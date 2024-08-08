@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Passing {
+  id            String  @id(map: "PK_Passing") @db.UniqueIdentifier
+  player_name   String  @db.NVarChar(Max)
+  completions   Int
+  attempts      Int
+  yards         Decimal @db.Decimal(18, 1)
+  hurries       Int
+  sacks         Int
+  sack_yards    Decimal @db.Decimal(18, 1)
+  interceptions Int
+  touchdowns    Int
+}
+
+model Rushing {
+  id                  String  @id(map: "PK_Rushing") @db.UniqueIdentifier
+  player_name         String  @db.NVarChar(Max)
+  position            String  @db.NVarChar(50)
+  rushes              Int
+  yards               Decimal @db.Decimal(18, 1)
+  average             Decimal @db.Decimal(18, 1)
+  touchdowns          Int
+  broken_tackles      Int
+  yards_after_contact Decimal @db.Decimal(18, 1)
+  tackles_for_loss    Int
+  fumbles             Int
+  fumbles_lost        Int
+  tier                String  @db.NVarChar(Max)
+}

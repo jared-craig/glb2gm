@@ -1,18 +1,14 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
-import { Container } from '@mui/material';
-import { Providers } from './Providers';
-
-const inter = Inter({ subsets: ['latin'] });
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../theme';
+import Header from './components/header';
+import { Box, CssBaseline } from '@mui/material';
 
 export const metadata: Metadata = {
-  title: 'GLB2 GM',
-  description: 'Tools for Goal Line Blitz 2',
+  title: 'GLB2GM',
+  description: 'GLB2 Helper',
 };
 
 export default function RootLayout({
@@ -21,12 +17,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Providers>
-      <html lang='en'>
-        <body className={inter.className}>
-          <Container>{children}</Container>
-        </body>
-      </html>
-    </Providers>
+    <html lang='en'>
+      <body>
+        <AppRouterCacheProvider>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Header />
+            <Box
+              component='main'
+              sx={{
+                flexGrow: 1,
+                overflow: 'auto',
+                m: 2,
+              }}
+            >
+              {children}
+            </Box>
+          </ThemeProvider>
+        </AppRouterCacheProvider>
+      </body>
+    </html>
   );
 }
