@@ -176,11 +176,11 @@ export default function PlayerPassingStats() {
         columns={columns}
         loading={rows.length <= 0 && !fetched}
         autoHeight
+        sortingOrder={['desc', 'asc']}
         pagination
         pageSizeOptions={[15, 30, 50, 100]}
         density='compact'
         disableDensitySelector
-        sortingOrder={['desc', 'asc']}
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{
