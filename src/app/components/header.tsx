@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useRouter } from 'next/navigation';
 
-const pages = ['Player Stats'];
+const pages = ['Rushing Stats'];
 
 function Header() {
   const router = useRouter();
@@ -30,8 +30,9 @@ function Header() {
   };
 
   const navigateToPage = (page: string) => {
+    handleCloseNavMenu();
     switch (page) {
-      case 'Player Stats':
+      case 'Rushing Stats':
         router.push('/stats/rushing');
         break;
     }

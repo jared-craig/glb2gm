@@ -3,8 +3,9 @@ import './globals.css';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
-import Header from './components/header';
 import { Box, CssBaseline } from '@mui/material';
+import MuiXLicense from '@/MuiXLicense';
+import Header from './components/Header';
 
 export const metadata: Metadata = {
   title: 'GLB2GM',
@@ -19,6 +20,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body>
+        <MuiXLicense />
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <CssBaseline />
