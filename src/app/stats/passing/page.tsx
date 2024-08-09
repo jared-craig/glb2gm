@@ -3,17 +3,17 @@
 import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
-import { PlayerRushingData } from './playerRushingData';
+import { PlayerPassingData } from './playerPassingData';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 
-export default function PlayerRushingStats() {
+export default function PlayerPassingStats() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
-  const [rows, setRows] = useState<PlayerRushingData[]>([]);
+  const [rows, setRows] = useState<PlayerPassingData[]>([]);
 
   const fetchData = async () => {
-    const res = await fetch('/api/rushing');
+    const res = await fetch('/api/passing');
     setRows(await res.json());
   };
 
@@ -38,16 +38,33 @@ export default function PlayerRushingStats() {
           pinnable: false,
         },
         {
-          field: 'average',
-          headerName: 'YPC',
+          field: 'yards_per_attempt',
+          headerName: 'YPA',
           width: 120,
           type: 'number',
           hideSortIcons: true,
           pinnable: false,
         },
         {
-          field: 'rushes',
-          headerName: 'RUSH',
+          field: 'completion_percentage',
+          headerName: 'PCT',
+          width: 120,
+          type: 'number',
+          hideSortIcons: true,
+          pinnable: false,
+          valueFormatter: (value) => `${value}%`,
+        },
+        {
+          field: 'attempts',
+          headerName: 'ATT',
+          width: 120,
+          type: 'number',
+          hideSortIcons: true,
+          pinnable: false,
+        },
+        {
+          field: 'completions',
+          headerName: 'COMP',
           width: 120,
           type: 'number',
           hideSortIcons: true,
@@ -62,32 +79,8 @@ export default function PlayerRushingStats() {
           pinnable: false,
         },
         {
-          field: 'broken_tackles',
-          headerName: 'BRTK',
-          width: 120,
-          type: 'number',
-          hideSortIcons: true,
-          pinnable: false,
-        },
-        {
-          field: 'tackles_for_loss',
-          headerName: 'TFL',
-          width: 120,
-          type: 'number',
-          hideSortIcons: true,
-          pinnable: false,
-        },
-        {
-          field: 'fumbles',
-          headerName: 'FUM',
-          width: 120,
-          type: 'number',
-          hideSortIcons: true,
-          pinnable: false,
-        },
-        {
-          field: 'fumbles_lost',
-          headerName: 'FUML',
+          field: 'interceptions',
+          headerName: 'INT',
           width: 120,
           type: 'number',
           hideSortIcons: true,
@@ -101,12 +94,6 @@ export default function PlayerRushingStats() {
           flex: 2,
         },
         {
-          field: 'position',
-          headerName: 'POS',
-          flex: 1,
-          pinnable: false,
-        },
-        {
           field: 'yards',
           headerName: 'YARDS',
           flex: 1,
@@ -114,15 +101,30 @@ export default function PlayerRushingStats() {
           pinnable: false,
         },
         {
-          field: 'average',
-          headerName: 'YPC',
+          field: 'yards_per_attempt',
+          headerName: 'YPA',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'rushes',
-          headerName: 'RUSH',
+          field: 'completion_percentage',
+          headerName: 'PCT',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueFormatter: (value) => `${value}%`,
+        },
+        {
+          field: 'attempts',
+          headerName: 'ATT',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'completions',
+          headerName: 'YARDS',
           flex: 1,
           type: 'number',
           pinnable: false,
@@ -135,36 +137,22 @@ export default function PlayerRushingStats() {
           pinnable: false,
         },
         {
-          field: 'broken_tackles',
-          headerName: 'BRTK',
+          field: 'interceptions',
+          headerName: 'INT',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'yards_after_contact',
-          headerName: 'YACON',
+          field: 'hurries',
+          headerName: 'HRY',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'tackles_for_loss',
-          headerName: 'TFL',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-        },
-        {
-          field: 'fumbles',
-          headerName: 'FUM',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-        },
-        {
-          field: 'fumbles_lost',
-          headerName: 'FUML',
+          field: 'sacks',
+          headerName: 'SACK',
           flex: 1,
           type: 'number',
           pinnable: false,
@@ -186,7 +174,7 @@ export default function PlayerRushingStats() {
         initialState={{
           filter: {
             filterModel: {
-              items: [{ field: 'rushes', operator: '>=', value: '100' }],
+              items: [{ field: 'attempts', operator: '>=', value: '100' }],
             },
           },
           pagination: { paginationModel: { pageSize: 15 } },

@@ -8,16 +8,19 @@ datasource db {
 }
 
 model Passing {
-  id            String  @id(map: "PK_Passing") @db.UniqueIdentifier
-  player_name   String  @db.NVarChar(Max)
-  completions   Int
-  attempts      Int
-  yards         Decimal @db.Decimal(18, 1)
-  hurries       Int
-  sacks         Int
-  sack_yards    Decimal @db.Decimal(18, 1)
-  interceptions Int
-  touchdowns    Int
+  id                    String  @id(map: "PK_Passing") @db.UniqueIdentifier
+  player_name           String  @db.NVarChar(Max)
+  completions           Int
+  attempts              Int
+  yards                 Decimal @db.Decimal(18, 1)
+  completion_percentage Decimal @db.Decimal(18, 1)
+  yards_per_attempt     Decimal @db.Decimal(18, 1)
+  hurries               Int
+  sacks                 Int
+  sack_yards            Decimal @db.Decimal(18, 1)
+  interceptions         Int
+  touchdowns            Int
+  tier                  String  @db.NVarChar(Max)
 }
 
 model Rushing {
