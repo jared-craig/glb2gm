@@ -188,13 +188,13 @@ export default function PlayerRushingStats() {
         columns={columns}
         loading={rows.length <= 0 && !fetched}
         autoHeight
+        sortingOrder={['desc', 'asc']}
         pagination
         pageSizeOptions={[15, 30, 50, 100]}
         density='compact'
         disableDensitySelector
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
-        sortingOrder={['desc', 'asc']}
         initialState={{
           filter: {
             filterModel: {
