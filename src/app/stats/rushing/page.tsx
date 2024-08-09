@@ -37,14 +37,12 @@ export default function PlayerRushingStats() {
           field: 'player_name',
           headerName: 'NAME',
           width: 130,
-          hideSortIcons: true,
         },
         {
           field: 'yards',
           headerName: 'YARDS',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -52,7 +50,6 @@ export default function PlayerRushingStats() {
           headerName: 'YPC',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -60,7 +57,6 @@ export default function PlayerRushingStats() {
           headerName: 'RUSH',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -68,7 +64,6 @@ export default function PlayerRushingStats() {
           headerName: 'TD',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -76,7 +71,6 @@ export default function PlayerRushingStats() {
           headerName: 'BRTK',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -84,7 +78,6 @@ export default function PlayerRushingStats() {
           headerName: 'TFL',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -92,7 +85,6 @@ export default function PlayerRushingStats() {
           headerName: 'FUM',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -100,7 +92,6 @@ export default function PlayerRushingStats() {
           headerName: 'FUML',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
       ]
