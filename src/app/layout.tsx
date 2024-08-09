@@ -7,6 +7,8 @@ import { Box, CssBaseline } from '@mui/material';
 import MuiXLicense from '@/MuiXLicense';
 import HeaderBar from './components/HeaderBar';
 
+import { Analytics } from '@vercel/analytics/react';
+
 export const metadata: Metadata = {
   title: 'GLB2GM',
   description: 'GLB2 Statistics and Analysis',
@@ -21,6 +23,7 @@ export default function RootLayout({
     <html lang='en'>
       <body>
         <MuiXLicense />
+        <Analytics />
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <CssBaseline />
