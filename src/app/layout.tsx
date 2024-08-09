@@ -9,7 +9,7 @@ import HeaderBar from './components/HeaderBar';
 
 export const metadata: Metadata = {
   title: 'GLB2GM',
-  description: 'GLB2 Helper',
+  description: 'GLB2 Statistics and Analysis',
 };
 
 export default function RootLayout({
