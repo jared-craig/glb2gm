@@ -37,14 +37,12 @@ export default function PlayerPassingStats() {
           field: 'player_name',
           headerName: 'NAME',
           width: 130,
-          hideSortIcons: true,
         },
         {
           field: 'yards',
           headerName: 'YARDS',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -52,7 +50,6 @@ export default function PlayerPassingStats() {
           headerName: 'YPA',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -60,7 +57,6 @@ export default function PlayerPassingStats() {
           headerName: 'PCT',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
           valueFormatter: (value) => `${value}%`,
         },
@@ -69,7 +65,6 @@ export default function PlayerPassingStats() {
           headerName: 'ATT',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -77,7 +72,6 @@ export default function PlayerPassingStats() {
           headerName: 'COMP',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -85,7 +79,6 @@ export default function PlayerPassingStats() {
           headerName: 'TD',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
         {
@@ -93,7 +86,6 @@ export default function PlayerPassingStats() {
           headerName: 'INT',
           width: 120,
           type: 'number',
-          hideSortIcons: true,
           pinnable: false,
         },
       ]
