@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation';
 
 const pages = ['Passing Stats', 'Rushing Stats'];
 
-function Header() {
+function HeaderBar() {
   const router = useRouter();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -124,4 +124,4 @@ function Header() {
     </AppBar>
   );
 }
-export default Header;
+export default HeaderBar;

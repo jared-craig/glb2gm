@@ -5,7 +5,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
 import { Box, CssBaseline } from '@mui/material';
 import MuiXLicense from '@/MuiXLicense';
-import Header from './components/Header';
+import HeaderBar from './components/HeaderBar';
 
 export const metadata: Metadata = {
   title: 'GLB2GM',
@@ -24,7 +24,7 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Header />
+            <HeaderBar />
             <Box
               component='main'
               sx={{
