@@ -180,6 +180,7 @@ export default function PlayerPassingStats() {
         pageSizeOptions={[15, 30, 50, 100]}
         density='compact'
         disableDensitySelector
+        sortingOrder={['desc', 'asc']}
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{

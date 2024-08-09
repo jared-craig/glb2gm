@@ -194,6 +194,7 @@ export default function PlayerRushingStats() {
         disableDensitySelector
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
+        sortingOrder={['desc', 'asc']}
         initialState={{
           filter: {
             filterModel: {
