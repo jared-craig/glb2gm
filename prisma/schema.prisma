@@ -38,3 +38,35 @@ model Rushing {
   fumbles_lost        Int
   tier                String  @db.NVarChar(Max)
 }
+
+model PassingTest {
+  id                    String  @id(map: "PK_PassingTest") @db.UniqueIdentifier
+  player_name           String  @db.NVarChar(Max)
+  completions           Int
+  attempts              Int
+  yards                 Decimal @db.Decimal(18, 1)
+  completion_percentage Decimal @db.Decimal(18, 1)
+  yards_per_attempt     Decimal @db.Decimal(18, 1)
+  hurries               Int
+  sacks                 Int
+  sack_yards            Decimal @db.Decimal(18, 1)
+  interceptions         Int
+  touchdowns            Int
+  tier                  String  @db.NVarChar(Max)
+}
+
+model RushingTest {
+  id                  String  @id(map: "PK_RushingTest") @db.UniqueIdentifier
+  player_name         String  @db.NVarChar(Max)
+  position            String  @db.NVarChar(50)
+  rushes              Int
+  yards               Decimal @db.Decimal(18, 1)
+  average             Decimal @db.Decimal(18, 1)
+  touchdowns          Int
+  broken_tackles      Int
+  yards_after_contact Decimal @db.Decimal(18, 1)
+  tackles_for_loss    Int
+  fumbles             Int
+  fumbles_lost        Int
+  tier                String  @db.NVarChar(Max)
+}

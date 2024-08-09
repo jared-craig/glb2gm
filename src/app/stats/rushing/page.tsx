@@ -10,16 +10,24 @@ export default function PlayerRushingStats() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
+  const [data, setData] = useState<PlayerRushingData[]>([]);
   const [rows, setRows] = useState<PlayerRushingData[]>([]);
+  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/rushing');
-    setRows(await res.json());
+    const data = await res.json();
+    setData(data);
+    setRows(data);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    setRows(data.filter((x: PlayerRushingData) => x.tier === tier));
+  }, [tier]);
 
   const columns: GridColDef[] = !desktop
     ? [
@@ -183,6 +191,7 @@ export default function PlayerRushingStats() {
         density='compact'
         disableDensitySelector
         slots={{ toolbar: CustomGridToolbar }}
+        slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{
           filter: {
             filterModel: {

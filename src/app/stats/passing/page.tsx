@@ -10,16 +10,24 @@ export default function PlayerPassingStats() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
+  const [data, setData] = useState<PlayerPassingData[]>([]);
   const [rows, setRows] = useState<PlayerPassingData[]>([]);
+  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/passing');
-    setRows(await res.json());
+    const data = await res.json();
+    setData(data);
+    setRows(data);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    setRows(data.filter((x: PlayerPassingData) => x.tier === tier));
+  }, [tier]);
 
   const columns: GridColDef[] = !desktop
     ? [
@@ -171,6 +179,7 @@ export default function PlayerPassingStats() {
         density='compact'
         disableDensitySelector
         slots={{ toolbar: CustomGridToolbar }}
+        slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{
           filter: {
             filterModel: {
