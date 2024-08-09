@@ -10,6 +10,7 @@ export default function PlayerPassingStats() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
+  const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerPassingData[]>([]);
   const [rows, setRows] = useState<PlayerPassingData[]>([]);
   const [tier, setTier] = useState<string>('Veteran');
@@ -19,6 +20,7 @@ export default function PlayerPassingStats() {
     const data = await res.json();
     setData(data);
     setRows(data);
+    setFetched(true);
   };
 
   useEffect(() => {
@@ -172,7 +174,7 @@ export default function PlayerPassingStats() {
       <DataGridPro
         rows={rows ?? []}
         columns={columns}
-        loading={rows.length <= 0}
+        loading={rows.length <= 0 && !fetched}
         autoHeight
         pagination
         pageSizeOptions={[15, 30, 50, 100]}

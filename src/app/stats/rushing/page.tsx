@@ -10,6 +10,7 @@ export default function PlayerRushingStats() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
+  const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerRushingData[]>([]);
   const [rows, setRows] = useState<PlayerRushingData[]>([]);
   const [tier, setTier] = useState<string>('Veteran');
@@ -19,6 +20,7 @@ export default function PlayerRushingStats() {
     const data = await res.json();
     setData(data);
     setRows(data);
+    setFetched(true);
   };
 
   useEffect(() => {
@@ -184,7 +186,7 @@ export default function PlayerRushingStats() {
       <DataGridPro
         rows={rows ?? []}
         columns={columns}
-        loading={rows.length <= 0}
+        loading={rows.length <= 0 && !fetched}
         autoHeight
         pagination
         pageSizeOptions={[15, 30, 50, 100]}
