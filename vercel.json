@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/update-players",
+      "path": "/api/cron/updatePlayers",
       "schedule": "0 0 * * *"
     }
   ]
