@@ -16,7 +16,9 @@ export default function PlayerPassingStats() {
   const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
-    const res = await fetch('/api/passing');
+    const res = await fetch('/api/passing', {
+      next: { revalidate: 3600 },
+    });
     const data = await res.json();
     setData(data);
     setRows(data);
