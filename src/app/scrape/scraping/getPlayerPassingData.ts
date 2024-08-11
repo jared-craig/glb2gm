@@ -2,7 +2,6 @@ import puppeteer from 'puppeteer';
 import { PlayerPassingData } from '../interfaces.js';
 
 export const getPlayerPassingData = async (season: string, tier: string, minAttempts: number): Promise<PlayerPassingData[]> => {
-  console.log(`Scraping season ${season} ${tier} QB passing player data...`);
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -26,7 +25,7 @@ export const getPlayerPassingData = async (season: string, tier: string, minAtte
     elementsToRemove.forEach((x) => x.remove());
   });
 
-  const playerLinks = await page.$$eval('a[href^="/game/player/"]', (links) => links.map((link) => link.href));
+  const playerLinks = (await page.$$eval('a[href^="/game/player/"]', (links) => links.map((link) => link.href))).slice(0, 5);
 
   let allPlayersStats: PlayerPassingData[] = [];
 
@@ -87,8 +86,6 @@ export const getPlayerPassingData = async (season: string, tier: string, minAtte
   }
 
   await browser.close();
-
-  console.log(`Scraped ${allPlayersStats.length} QBs`);
 
   return allPlayersStats;
 };

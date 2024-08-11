@@ -2,7 +2,6 @@ import puppeteer from 'puppeteer';
 import { PlayerRushingData } from '../interfaces.js';
 
 export const getPlayerRushingData = async (season: string, tier: string, position: string, minRushes: number): Promise<PlayerRushingData[]> => {
-  console.log(`Scraping season ${season} ${tier} ${position} rushing player data...`);
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -26,7 +25,7 @@ export const getPlayerRushingData = async (season: string, tier: string, positio
     elementsToRemove.forEach((x) => x.remove());
   });
 
-  const playerLinks = await page.$$eval('a[href^="/game/player/"]', (links) => links.map((link) => link.href));
+  const playerLinks = (await page.$$eval('a[href^="/game/player/"]', (links) => links.map((link) => link.href))).slice(0, 5);
 
   let allPlayersStats: PlayerRushingData[] = [];
 
@@ -87,8 +86,6 @@ export const getPlayerRushingData = async (season: string, tier: string, positio
   }
 
   await browser.close();
-
-  console.log(`Scraped ${allPlayersStats.length} ${position}s`);
 
   return allPlayersStats;
 };

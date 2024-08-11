@@ -3,7 +3,6 @@ import { PlayerPassingData, PlayerRushingData } from '../interfaces';
 import { v4 as uuidv4 } from 'uuid';
 
 export const truncateTable = async (table: string) => {
-  console.log(`Truncating ${table}...`);
   try {
     await mssql.connect(
       'Server=tcp:hotsgg.database.windows.net,1433;Initial Catalog=glb2-data;Persist Security Info=False;User ID=hotsgg-admin;Password=Ludacris123!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
@@ -30,7 +29,6 @@ export const truncateTable = async (table: string) => {
 };
 
 export const writeRushingDataToDb = async (data: PlayerRushingData[], tableDestination: string): Promise<void> => {
-  console.log(`Attempting to write ${data[0].tier} rushing data to ${tableDestination}...`);
   try {
     await mssql.connect(
       'Server=tcp:hotsgg.database.windows.net,1433;Initial Catalog=glb2-data;Persist Security Info=False;User ID=hotsgg-admin;Password=Ludacris123!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
@@ -71,7 +69,6 @@ export const writeRushingDataToDb = async (data: PlayerRushingData[], tableDesti
     const request = new mssql.Request();
     request.bulk(table, async (err, result) => {
       if (err) console.error('Error inserting data:', err);
-      else console.log(`Successfully inserted ${result.rowsAffected} rows`);
     });
   } catch (err) {
     console.error('DB error:', err);
@@ -79,7 +76,6 @@ export const writeRushingDataToDb = async (data: PlayerRushingData[], tableDesti
 };
 
 export const writePassingDataToDb = async (data: PlayerPassingData[], tableDestination: string): Promise<void> => {
-  console.log('Attempting to write passing data to db...');
   try {
     await mssql.connect(
       'Server=tcp:hotsgg.database.windows.net,1433;Initial Catalog=glb2-data;Persist Security Info=False;User ID=hotsgg-admin;Password=Ludacris123!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
@@ -120,7 +116,6 @@ export const writePassingDataToDb = async (data: PlayerPassingData[], tableDesti
     const request = new mssql.Request();
     request.bulk(table, async (err, result) => {
       if (err) console.error('Error inserting data:', err);
-      else console.log(`Successfully inserted ${result.rowsAffected} rows`);
     });
   } catch (err) {
     console.error('DB error:', err);
