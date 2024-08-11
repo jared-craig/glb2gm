@@ -25,7 +25,7 @@ export const getPlayerPassingData = async (season: string, tier: string, minAtte
     elementsToRemove.forEach((x) => x.remove());
   });
 
-  const playerLinks = (await page.$$eval('a[href^="/game/player/"]', (links) => links.map((link) => link.href))).slice(0, 5);
+  const playerLinks = await page.$$eval('a[href^="/game/player/"]', (links) => links.map((link) => link.href));
 
   let allPlayersStats: PlayerPassingData[] = [];
 
