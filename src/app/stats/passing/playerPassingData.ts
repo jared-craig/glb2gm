@@ -1,5 +1,5 @@
 export interface PlayerPassingData {
-  id: string;
+  id: number;
   playerName: string;
   completions: number;
   attempts: number;

@@ -41,6 +41,11 @@ function HeaderBar() {
     }
   };
 
+  React.useEffect(() => {
+    router.prefetch('/stats/passing');
+    router.prefetch('/stats/rushing');
+  }, []);
+
   return (
     <AppBar position='static'>
       <Container maxWidth='xl'>
