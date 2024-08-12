@@ -7,8 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model Passing {
-  id                    String  @id(map: "PK_Passing") @db.UniqueIdentifier
+  id                    Int     @id(map: "PK_Passing")
   player_name           String  @db.NVarChar(Max)
   completions           Int
   attempts              Int
@@ -23,8 +24,9 @@ model Passing {
   tier                  String  @db.NVarChar(Max)
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model Rushing {
-  id                  String  @id(map: "PK_Rushing") @db.UniqueIdentifier
+  id                  Int     @id(map: "PK_Rushing")
   player_name         String  @db.NVarChar(Max)
   position            String  @db.NVarChar(50)
   rushes              Int
@@ -39,8 +41,9 @@ model Rushing {
   tier                String  @db.NVarChar(Max)
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model PassingTest {
-  id                    String  @id(map: "PK_PassingTest") @db.UniqueIdentifier
+  id                    Int     @id(map: "PK_PassingTest")
   player_name           String  @db.NVarChar(Max)
   completions           Int
   attempts              Int
@@ -55,8 +58,9 @@ model PassingTest {
   tier                  String  @db.NVarChar(Max)
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model RushingTest {
-  id                  String  @id(map: "PK_RushingTest") @db.UniqueIdentifier
+  id                  Int     @id(map: "PK_RushingTest")
   player_name         String  @db.NVarChar(Max)
   position            String  @db.NVarChar(50)
   rushes              Int
