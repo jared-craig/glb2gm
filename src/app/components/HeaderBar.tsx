@@ -108,6 +108,7 @@ function HeaderBar() {
           <Box sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}>
             <Image src={logo} width={40} height={40} alt='logo' />
           </Box>
+          <Box sx={{ flexGrow: 1 }} />
           <Typography
             variant='h5'
             noWrap
