@@ -11,8 +11,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import logo from '../assets/logo-no-background.png';
 
 const pages = ['Passing Stats', 'Rushing Stats'];
 
@@ -50,6 +51,9 @@ function HeaderBar() {
     <AppBar position='static'>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}>
+            <Image src={logo} width={40} height={40} alt='logo' />
+          </Box>
           <Typography
             variant='h5'
             noWrap
@@ -96,6 +100,9 @@ function HeaderBar() {
                 </MenuItem>
               ))}
             </Menu>
+          </Box>
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}>
+            <Image src={logo} width={40} height={40} alt='logo' />
           </Box>
           <Typography
             variant='h5'
