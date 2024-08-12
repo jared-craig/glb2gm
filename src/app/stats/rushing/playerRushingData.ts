@@ -1,5 +1,5 @@
 export interface PlayerRushingData {
-  id: string;
+  id: number;
   playerName: string;
   position: string;
   rushes: number;
