@@ -198,6 +198,16 @@ export default function PlayerReceivingStats() {
           type: 'number',
           pinnable: false,
         },
+        {
+          field: 'gm_rating',
+          headerName: 'GM Rating',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return Math.round(0.1 * +row.yards + 10.0 * +row.touchdowns - 100.0 * +(+row.drops / +row.receptions) - +row.fumbles_lost);
+          },
+        },
       ];
 
   return (
@@ -216,6 +226,7 @@ export default function PlayerReceivingStats() {
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{
+          sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           pagination: { paginationModel: { pageSize: 15 } },
           pinnedColumns: {
             left: ['player_name'],

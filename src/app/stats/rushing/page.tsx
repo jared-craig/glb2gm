@@ -181,6 +181,16 @@ export default function PlayerRushingStats() {
           type: 'number',
           pinnable: false,
         },
+        {
+          field: 'gm_rating',
+          headerName: 'GM Rating',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return Math.round(0.1 * +row.yards + 10.0 * +row.touchdowns + 100.0 * +row.average - +row.fumbles_lost);
+          },
+        },
       ];
 
   return (
@@ -199,6 +209,7 @@ export default function PlayerRushingStats() {
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{
+          sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           filter: {
             filterModel: {
               items: [{ field: 'rushes', operator: '>=', value: '100' }],

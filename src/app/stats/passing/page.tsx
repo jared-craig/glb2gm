@@ -64,7 +64,7 @@ export default function PlayerPassingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
-          valueFormatter: (value) => `${value}%`,
+          valueFormatter: (value: number) => `${value}%`,
         },
         {
           field: 'attempts',
@@ -170,6 +170,16 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
         },
+        {
+          field: 'gm_rating',
+          headerName: 'GM Rating',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return Math.round(0.1 * +row.yards + 10.0 * +row.touchdowns - 10.0 * +row.interceptions - +row.sacks);
+          },
+        },
       ];
 
   return (
@@ -188,6 +198,7 @@ export default function PlayerPassingStats() {
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{
+          sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           filter: {
             filterModel: {
               items: [{ field: 'attempts', operator: '>=', value: '100' }],
