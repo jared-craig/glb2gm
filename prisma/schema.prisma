@@ -74,3 +74,35 @@ model RushingTest {
   fumbles_lost        Int
   tier                String  @db.NVarChar(Max)
 }
+
+model Receiving {
+  id                Int     @id(map: "PK_Receiving")
+  player_name       String  @db.NVarChar(Max)
+  position          String  @db.NVarChar(50)
+  targets           Int
+  receptions        Int
+  yards             Decimal @db.Decimal(18, 1)
+  average           Decimal @db.Decimal(18, 1)
+  yards_after_catch Decimal @db.Decimal(18, 1)
+  touchdowns        Int
+  drops             Int
+  fumbles           Int
+  fumbles_lost      Int
+  tier              String  @db.NVarChar(Max)
+}
+
+model ReceivingTest {
+  id                Int     @id(map: "PK_ReceivingTest")
+  player_name       String  @db.NVarChar(Max)
+  position          String  @db.NVarChar(50)
+  targets           Int
+  receptions        Int
+  yards             Decimal @db.Decimal(18, 1)
+  average           Decimal @db.Decimal(18, 1)
+  yards_after_catch Decimal @db.Decimal(18, 1)
+  touchdowns        Int
+  drops             Int
+  fumbles           Int
+  fumbles_lost      Int
+  tier              String  @db.NVarChar(Max)
+}

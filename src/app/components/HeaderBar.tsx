@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import logo from '../assets/logo-no-background.png';
 
-const pages = ['Passing Stats', 'Rushing Stats'];
+const pages = ['Passing Stats', 'Rushing Stats', 'Receiving Stats'];
 
 function HeaderBar() {
   const router = useRouter();
@@ -39,12 +39,16 @@ function HeaderBar() {
       case 'Rushing Stats':
         router.push('/stats/rushing');
         break;
+      case 'Receiving Stats':
+        router.push('/stats/receiving');
+        break;
     }
   };
 
   React.useEffect(() => {
     router.prefetch('/stats/passing');
     router.prefetch('/stats/rushing');
+    router.prefetch('/stats/receiving');
   }, []);
 
   return (
