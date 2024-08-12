@@ -4,9 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const truncateTable = async (table: string) => {
   try {
-    await mssql.connect(
-      'Server=tcp:hotsgg.database.windows.net,1433;Initial Catalog=glb2-data;Persist Security Info=False;User ID=hotsgg-admin;Password=Ludacris123!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
-    );
+    await mssql.connect(process.env.DATABASE_SCRAPE_URL ?? '');
     switch (table) {
       case 'Rushing':
         await mssql.query`TRUNCATE TABLE Rushing`;
@@ -24,15 +22,13 @@ export const truncateTable = async (table: string) => {
         break;
     }
   } catch (err) {
-    console.error('DB error:', err);
+    throw new Error(`${err}`);
   }
 };
 
 export const writeRushingDataToDb = async (data: PlayerRushingData[], tableDestination: string): Promise<void> => {
   try {
-    await mssql.connect(
-      'Server=tcp:hotsgg.database.windows.net,1433;Initial Catalog=glb2-data;Persist Security Info=False;User ID=hotsgg-admin;Password=Ludacris123!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
-    );
+    await mssql.connect(process.env.DATABASE_SCRAPE_URL ?? '');
 
     const table = new mssql.Table(tableDestination);
     table.columns.add('id', mssql.UniqueIdentifier, { nullable: false, primary: true });
@@ -68,18 +64,16 @@ export const writeRushingDataToDb = async (data: PlayerRushingData[], tableDesti
 
     const request = new mssql.Request();
     request.bulk(table, async (err, result) => {
-      if (err) console.error('Error inserting data:', err);
+      if (err) throw new Error(`${err}`);
     });
   } catch (err) {
-    console.error('DB error:', err);
+    throw new Error(`${err}`);
   }
 };
 
 export const writePassingDataToDb = async (data: PlayerPassingData[], tableDestination: string): Promise<void> => {
   try {
-    await mssql.connect(
-      'Server=tcp:hotsgg.database.windows.net,1433;Initial Catalog=glb2-data;Persist Security Info=False;User ID=hotsgg-admin;Password=Ludacris123!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
-    );
+    await mssql.connect(process.env.DATABASE_SCRAPE_URL ?? '');
 
     const table = new mssql.Table(tableDestination);
     table.columns.add('id', mssql.UniqueIdentifier, { nullable: false, primary: true });
@@ -115,9 +109,9 @@ export const writePassingDataToDb = async (data: PlayerPassingData[], tableDesti
 
     const request = new mssql.Request();
     request.bulk(table, async (err, result) => {
-      if (err) console.error('Error inserting data:', err);
+      if (err) throw new Error(`${err}`);
     });
   } catch (err) {
-    console.error('DB error:', err);
+    throw new Error(`${err}`);
   }
 };
