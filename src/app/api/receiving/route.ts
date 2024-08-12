@@ -6,10 +6,10 @@ export async function GET() {
   const allPlayerReceivingData = await prisma.receiving.findMany({
     orderBy: [
       {
-        average: 'desc',
+        yards: 'desc',
       },
       {
-        yards: 'desc',
+        average: 'desc',
       },
     ],
   });
