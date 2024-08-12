@@ -20,7 +20,7 @@ export default function PlayerRushingStats() {
     const res = await fetch('/api/rushing');
     const data = await res.json();
     setData(data);
-    setRows(data);
+    setRows(data.filter((x: PlayerRushingData) => x.tier === tier));
     setFetched(true);
   };
 

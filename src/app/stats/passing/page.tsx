@@ -20,7 +20,7 @@ export default function PlayerPassingStats() {
     const res = await fetch('/api/passing');
     const data = await res.json();
     setData(data);
-    setRows(data);
+    setRows(data.filter((x: PlayerPassingData) => x.tier === tier));
     setFetched(true);
   };
 
