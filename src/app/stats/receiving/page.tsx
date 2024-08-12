@@ -1,6 +1,6 @@
 'use client';
 
-import { DataGridPro, GridColDef, GridRenderCellParams } from '@mui/x-data-grid-pro';
+import { DataGridPro, GridColDef, GridRenderCellParams, GridValueGetter } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerReceivingData } from './playerReceivingData';
@@ -20,7 +20,7 @@ export default function PlayerReceivingStats() {
     const res = await fetch('/api/receiving');
     const data = await res.json();
     setData(data);
-    setRows(data);
+    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier));
     setFetched(true);
   };
 
@@ -39,7 +39,7 @@ export default function PlayerReceivingStats() {
           headerName: 'NAME',
           width: 130,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
             </Link>
           ),
@@ -114,7 +114,7 @@ export default function PlayerReceivingStats() {
           headerName: 'NAME',
           flex: 2,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
             </Link>
           ),
@@ -173,6 +173,16 @@ export default function PlayerReceivingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+        },
+        {
+          field: 'drops_per_receptions',
+          headerName: 'DPR',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return (row.drops / row.receptions).toFixed(2);
+          },
         },
         {
           field: 'fumbles',
