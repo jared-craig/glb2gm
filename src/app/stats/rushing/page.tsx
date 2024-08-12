@@ -16,9 +16,7 @@ export default function PlayerRushingStats() {
   const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
-    const res = await fetch('/api/rushing', {
-      next: { revalidate: 3600 },
-    });
+    const res = await fetch('/api/rushing');
     const data = await res.json();
     setData(data);
     setRows(data);
