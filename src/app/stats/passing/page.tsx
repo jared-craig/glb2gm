@@ -43,6 +43,7 @@ export default function PlayerPassingStats() {
               <strong>{params.value}</strong>
             </Link>
           ),
+          disableColumnMenu: true,
         },
         {
           field: 'yards',
@@ -50,6 +51,7 @@ export default function PlayerPassingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'yards_per_attempt',
@@ -57,6 +59,7 @@ export default function PlayerPassingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'completion_percentage',
@@ -65,6 +68,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           valueFormatter: (value: number) => `${value}%`,
+          disableColumnMenu: true,
         },
         {
           field: 'attempts',
@@ -72,6 +76,7 @@ export default function PlayerPassingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'completions',
@@ -79,6 +84,7 @@ export default function PlayerPassingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'touchdowns',
@@ -86,6 +92,7 @@ export default function PlayerPassingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'interceptions',
@@ -93,6 +100,18 @@ export default function PlayerPassingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'gm_rating',
+          headerName: 'GM Rating',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return Math.round(0.1 * +row.yards + 10.0 * +row.touchdowns - 10.0 * +row.interceptions - +row.sacks);
+          },
+          disableColumnMenu: true,
         },
       ]
     : [

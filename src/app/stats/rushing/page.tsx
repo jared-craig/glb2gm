@@ -43,6 +43,7 @@ export default function PlayerRushingStats() {
               <strong>{params.value}</strong>
             </Link>
           ),
+          disableColumnMenu: true,
         },
         {
           field: 'yards',
@@ -50,6 +51,7 @@ export default function PlayerRushingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'average',
@@ -57,6 +59,7 @@ export default function PlayerRushingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'rushes',
@@ -64,6 +67,7 @@ export default function PlayerRushingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'touchdowns',
@@ -71,6 +75,7 @@ export default function PlayerRushingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'broken_tackles',
@@ -78,6 +83,7 @@ export default function PlayerRushingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'tackles_for_loss',
@@ -85,6 +91,7 @@ export default function PlayerRushingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'fumbles',
@@ -92,6 +99,7 @@ export default function PlayerRushingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
         },
         {
           field: 'fumbles_lost',
@@ -99,6 +107,18 @@ export default function PlayerRushingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'gm_rating',
+          headerName: 'GM Rating',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return Math.round(0.1 * +row.yards + 10.0 * +row.touchdowns + 100.0 * +row.average - +row.fumbles_lost);
+          },
+          disableColumnMenu: true,
         },
       ]
     : [
