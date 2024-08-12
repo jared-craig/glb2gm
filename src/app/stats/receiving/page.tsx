@@ -120,7 +120,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'gm_rating',
           headerName: 'GM Rating',
-          flex: 1,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
