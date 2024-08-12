@@ -1,0 +1,222 @@
+'use client';
+
+import { DataGridPro, GridColDef, GridRenderCellParams } from '@mui/x-data-grid-pro';
+import { useEffect, useState } from 'react';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { PlayerReceivingData } from './playerReceivingData';
+import CustomGridToolbar from '@/app/components/CustomGridToolBar';
+import Link from 'next/link';
+
+export default function PlayerReceivingStats() {
+  const theme = useTheme();
+  const desktop = useMediaQuery(theme.breakpoints.up('xl'));
+
+  const [fetched, setFetched] = useState<boolean>(false);
+  const [data, setData] = useState<PlayerReceivingData[]>([]);
+  const [rows, setRows] = useState<PlayerReceivingData[]>([]);
+  const [tier, setTier] = useState<string>('Veteran');
+
+  const fetchData = async () => {
+    const res = await fetch('/api/receiving');
+    const data = await res.json();
+    setData(data);
+    setRows(data);
+    setFetched(true);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier));
+  }, [tier]);
+
+  const columns: GridColDef[] = !desktop
+    ? [
+        {
+          field: 'player_name',
+          headerName: 'NAME',
+          width: 130,
+          renderCell: (params: GridRenderCellParams<any, string>) => (
+            <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+              <strong>{params.value}</strong>
+            </Link>
+          ),
+        },
+        {
+          field: 'yards',
+          headerName: 'YARDS',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'average',
+          headerName: 'YPR',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'touchdowns',
+          headerName: 'TD',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'receptions',
+          headerName: 'REC',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'targets',
+          headerName: 'TAR',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'yards_after_catch',
+          headerName: 'YAC',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'drops',
+          headerName: 'DROPS',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'fumbles',
+          headerName: 'FUM',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'fumbles_lost',
+          headerName: 'FUML',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+        },
+      ]
+    : [
+        {
+          field: 'player_name',
+          headerName: 'NAME',
+          flex: 2,
+          renderCell: (params: GridRenderCellParams<any, string>) => (
+            <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+              <strong>{params.value}</strong>
+            </Link>
+          ),
+        },
+        {
+          field: 'position',
+          headerName: 'POS',
+          flex: 1,
+          pinnable: false,
+        },
+        {
+          field: 'yards',
+          headerName: 'YARDS',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'average',
+          headerName: 'YPR',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'touchdowns',
+          headerName: 'TD',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'receptions',
+          headerName: 'REC',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'targets',
+          headerName: 'TAR',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'yards_after_catch',
+          headerName: 'YAC',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'drops',
+          headerName: 'DROPS',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'fumbles',
+          headerName: 'FUM',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'fumbles_lost',
+          headerName: 'FUML',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+      ];
+
+  return (
+    <Box>
+      <DataGridPro
+        rows={rows ?? []}
+        columns={columns}
+        loading={rows.length <= 0 && !fetched}
+        autoHeight
+        sortingOrder={['desc', 'asc']}
+        pagination
+        pageSizeOptions={[15, 30, 50, 100]}
+        density='compact'
+        disableRowSelectionOnClick
+        disableDensitySelector
+        slots={{ toolbar: CustomGridToolbar }}
+        slotProps={{ toolbar: { tierFilter: setTier } }}
+        initialState={{
+          filter: {
+            filterModel: {
+              items: [{ field: 'receptions', operator: '>=', value: '100' }],
+            },
+          },
+          pagination: { paginationModel: { pageSize: 15 } },
+          pinnedColumns: {
+            left: ['player_name'],
+          },
+        }}
+      />
+    </Box>
+  );
+}
