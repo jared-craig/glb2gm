@@ -216,11 +216,6 @@ export default function PlayerReceivingStats() {
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{
-          filter: {
-            filterModel: {
-              items: [{ field: 'receptions', operator: '>=', value: '100' }],
-            },
-          },
           pagination: { paginationModel: { pageSize: 15 } },
           pinnedColumns: {
             left: ['player_name'],
