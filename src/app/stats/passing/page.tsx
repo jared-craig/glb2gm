@@ -1,10 +1,11 @@
 'use client';
 
-import { DataGridPro, GridColDef } from '@mui/x-data-grid-pro';
+import { DataGridPro, GridColDef, GridRenderCellParams } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerPassingData } from './playerPassingData';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
+import Link from 'next/link';
 
 export default function PlayerPassingStats() {
   const theme = useTheme();
@@ -37,6 +38,11 @@ export default function PlayerPassingStats() {
           field: 'player_name',
           headerName: 'NAME',
           width: 130,
+          renderCell: (params: GridRenderCellParams<any, string>) => (
+            <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+              <strong>{params.value}</strong>
+            </Link>
+          ),
         },
         {
           field: 'yards',
@@ -94,6 +100,11 @@ export default function PlayerPassingStats() {
           field: 'player_name',
           headerName: 'NAME',
           flex: 2,
+          renderCell: (params: GridRenderCellParams<any, string>) => (
+            <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+              <strong>{params.value}</strong>
+            </Link>
+          ),
         },
         {
           field: 'yards',
@@ -172,6 +183,7 @@ export default function PlayerPassingStats() {
         pagination
         pageSizeOptions={[15, 30, 50, 100]}
         density='compact'
+        disableRowSelectionOnClick
         disableDensitySelector
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
