@@ -56,26 +56,8 @@ function HeaderBar() {
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
           <Box sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}>
-            <Image src={logo} width={40} height={40} alt='logo' />
+            <Image src={logo} width={50} height={50} alt='logo' />
           </Box>
-          <Typography
-            variant='h5'
-            noWrap
-            component='a'
-            href='/'
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.1rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            GLB2GM
-          </Typography>
-
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton size='large' aria-label='glb2gm menu' aria-controls='menu-appbar' aria-haspopup='true' onClick={handleOpenNavMenu} color='inherit'>
               <MenuIcon />
