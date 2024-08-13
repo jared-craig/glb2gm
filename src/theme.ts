@@ -1,10 +1,10 @@
 'use client';
-import { Roboto } from 'next/font/google';
+import { Aldrich } from 'next/font/google';
 import { createTheme } from '@mui/material/styles';
 import type {} from '@mui/x-data-grid-pro/themeAugmentation';
 
-const roboto = Roboto({
-  weight: ['300', '400', '500', '700'],
+const roboto = Aldrich({
+  weight: ['400'],
   subsets: ['latin'],
   display: 'swap',
 });

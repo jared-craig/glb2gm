@@ -1,6 +1,6 @@
 'use client';
 
-import { DataGridPro, GridColDef, GridRenderCellParams, GridRowModel, GridValueGetter } from '@mui/x-data-grid-pro';
+import { DataGridPro, GridColDef, GridRenderCellParams, GridRowModel } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerReceivingData } from './playerReceivingData';
@@ -38,7 +38,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'player_name',
           headerName: 'NAME',
-          width: 130,
+          width: 140,
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
@@ -49,7 +49,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'yards',
           headerName: 'YARDS',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -57,7 +57,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'average',
           headerName: 'YPR',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -65,7 +65,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'touchdowns',
           headerName: 'TD',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -73,7 +73,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'receptions',
           headerName: 'REC',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -81,7 +81,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'targets',
           headerName: 'TAR',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -89,7 +89,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'yards_after_catch',
           headerName: 'YAC',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -97,7 +97,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'drops',
           headerName: 'DROPS',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -105,17 +105,18 @@ export default function PlayerReceivingStats() {
         {
           field: 'drops_per_receptions',
           headerName: 'DPR',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
             return getReceivingDropsPerReception(row);
           },
+          disableColumnMenu: true,
         },
         {
           field: 'fumbles',
           headerName: 'FUM',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -123,7 +124,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'fumbles_lost',
           headerName: 'FUML',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
