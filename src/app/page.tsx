@@ -125,7 +125,7 @@ export default function Home() {
                     target='_blank'
                     style={{ color: 'inherit', textDecoration: 'inherit' }}
                   >
-                    QB ${passerData[1]?.player_name}
+                    QB {passerData[1]?.player_name}
                   </Link>
                 ) : (
                   'N/A'
@@ -169,7 +169,7 @@ export default function Home() {
                     target='_blank'
                     style={{ color: 'inherit', textDecoration: 'inherit' }}
                   >
-                    QB ${passerData[2]?.player_name}
+                    QB {passerData[2]?.player_name}
                   </Link>
                 ) : (
                   'N/A'
@@ -213,7 +213,7 @@ export default function Home() {
                     target='_blank'
                     style={{ color: 'inherit', textDecoration: 'inherit' }}
                   >
-                    QB ${passerData[3]?.player_name}
+                    QB {passerData[3]?.player_name}
                   </Link>
                 ) : (
                   'N/A'
