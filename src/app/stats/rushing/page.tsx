@@ -116,7 +116,7 @@ export default function PlayerRushingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.1 * +row.yards + 10.0 * +row.touchdowns + 100.0 * +row.average - +row.fumbles_lost);
+            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns + 100.0 * +row.average - +row.fumbles_lost);
           },
           disableColumnMenu: true,
         },
@@ -208,7 +208,7 @@ export default function PlayerRushingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.1 * +row.yards + 10.0 * +row.touchdowns + 100.0 * +row.average - +row.fumbles_lost);
+            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns + 100.0 * +row.average - +row.fumbles_lost);
           },
         },
       ];

@@ -102,6 +102,16 @@ export default function PlayerReceivingStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'drops_per_receptions',
+          headerName: 'DPR',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return (row.drops / row.receptions).toFixed(2);
+          },
+        },
+        {
           field: 'fumbles',
           headerName: 'FUM',
           width: 120,
@@ -124,7 +134,7 @@ export default function PlayerReceivingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.1 * +row.yards + 10.0 * +row.touchdowns - 100.0 * +(+row.drops / +row.receptions) - +row.fumbles_lost);
+            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns - 100.0 * +(+row.drops / +row.receptions) - +row.fumbles_lost);
           },
           disableColumnMenu: true,
         },
@@ -226,7 +236,7 @@ export default function PlayerReceivingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.1 * +row.yards + 10.0 * +row.touchdowns - 100.0 * +(+row.drops / +row.receptions) - +row.fumbles_lost);
+            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns - 100.0 * +(+row.drops / +row.receptions) - +row.fumbles_lost);
           },
         },
       ];

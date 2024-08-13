@@ -109,7 +109,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.1 * +row.yards + 10.0 * +row.touchdowns - 10.0 * +row.interceptions - +row.sacks);
+            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns - 10.0 * +row.interceptions - +row.sacks);
           },
           disableColumnMenu: true,
         },
@@ -196,7 +196,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.1 * +row.yards + 10.0 * +row.touchdowns - 10.0 * +row.interceptions - +row.sacks);
+            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns - 10.0 * +row.interceptions - +row.sacks);
           },
         },
       ];
