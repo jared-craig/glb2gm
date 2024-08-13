@@ -1,15 +1,15 @@
 export interface PlayerRushingData {
   id: number;
-  playerName: string;
+  player_name: string;
   position: string;
   rushes: number;
   yards: number;
   average: number;
   touchdowns: number;
-  brokenTackles: number;
-  yardsAfterContact: number;
-  tacklesForLoss: number;
+  broken_tackles: number;
+  yards_after_contact: number;
+  tackles_for_loss: number;
   fumbles: number;
-  fumblesLost: number;
+  fumbles_lost: number;
   tier: string;
 }
