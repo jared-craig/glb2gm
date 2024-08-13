@@ -134,7 +134,7 @@ export default function PlayerReceivingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns - 100.0 * +(+row.drops / +row.receptions) - +row.fumbles_lost);
+            return Math.round(0.1 * +row.receptions + 0.1 * +row.yards + +row.touchdowns + 10.0 * +row.average - +row.drops);
           },
           disableColumnMenu: true,
         },
@@ -236,7 +236,7 @@ export default function PlayerReceivingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns - 100.0 * +(+row.drops / +row.receptions) - +row.fumbles_lost);
+            return Math.round(0.1 * +row.receptions + 0.1 * +row.yards + +row.touchdowns + 10.0 * +row.average - +row.drops);
           },
         },
       ];
