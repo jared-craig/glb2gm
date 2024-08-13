@@ -38,7 +38,7 @@ export default function PlayerPassingStats() {
         {
           field: 'player_name',
           headerName: 'NAME',
-          width: 130,
+          width: 140,
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
@@ -49,7 +49,7 @@ export default function PlayerPassingStats() {
         {
           field: 'yards',
           headerName: 'YARDS',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -57,7 +57,7 @@ export default function PlayerPassingStats() {
         {
           field: 'yards_per_attempt',
           headerName: 'YPA',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -65,7 +65,7 @@ export default function PlayerPassingStats() {
         {
           field: 'completion_percentage',
           headerName: 'PCT',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           valueFormatter: (value: number) => `${value}%`,
@@ -74,7 +74,7 @@ export default function PlayerPassingStats() {
         {
           field: 'attempts',
           headerName: 'ATT',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -82,7 +82,7 @@ export default function PlayerPassingStats() {
         {
           field: 'completions',
           headerName: 'COMP',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -90,7 +90,7 @@ export default function PlayerPassingStats() {
         {
           field: 'touchdowns',
           headerName: 'TD',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -98,7 +98,7 @@ export default function PlayerPassingStats() {
         {
           field: 'interceptions',
           headerName: 'INT',
-          width: 120,
+          width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
