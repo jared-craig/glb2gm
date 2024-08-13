@@ -1,13 +1,13 @@
 export interface PlayerPassingData {
   id: number;
-  playerName: string;
+  player_name: string;
   completions: number;
   attempts: number;
   yards: number;
-  completionPercentage: number;
+  completion_percentage: number;
   hurries: number;
   sacks: number;
-  sackYards: number;
+  sack_yards: number;
   interceptions: number;
   touchdowns: number;
   tier: string;

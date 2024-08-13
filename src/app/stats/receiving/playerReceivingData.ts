@@ -1,15 +1,15 @@
 export interface PlayerReceivingData {
   id: number;
-  playerName: string;
+  player_name: string;
   position: string;
   targets: number;
   receptions: number;
   yards: number;
   average: number;
-  yardsAfterCatch: number;
+  yards_after_catch: number;
   touchdowns: number;
   drops: number;
   fumbles: number;
-  fumblesLost: number;
+  fumbles_lost: number;
   tier: string;
 }
