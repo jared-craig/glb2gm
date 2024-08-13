@@ -1,11 +1,12 @@
 'use client';
 
-import { DataGridPro, GridColDef, GridRenderCellParams, GridValueGetter } from '@mui/x-data-grid-pro';
+import { DataGridPro, GridColDef, GridRenderCellParams, GridRowModel, GridValueGetter } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerReceivingData } from './playerReceivingData';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
+import { getReceivingDropsPerReception, getReceivingGmRating } from '../statCalculations';
 
 export default function PlayerReceivingStats() {
   const theme = useTheme();
@@ -108,7 +109,7 @@ export default function PlayerReceivingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return (row.drops / row.receptions).toFixed(2);
+            return getReceivingDropsPerReception(row);
           },
         },
         {
@@ -133,8 +134,8 @@ export default function PlayerReceivingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
-            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns - 100.0 * +(+row.drops / +row.receptions) - +row.fumbles_lost);
+          valueGetter: (value, row: GridRowModel) => {
+            return getReceivingGmRating(row);
           },
           disableColumnMenu: true,
         },
@@ -212,7 +213,7 @@ export default function PlayerReceivingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return (row.drops / row.receptions).toFixed(2);
+            return getReceivingDropsPerReception(row);
           },
         },
         {
@@ -236,7 +237,7 @@ export default function PlayerReceivingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns - 100.0 * +(+row.drops / +row.receptions) - +row.fumbles_lost);
+            return getReceivingGmRating(row);
           },
         },
       ];

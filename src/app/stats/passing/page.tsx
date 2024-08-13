@@ -6,6 +6,7 @@ import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerPassingData } from './playerPassingData';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
+import { getPassingGmRating } from '../statCalculations';
 
 export default function PlayerPassingStats() {
   const theme = useTheme();
@@ -109,7 +110,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns - 10.0 * +row.interceptions - +row.sacks);
+            return getPassingGmRating(row);
           },
           disableColumnMenu: true,
         },
@@ -196,7 +197,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns - 10.0 * +row.interceptions - +row.sacks);
+            return getPassingGmRating(row);
           },
         },
       ];

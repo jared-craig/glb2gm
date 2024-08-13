@@ -1,11 +1,12 @@
 'use client';
 
-import { DataGridPro, GridColDef, GridRenderCellParams } from '@mui/x-data-grid-pro';
+import { DataGridPro, GridColDef, GridRenderCellParams, GridRowModel, GridRowParams } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerRushingData } from './playerRushingData';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
+import { getRushingGmRating } from '../statCalculations';
 
 export default function PlayerRushingStats() {
   const theme = useTheme();
@@ -115,8 +116,8 @@ export default function PlayerRushingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
-            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns + 100.0 * +row.average - +row.fumbles_lost);
+          valueGetter: (value, row: GridRowModel) => {
+            return getRushingGmRating(row);
           },
           disableColumnMenu: true,
         },
@@ -208,7 +209,7 @@ export default function PlayerRushingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return Math.round(0.2 * +row.yards + 10.0 * +row.touchdowns + 100.0 * +row.average - +row.fumbles_lost);
+            return getRushingGmRating(row);
           },
         },
       ];
