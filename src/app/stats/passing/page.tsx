@@ -72,6 +72,33 @@ export default function PlayerPassingStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'touchdowns',
+          headerName: 'TD',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'attempts_per_touchdowns',
+          headerName: 'A/TD',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return +(row.attempts / row.touchdowns).toFixed(2);
+          },
+          disableColumnMenu: true,
+        },
+        {
+          field: 'interceptions',
+          headerName: 'INT',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
           field: 'attempts',
           headerName: 'ATT',
           width: 110,
@@ -88,24 +115,8 @@ export default function PlayerPassingStats() {
           disableColumnMenu: true,
         },
         {
-          field: 'touchdowns',
-          headerName: 'TD',
-          width: 110,
-          type: 'number',
-          pinnable: false,
-          disableColumnMenu: true,
-        },
-        {
-          field: 'interceptions',
-          headerName: 'INT',
-          width: 110,
-          type: 'number',
-          pinnable: false,
-          disableColumnMenu: true,
-        },
-        {
           field: 'gm_rating',
-          headerName: 'GM Rating',
+          headerName: 'GM RTG',
           width: 120,
           type: 'number',
           pinnable: false,
@@ -119,7 +130,7 @@ export default function PlayerPassingStats() {
         {
           field: 'player_name',
           headerName: 'NAME',
-          flex: 2,
+          flex: 1.5,
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
@@ -149,6 +160,30 @@ export default function PlayerPassingStats() {
           valueFormatter: (value) => `${value}%`,
         },
         {
+          field: 'touchdowns',
+          headerName: 'TD',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'attempts_per_touchdowns',
+          headerName: 'ATT/TD',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return +(row.attempts / row.touchdowns).toFixed(2);
+          },
+        },
+        {
+          field: 'interceptions',
+          headerName: 'INT',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
           field: 'attempts',
           headerName: 'ATT',
           flex: 1,
@@ -157,21 +192,7 @@ export default function PlayerPassingStats() {
         },
         {
           field: 'completions',
-          headerName: 'YARDS',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-        },
-        {
-          field: 'touchdowns',
-          headerName: 'TD',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-        },
-        {
-          field: 'interceptions',
-          headerName: 'INT',
+          headerName: 'COMP',
           flex: 1,
           type: 'number',
           pinnable: false,
@@ -192,7 +213,7 @@ export default function PlayerPassingStats() {
         },
         {
           field: 'gm_rating',
-          headerName: 'GM Rating',
+          headerName: 'GM RATING',
           flex: 1,
           type: 'number',
           pinnable: false,

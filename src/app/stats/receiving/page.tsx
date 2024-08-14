@@ -79,6 +79,17 @@ export default function PlayerReceivingStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'receptions_per_touchdown',
+          headerName: 'REC/TD',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(row.receptions / row.touchdowns).toFixed(2);
+          },
+          disableColumnMenu: true,
+        },
+        {
           field: 'targets',
           headerName: 'TAR',
           width: 110,
@@ -104,7 +115,7 @@ export default function PlayerReceivingStats() {
         },
         {
           field: 'drops_per_receptions',
-          headerName: 'DPR',
+          headerName: 'D/REC',
           width: 110,
           type: 'number',
           pinnable: false,
@@ -131,7 +142,7 @@ export default function PlayerReceivingStats() {
         },
         {
           field: 'gm_rating',
-          headerName: 'GM Rating',
+          headerName: 'GM RTG',
           width: 120,
           type: 'number',
           pinnable: false,
@@ -145,7 +156,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'player_name',
           headerName: 'NAME',
-          flex: 2,
+          flex: 1.5,
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
@@ -187,6 +198,16 @@ export default function PlayerReceivingStats() {
           pinnable: false,
         },
         {
+          field: 'receptions_per_touchdown',
+          headerName: 'REC/TD',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(row.receptions / row.touchdowns).toFixed(2);
+          },
+        },
+        {
           field: 'targets',
           headerName: 'TAR',
           flex: 1,
@@ -209,7 +230,7 @@ export default function PlayerReceivingStats() {
         },
         {
           field: 'drops_per_receptions',
-          headerName: 'DPR',
+          headerName: 'D/REC',
           flex: 1,
           type: 'number',
           pinnable: false,
@@ -233,7 +254,7 @@ export default function PlayerReceivingStats() {
         },
         {
           field: 'gm_rating',
-          headerName: 'GM Rating',
+          headerName: 'GM RATING',
           flex: 1,
           type: 'number',
           pinnable: false,
