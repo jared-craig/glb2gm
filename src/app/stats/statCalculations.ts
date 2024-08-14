@@ -2,7 +2,7 @@ import { GridRowModel } from '@mui/x-data-grid-pro';
 import { PlayerPassingData } from './passing/playerPassingData';
 
 export const getPassingGmRating = (row: GridRowModel): number => {
-  return Math.round(0.2 * +row.yards + 2.0 * +row.touchdowns - 2.0 * +row.interceptions + 100.0 * (+row.yards / +row.attempts) - +row.sacks);
+  return Math.round(0.2 * +row.yards + 2.0 * +row.touchdowns - 2.0 * +row.interceptions + 100.0 * +row.yards_per_attempt - +row.sacks);
 };
 
 export const getReceivingGmRating = (row: GridRowModel): number => {
