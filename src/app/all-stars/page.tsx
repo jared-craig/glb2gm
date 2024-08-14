@@ -6,19 +6,22 @@ import { PlayerPassingData } from '../stats/passing/playerPassingData';
 import { PlayerRushingData } from '../stats/rushing/playerRushingData';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { getPassingGmRating, getReceivingGmRating, getRushingGmRating } from '../stats/statCalculations';
-import { Box, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import AllStarTeamPlayer from './AllStarTeamPlayer';
 
 export default function TopTeam() {
-  const [passerData, setPasserData] = useState<PlayerPassingData[]>();
-  const [rusherRookieData, setRusherRookieData] = useState<PlayerRushingData[]>();
-  const [rusherSophData, setRusherSophData] = useState<PlayerRushingData[]>();
-  const [rusherProData, setRusherProData] = useState<PlayerRushingData[]>();
-  const [rusherVetData, setRusherVetData] = useState<PlayerRushingData[]>();
-  const [receiverRookieData, setReceiverRookieData] = useState<PlayerReceivingData[]>();
-  const [receiverSophData, setReceiverSophData] = useState<PlayerReceivingData[]>();
-  const [receiverProData, setReceiverProData] = useState<PlayerReceivingData[]>();
-  const [receiverVetData, setReceiverVetData] = useState<PlayerReceivingData[]>();
+  const [passerData, setPasserData] = useState<PlayerPassingData[]>([]);
+  const [rusherRookieData, setRusherRookieData] = useState<PlayerRushingData[]>([]);
+  const [rusherSophData, setRusherSophData] = useState<PlayerRushingData[]>([]);
+  const [rusherProData, setRusherProData] = useState<PlayerRushingData[]>([]);
+  const [rusherVetData, setRusherVetData] = useState<PlayerRushingData[]>([]);
+  const [receiverRookieData, setReceiverRookieData] = useState<PlayerReceivingData[]>([]);
+  const [receiverSophData, setReceiverSophData] = useState<PlayerReceivingData[]>([]);
+  const [receiverProData, setReceiverProData] = useState<PlayerReceivingData[]>([]);
+  const [receiverVetData, setReceiverVetData] = useState<PlayerReceivingData[]>([]);
+  const [passersFetching, setPassersFetching] = useState<boolean>(true);
+  const [rushersFetching, setRushersFetching] = useState<boolean>(true);
+  const [receiversFetching, setReceiversFetching] = useState<boolean>(true);
 
   const fetchPasserData = async () => {
     const res = await fetch('/api/passing');
@@ -34,6 +37,8 @@ export default function TopTeam() {
     const vetQb = tops.find((x) => x.tier === 'Veteran');
     if (vetQb) qbs[3] = vetQb;
     setPasserData(qbs);
+
+    setPassersFetching(false);
   };
 
   const fetchRusherData = async () => {
@@ -70,6 +75,8 @@ export default function TopTeam() {
     const vetHB = tops.find((x) => x.tier === 'Veteran' && x.position === 'HB');
     if (vetHB) vets = [...vets, vetHB];
     setRusherVetData(vets);
+
+    setRushersFetching(false);
   };
 
   const fetchReceiverData = async () => {
@@ -105,6 +112,8 @@ export default function TopTeam() {
     const vetWRs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'WR').slice(0, 2);
     if (vetWRs) vets = [...vets, ...vetWRs];
     setReceiverVetData(vets);
+
+    setReceiversFetching(false);
   };
 
   useEffect(() => {
@@ -121,45 +130,45 @@ export default function TopTeam() {
       <Grid xs={12} md={6} lg={3}>
         <Stack spacing={1}>
           <Typography>Rookie</Typography>
-          {passerData && <AllStarTeamPlayer player={passerData[0]} />}
-          {rusherRookieData && <AllStarTeamPlayer player={rusherRookieData[0]} />}
-          {rusherRookieData && <AllStarTeamPlayer player={rusherRookieData[1]} />}
-          {receiverRookieData && <AllStarTeamPlayer player={receiverRookieData[0]} />}
-          {receiverRookieData && <AllStarTeamPlayer player={receiverRookieData[1]} />}
-          {receiverRookieData && <AllStarTeamPlayer player={receiverRookieData[2]} />}
+          <AllStarTeamPlayer player={passerData[0]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={rusherRookieData[0]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherRookieData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={receiverRookieData[0]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverRookieData[1]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverRookieData[2]} fetching={receiversFetching} />
         </Stack>
       </Grid>
       <Grid xs={12} md={6} lg={3}>
         <Stack spacing={1}>
           <Typography>Sophomore</Typography>
-          {passerData && <AllStarTeamPlayer player={passerData[1]} />}
-          {rusherSophData && <AllStarTeamPlayer player={rusherSophData[0]} />}
-          {rusherSophData && <AllStarTeamPlayer player={rusherSophData[1]} />}
-          {receiverSophData && <AllStarTeamPlayer player={receiverSophData[0]} />}
-          {receiverSophData && <AllStarTeamPlayer player={receiverSophData[1]} />}
-          {receiverSophData && <AllStarTeamPlayer player={receiverSophData[2]} />}
+          <AllStarTeamPlayer player={passerData[1]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={rusherSophData[0]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherSophData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={receiverSophData[0]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverSophData[1]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverSophData[2]} fetching={receiversFetching} />
         </Stack>
       </Grid>
       <Grid xs={12} md={6} lg={3}>
         <Stack spacing={1}>
           <Typography>Professional</Typography>
-          {passerData && <AllStarTeamPlayer player={passerData[2]} />}
-          {rusherProData && <AllStarTeamPlayer player={rusherProData[0]} />}
-          {rusherProData && <AllStarTeamPlayer player={rusherProData[1]} />}
-          {receiverProData && <AllStarTeamPlayer player={receiverProData[0]} />}
-          {receiverProData && <AllStarTeamPlayer player={receiverProData[1]} />}
-          {receiverProData && <AllStarTeamPlayer player={receiverProData[2]} />}
+          <AllStarTeamPlayer player={passerData[2]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={rusherProData[0]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherProData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={receiverProData[0]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverProData[1]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverProData[2]} fetching={receiversFetching} />
         </Stack>
       </Grid>
       <Grid xs={12} md={6} lg={3}>
         <Stack spacing={1}>
           <Typography>Veteran</Typography>
-          {passerData && <AllStarTeamPlayer player={passerData[3]} />}
-          {rusherVetData && <AllStarTeamPlayer player={rusherVetData[0]} />}
-          {rusherVetData && <AllStarTeamPlayer player={rusherVetData[1]} />}
-          {receiverVetData && <AllStarTeamPlayer player={receiverVetData[0]} />}
-          {receiverVetData && <AllStarTeamPlayer player={receiverVetData[1]} />}
-          {receiverVetData && <AllStarTeamPlayer player={receiverVetData[2]} />}
+          <AllStarTeamPlayer player={passerData[3]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={rusherVetData[0]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherVetData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={receiverVetData[0]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverVetData[1]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverVetData[2]} fetching={receiversFetching} />
         </Stack>
       </Grid>
     </Grid>
