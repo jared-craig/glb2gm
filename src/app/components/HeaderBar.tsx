@@ -16,7 +16,7 @@ import Image from 'next/image';
 import logo from '../assets/logo-no-background.png';
 import Link from 'next/link';
 
-const pages = ['Passing Stats', 'Rushing Stats', 'Receiving Stats'];
+const pages = ['All Stars', 'Passing Stats', 'Rushing Stats', 'Receiving Stats'];
 
 function HeaderBar() {
   const router = useRouter();
@@ -34,6 +34,9 @@ function HeaderBar() {
   const navigateToPage = (page: string) => {
     handleCloseNavMenu();
     switch (page) {
+      case 'All Stars':
+        router.push('/all-stars');
+        break;
       case 'Passing Stats':
         router.push('/stats/passing');
         break;
