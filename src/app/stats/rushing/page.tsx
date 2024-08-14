@@ -79,11 +79,33 @@ export default function PlayerRushingStats() {
           disableColumnMenu: true,
         },
         {
-          field: 'broken_tackles',
-          headerName: 'BRTK',
+          field: 'rushes_per_touchdown',
+          headerName: 'R/TD',
           width: 110,
           type: 'number',
           pinnable: false,
+          valueGetter: (value, row) => {
+            return +(row.rushes / row.touchdowns).toFixed(2);
+          },
+          disableColumnMenu: true,
+        },
+        {
+          field: 'broken_tackles',
+          headerName: 'BTK',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'broken_tackles_per_rush',
+          headerName: 'BTK/R',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return +(row.broken_tackles / row.rushes).toFixed(2);
+          },
           disableColumnMenu: true,
         },
         {
@@ -112,7 +134,7 @@ export default function PlayerRushingStats() {
         },
         {
           field: 'gm_rating',
-          headerName: 'GM Rating',
+          headerName: 'GM RTG',
           width: 120,
           type: 'number',
           pinnable: false,
@@ -126,7 +148,7 @@ export default function PlayerRushingStats() {
         {
           field: 'player_name',
           headerName: 'NAME',
-          flex: 2,
+          flex: 1.5,
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
@@ -168,11 +190,31 @@ export default function PlayerRushingStats() {
           pinnable: false,
         },
         {
-          field: 'broken_tackles',
-          headerName: 'BRTK',
+          field: 'rushes_per_touchdown',
+          headerName: 'RUSH/TD',
           flex: 1,
           type: 'number',
           pinnable: false,
+          valueGetter: (value, row) => {
+            return +(row.rushes / row.touchdowns).toFixed(2);
+          },
+        },
+        {
+          field: 'broken_tackles',
+          headerName: 'BTK',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'broken_tackles_per_rush',
+          headerName: 'BTK/RUSH',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return +(row.broken_tackles / row.rushes).toFixed(2);
+          },
         },
         {
           field: 'yards_after_contact',
@@ -204,7 +246,7 @@ export default function PlayerRushingStats() {
         },
         {
           field: 'gm_rating',
-          headerName: 'GM Rating',
+          headerName: 'GM RATING',
           flex: 1,
           type: 'number',
           pinnable: false,
