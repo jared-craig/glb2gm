@@ -3,6 +3,7 @@ export interface PlayerReceivingData {
   player_name: string;
   team_name: string;
   position: string;
+  games_played: number;
   targets: number;
   receptions: number;
   yards: number;

@@ -7,7 +7,7 @@ interface AllStarTeamPlayerProps {
 }
 
 export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlayerProps) {
-  if (fetching)
+  if (fetching || !player)
     return (
       <Stack>
         <Typography variant='body2'>
@@ -18,7 +18,6 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
         </Typography>
       </Stack>
     );
-  else if (!player) return <Typography variant='body2'>N/A</Typography>;
 
   return (
     <Stack>
