@@ -1,6 +1,7 @@
 export interface PlayerReceivingData {
   id: number;
   player_name: string;
+  team_name: string;
   position: string;
   targets: number;
   receptions: number;
