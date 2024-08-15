@@ -79,6 +79,26 @@ export default function PlayerReceivingStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'targets',
+          headerName: 'TAR',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'catch_rate',
+          headerName: 'REC%',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +((row.receptions / row.targets) * 100.0).toFixed(1);
+          },
+          valueFormatter: (value) => `${value}%`,
+          disableColumnMenu: true,
+        },
+        {
           field: 'receptions_per_touchdown',
           headerName: 'REC/TD',
           width: 110,
@@ -90,11 +110,14 @@ export default function PlayerReceivingStats() {
           disableColumnMenu: true,
         },
         {
-          field: 'targets',
-          headerName: 'TAR',
+          field: 'targets_per_touchdown',
+          headerName: 'TAR/TD',
           width: 110,
           type: 'number',
           pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(row.targets / row.touchdowns).toFixed(2);
+          },
           disableColumnMenu: true,
         },
         {
@@ -166,7 +189,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'position',
           headerName: 'POS',
-          flex: 1,
+          flex: 0.5,
           pinnable: false,
         },
         {
@@ -198,6 +221,24 @@ export default function PlayerReceivingStats() {
           pinnable: false,
         },
         {
+          field: 'targets',
+          headerName: 'TAR',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'catch_rate',
+          headerName: 'REC%',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +((row.receptions / row.targets) * 100.0).toFixed(1);
+          },
+          valueFormatter: (value) => `${value}%`,
+        },
+        {
           field: 'receptions_per_touchdown',
           headerName: 'REC/TD',
           flex: 1,
@@ -208,11 +249,14 @@ export default function PlayerReceivingStats() {
           },
         },
         {
-          field: 'targets',
-          headerName: 'TAR',
+          field: 'targets_per_touchdown',
+          headerName: 'TAR/TD',
           flex: 1,
           type: 'number',
           pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(row.targets / row.touchdowns).toFixed(2);
+          },
         },
         {
           field: 'yards_after_catch',
@@ -254,7 +298,7 @@ export default function PlayerReceivingStats() {
         },
         {
           field: 'gm_rating',
-          headerName: 'GM RATING',
+          headerName: 'GM RTG',
           flex: 1,
           type: 'number',
           pinnable: false,

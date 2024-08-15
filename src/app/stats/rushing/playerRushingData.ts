@@ -3,6 +3,7 @@ export interface PlayerRushingData {
   player_name: string;
   team_name: string;
   position: string;
+  games_played: number;
   rushes: number;
   yards: number;
   average: number;

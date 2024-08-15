@@ -158,7 +158,7 @@ export default function PlayerRushingStats() {
         {
           field: 'position',
           headerName: 'POS',
-          flex: 1,
+          flex: 0.5,
           pinnable: false,
         },
         {
