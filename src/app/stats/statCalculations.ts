@@ -1,8 +1,4 @@
-import { PlayerPassingData } from './passing/playerPassingData';
-import { PlayerReceivingData } from './receiving/playerReceivingData';
-import { PlayerRushingData } from './rushing/playerRushingData';
-
-export const getPassingGmRating = (x: PlayerPassingData): number => {
+export const getPassingGmRating = (x: any): number => {
   return Math.round(
     +(+x.yards / +x.games_played) +
       2.0 * +x.touchdowns -
@@ -13,11 +9,11 @@ export const getPassingGmRating = (x: PlayerPassingData): number => {
   );
 };
 
-export const getReceivingGmRating = (x: PlayerReceivingData): number => {
+export const getReceivingGmRating = (x: any): number => {
   return Math.round(+(+x.yards / +x.games_played) + 2.0 * +x.touchdowns - 10.0 * +x.drops - +x.fumbles_lost);
 };
 
-export const getRushingGmRating = (x: PlayerRushingData): number => {
+export const getRushingGmRating = (x: any): number => {
   return Math.round(
     +(+x.yards / +x.games_played) +
       2.0 * +x.touchdowns +
