@@ -63,6 +63,17 @@ export default function PlayerRushingStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'yards_per_game',
+          headerName: 'YPG',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(+row.yards / +row.games_played).toFixed(1);
+          },
+          disableColumnMenu: true,
+        },
+        {
           field: 'rushes',
           headerName: 'RUSH',
           width: 110,
@@ -174,6 +185,16 @@ export default function PlayerRushingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+        },
+        {
+          field: 'yards_per_game',
+          headerName: 'YPG',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(+row.yards / +row.games_played).toFixed(1);
+          },
         },
         {
           field: 'rushes',

@@ -1,6 +1,6 @@
 'use client';
 
-import { DataGridPro, GridColDef, GridRenderCellParams } from '@mui/x-data-grid-pro';
+import { DataGridPro, GridColDef, GridRenderCellParams, GridRowModel } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerPassingData } from './playerPassingData';
@@ -60,6 +60,17 @@ export default function PlayerPassingStats() {
           width: 110,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'yards_per_game',
+          headerName: 'YPG',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(+row.yards / +row.games_played).toFixed(1);
+          },
           disableColumnMenu: true,
         },
         {
@@ -150,6 +161,16 @@ export default function PlayerPassingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+        },
+        {
+          field: 'yards_per_game',
+          headerName: 'YPG',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(+row.yards / +row.games_played).toFixed(1);
+          },
         },
         {
           field: 'completion_percentage',
