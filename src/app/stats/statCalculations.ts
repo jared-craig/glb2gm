@@ -1,17 +1,32 @@
-import { GridRowModel } from '@mui/x-data-grid-pro';
+import { PlayerPassingData } from './passing/playerPassingData';
+import { PlayerReceivingData } from './receiving/playerReceivingData';
+import { PlayerRushingData } from './rushing/playerRushingData';
 
-export const getPassingGmRating = (row: GridRowModel): number => {
-  return Math.round(0.2 * +row.yards + 2.0 * +row.touchdowns - 2.0 * +row.interceptions + 100.0 * +row.yards_per_attempt - +row.sacks);
+export const getPassingGmRating = (x: PlayerPassingData): number => {
+  return Math.round(
+    +(+x.yards / +x.games_played) +
+      2.0 * +x.touchdowns -
+      2.0 * +x.interceptions +
+      100.0 * +x.yards_per_attempt -
+      +x.sacks +
+      (+x.rush_yards > 0 && +x.rush_touchdowns > 0 ? +(+x.rush_yards / +x.games_played) + 2.0 * +x.rush_touchdowns : 0.0)
+  );
 };
 
-export const getReceivingGmRating = (row: GridRowModel): number => {
-  return Math.round(0.2 * +row.yards + 2.0 * +row.touchdowns - 10.0 * +row.drops - +row.fumbles_lost);
+export const getReceivingGmRating = (x: PlayerReceivingData): number => {
+  return Math.round(+(+x.yards / +x.games_played) + 2.0 * +x.touchdowns - 10.0 * +x.drops - +x.fumbles_lost);
 };
 
-export const getRushingGmRating = (row: GridRowModel): number => {
-  return Math.round(0.1 * +row.yards + 2.0 * +row.touchdowns + 100.0 * +row.average - 10.0 * +row.fumbles_lost);
+export const getRushingGmRating = (x: PlayerRushingData): number => {
+  return Math.round(
+    +(+x.yards / +x.games_played) +
+      2.0 * +x.touchdowns +
+      100.0 * +x.average -
+      10.0 * +x.fumbles_lost +
+      (+x.rec_yards > 0 && +x.rec_touchdowns > 0 ? +(+x.rec_yards / +x.games_played) + 2.0 * +x.rec_touchdowns : 0.0)
+  );
 };
 
-export const getReceivingDropsPerReception = (row: GridRowModel): number => {
-  return +(row.drops / row.receptions).toFixed(2);
+export const getReceivingDropsPerReception = (x: any): number => {
+  return +(+x.drops / +x.receptions).toFixed(2);
 };

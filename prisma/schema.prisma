@@ -12,6 +12,8 @@ model Passing {
   id                    Int     @id(map: "PK_Passing")
   player_name           String  @db.NVarChar(Max)
   team_name             String  @db.NVarChar(Max)
+  position              String  @db.NVarChar(50)
+  games_played          Int
   completions           Int
   attempts              Int
   yards                 Decimal @db.Decimal(18, 1)
@@ -31,6 +33,7 @@ model Rushing {
   player_name         String  @db.NVarChar(Max)
   team_name           String  @db.NVarChar(Max)
   position            String  @db.NVarChar(50)
+  games_played        Int
   rushes              Int
   yards               Decimal @db.Decimal(18, 1)
   average             Decimal @db.Decimal(18, 1)
@@ -48,6 +51,8 @@ model PassingTest {
   id                    Int     @id(map: "PK_PassingTest")
   player_name           String  @db.NVarChar(Max)
   team_name             String  @db.NVarChar(Max)
+  position              String  @db.NVarChar(50)
+  games_played          Int
   completions           Int
   attempts              Int
   yards                 Decimal @db.Decimal(18, 1)
@@ -67,6 +72,7 @@ model RushingTest {
   player_name         String  @db.NVarChar(Max)
   team_name           String  @db.NVarChar(Max)
   position            String  @db.NVarChar(50)
+  games_played        Int
   rushes              Int
   yards               Decimal @db.Decimal(18, 1)
   average             Decimal @db.Decimal(18, 1)
@@ -84,6 +90,7 @@ model Receiving {
   player_name       String  @db.NVarChar(Max)
   team_name         String  @db.NVarChar(Max)
   position          String  @db.NVarChar(50)
+  games_played      Int
   targets           Int
   receptions        Int
   yards             Decimal @db.Decimal(18, 1)
@@ -101,6 +108,7 @@ model ReceivingTest {
   player_name       String  @db.NVarChar(Max)
   team_name         String  @db.NVarChar(Max)
   position          String  @db.NVarChar(50)
+  games_played      Int
   targets           Int
   receptions        Int
   yards             Decimal @db.Decimal(18, 1)

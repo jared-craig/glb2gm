@@ -14,4 +14,6 @@ export interface PlayerRushingData {
   fumbles: number;
   fumbles_lost: number;
   tier: string;
+  rec_yards: number;
+  rec_touchdowns: number;
 }
