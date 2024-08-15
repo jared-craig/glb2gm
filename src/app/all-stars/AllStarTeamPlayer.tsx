@@ -9,9 +9,14 @@ interface AllStarTeamPlayerProps {
 export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlayerProps) {
   if (fetching)
     return (
-      <Typography variant='body2'>
-        <Skeleton width={'80%'} />
-      </Typography>
+      <Stack>
+        <Typography variant='body2'>
+          <Skeleton width={'80%'} />
+        </Typography>
+        <Typography variant='caption'>
+          <Skeleton width={'80%'} />
+        </Typography>
+      </Stack>
     );
   else if (!player) return <Typography variant='body2'>N/A</Typography>;
 
