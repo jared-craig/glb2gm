@@ -1,6 +1,7 @@
 export interface PlayerPassingData {
   id: number;
   player_name: string;
+  team_name: string;
   completions: number;
   attempts: number;
   yards: number;

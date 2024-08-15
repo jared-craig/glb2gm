@@ -11,6 +11,7 @@ datasource db {
 model Passing {
   id                    Int     @id(map: "PK_Passing")
   player_name           String  @db.NVarChar(Max)
+  team_name             String  @db.NVarChar(Max)
   completions           Int
   attempts              Int
   yards                 Decimal @db.Decimal(18, 1)
@@ -28,6 +29,7 @@ model Passing {
 model Rushing {
   id                  Int     @id(map: "PK_Rushing")
   player_name         String  @db.NVarChar(Max)
+  team_name           String  @db.NVarChar(Max)
   position            String  @db.NVarChar(50)
   rushes              Int
   yards               Decimal @db.Decimal(18, 1)
@@ -45,6 +47,7 @@ model Rushing {
 model PassingTest {
   id                    Int     @id(map: "PK_PassingTest")
   player_name           String  @db.NVarChar(Max)
+  team_name             String  @db.NVarChar(Max)
   completions           Int
   attempts              Int
   yards                 Decimal @db.Decimal(18, 1)
@@ -62,6 +65,7 @@ model PassingTest {
 model RushingTest {
   id                  Int     @id(map: "PK_RushingTest")
   player_name         String  @db.NVarChar(Max)
+  team_name           String  @db.NVarChar(Max)
   position            String  @db.NVarChar(50)
   rushes              Int
   yards               Decimal @db.Decimal(18, 1)
@@ -78,6 +82,7 @@ model RushingTest {
 model Receiving {
   id                Int     @id(map: "PK_Receiving")
   player_name       String  @db.NVarChar(Max)
+  team_name         String  @db.NVarChar(Max)
   position          String  @db.NVarChar(50)
   targets           Int
   receptions        Int
@@ -94,6 +99,7 @@ model Receiving {
 model ReceivingTest {
   id                Int     @id(map: "PK_ReceivingTest")
   player_name       String  @db.NVarChar(Max)
+  team_name         String  @db.NVarChar(Max)
   position          String  @db.NVarChar(50)
   targets           Int
   receptions        Int
