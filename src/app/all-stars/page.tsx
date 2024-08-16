@@ -6,7 +6,7 @@ import { PlayerPassingData } from '../stats/passing/playerPassingData';
 import { PlayerRushingData } from '../stats/rushing/playerRushingData';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { getPassingGmRating, getReceivingGmRating, getRushingGmRating } from '../stats/statCalculations';
-import { Stack, Typography } from '@mui/material';
+import { Divider, Stack, Typography } from '@mui/material';
 import AllStarTeamPlayer from './AllStarTeamPlayer';
 
 interface AllData {
@@ -17,7 +17,10 @@ interface AllData {
 
 export default function TopTeam() {
   const [allData, setAllData] = useState<AllData>();
-  const [passerData, setPasserData] = useState<(PlayerPassingData | undefined)[]>([]);
+  const [passerRookieData, setPasserRookieData] = useState<(PlayerPassingData | undefined)[]>([]);
+  const [passerSophData, setPasserSophData] = useState<(PlayerPassingData | undefined)[]>([]);
+  const [passerProData, setPasserProData] = useState<(PlayerPassingData | undefined)[]>([]);
+  const [passerVetData, setPasserVetData] = useState<(PlayerPassingData | undefined)[]>([]);
   const [rusherRookieData, setRusherRookieData] = useState<(PlayerRushingData | undefined)[]>([]);
   const [rusherSophData, setRusherSophData] = useState<(PlayerRushingData | undefined)[]>([]);
   const [rusherProData, setRusherProData] = useState<(PlayerRushingData | undefined)[]>([]);
@@ -64,17 +67,14 @@ export default function TopTeam() {
       getPassingGmRating(a) > getPassingGmRating(b) ? -1 : 1
     );
 
-    let qbs: (PlayerPassingData | undefined)[] = [];
-
-    const rookieQb = tops.find((x) => x.tier === 'Rookie');
-    qbs[0] = rookieQb;
-    const sophQb = tops.find((x) => x.tier === 'Sophomore');
-    qbs[1] = sophQb;
-    const proQb = tops.find((x) => x.tier === 'Professional');
-    qbs[2] = proQb;
-    const vetQb = tops.find((x) => x.tier === 'Veteran');
-    qbs[3] = vetQb;
-    setPasserData(qbs);
+    const rookieQBs = tops.filter((x) => x.tier === 'Rookie').slice(0, 2);
+    setPasserRookieData(rookieQBs);
+    const sophQBs = tops.filter((x) => x.tier === 'Sophomore').slice(0, 2);
+    setPasserSophData(sophQBs);
+    const proQBs = tops.filter((x) => x.tier === 'Professional').slice(0, 2);
+    setPasserProData(proQBs);
+    const vetQBs = tops.filter((x) => x.tier === 'Veteran').slice(0, 2);
+    setPasserVetData(vetQBs);
 
     setTimeout(() => setPassersFetching(false), 1000);
   };
@@ -94,28 +94,30 @@ export default function TopTeam() {
     let pros: (PlayerRushingData | undefined)[] = [];
     let vets: (PlayerRushingData | undefined)[] = [];
 
-    const rookieFB = tops.find((x) => x.tier === 'Rookie' && x.position === 'FB');
-    rookies = [...rookies, rookieFB];
-    const rookieHB = tops.find((x) => x.tier === 'Rookie' && x.position === 'HB');
-    rookies = [...rookies, rookieHB];
+    console.log(tops.filter((x) => x.tier === 'Rookie' && x.position === 'FB'));
+
+    const rookieFBs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'FB').slice(0, 2);
+    rookies = [...rookies, ...rookieFBs];
+    const rookieHBs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'HB').slice(0, 2);
+    rookies = [...rookies, ...rookieHBs];
     setRusherRookieData(rookies);
 
-    const sophFB = tops.find((x) => x.tier === 'Sophomore' && x.position === 'FB');
-    sophs = [...sophs, sophFB];
-    const sophHB = tops.find((x) => x.tier === 'Sophomore' && x.position === 'HB');
-    sophs = [...sophs, sophHB];
+    const sophFBs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'FB').slice(0, 2);
+    sophs = [...sophs, ...sophFBs];
+    const sophHBs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'HB').slice(0, 2);
+    sophs = [...sophs, ...sophHBs];
     setRusherSophData(sophs);
 
-    const proFB = tops.find((x) => x.tier === 'Professional' && x.position === 'FB');
-    pros = [...pros, proFB];
-    const proHB = tops.find((x) => x.tier === 'Professional' && x.position === 'HB');
-    pros = [...pros, proHB];
+    const proFBs = tops.filter((x) => x.tier === 'Professional' && x.position === 'FB').slice(0, 2);
+    pros = [...pros, ...proFBs];
+    const proHBs = tops.filter((x) => x.tier === 'Professional' && x.position === 'HB').slice(0, 2);
+    pros = [...pros, ...proHBs];
     setRusherProData(pros);
 
-    const vetFB = tops.find((x) => x.tier === 'Veteran' && x.position === 'FB');
-    vets = [...vets, vetFB];
-    const vetHB = tops.find((x) => x.tier === 'Veteran' && x.position === 'HB');
-    vets = [...vets, vetHB];
+    const vetFBs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'FB').slice(0, 2);
+    vets = [...vets, ...vetFBs];
+    const vetHBs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'HB').slice(0, 2);
+    vets = [...vets, ...vetHBs];
     setRusherVetData(vets);
 
     setTimeout(() => setRushersFetching(false), 1000);
@@ -131,27 +133,27 @@ export default function TopTeam() {
     let pros: (PlayerReceivingData | undefined)[] = [];
     let vets: (PlayerReceivingData | undefined)[] = [];
 
-    const rookieTE = tops.find((x) => x.tier === 'Rookie' && x.position === 'TE');
-    rookies = [...rookies, rookieTE];
-    const rookieWRs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'WR').slice(0, 2);
+    const rookieTEs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'TE').slice(0, 2);
+    rookies = [...rookies, ...rookieTEs];
+    const rookieWRs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'WR').slice(0, 4);
     rookies = [...rookies, ...rookieWRs];
     setReceiverRookieData(rookies);
 
-    const sophTE = tops.find((x) => x.tier === 'Sophomore' && x.position === 'TE');
-    sophs = [...sophs, sophTE];
-    const sophWRs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'WR').slice(0, 2);
+    const sophTEs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'TE').slice(0, 2);
+    sophs = [...sophs, ...sophTEs];
+    const sophWRs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'WR').slice(0, 4);
     sophs = [...sophs, ...sophWRs];
     setReceiverSophData(sophs);
 
-    const proTE = tops.find((x) => x.tier === 'Professional' && x.position === 'TE');
-    pros = [...pros, proTE];
-    const proWRs = tops.filter((x) => x.tier === 'Professional' && x.position === 'WR').slice(0, 2);
+    const proTEs = tops.filter((x) => x.tier === 'Professional' && x.position === 'TE').slice(0, 2);
+    pros = [...pros, ...proTEs];
+    const proWRs = tops.filter((x) => x.tier === 'Professional' && x.position === 'WR').slice(0, 4);
     pros = [...pros, ...proWRs];
     setReceiverProData(pros);
 
-    const vetTE = tops.find((x) => x.tier === 'Veteran' && x.position === 'TE');
-    vets = [...vets, vetTE];
-    const vetWRs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'WR').slice(0, 2);
+    const vetTEs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'TE').slice(0, 2);
+    vets = [...vets, ...vetTEs];
+    const vetWRs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'WR').slice(0, 4);
     vets = [...vets, ...vetWRs];
     setReceiverVetData(vets);
 
@@ -171,50 +173,101 @@ export default function TopTeam() {
   return (
     <Grid container rowSpacing={2} disableEqualOverflow>
       <Grid xs={12} sx={{ pb: 0 }}>
-        <Typography variant='h5'>All Stars</Typography>
+        <Divider variant='middle'>
+          <Typography variant='h5'>1st Team All Stars</Typography>
+        </Divider>
       </Grid>
       <Grid xs={12} md={6} lg={3}>
         <Stack spacing={1}>
           <Typography variant='h6'>Rookie</Typography>
-          <AllStarTeamPlayer player={passerData[0]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={passerRookieData[0]} fetching={passersFetching} />
           <AllStarTeamPlayer player={rusherRookieData[0]} fetching={rushersFetching} />
-          <AllStarTeamPlayer player={rusherRookieData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherRookieData[2]} fetching={rushersFetching} />
           <AllStarTeamPlayer player={receiverRookieData[0]} fetching={receiversFetching} />
-          <AllStarTeamPlayer player={receiverRookieData[1]} fetching={receiversFetching} />
           <AllStarTeamPlayer player={receiverRookieData[2]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverRookieData[3]} fetching={receiversFetching} />
         </Stack>
       </Grid>
       <Grid xs={12} md={6} lg={3}>
         <Stack spacing={1}>
           <Typography variant='h6'>Sophomore</Typography>
-          <AllStarTeamPlayer player={passerData[1]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={passerSophData[0]} fetching={passersFetching} />
           <AllStarTeamPlayer player={rusherSophData[0]} fetching={rushersFetching} />
-          <AllStarTeamPlayer player={rusherSophData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherSophData[2]} fetching={rushersFetching} />
           <AllStarTeamPlayer player={receiverSophData[0]} fetching={receiversFetching} />
-          <AllStarTeamPlayer player={receiverSophData[1]} fetching={receiversFetching} />
           <AllStarTeamPlayer player={receiverSophData[2]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverSophData[3]} fetching={receiversFetching} />
         </Stack>
       </Grid>
       <Grid xs={12} md={6} lg={3}>
         <Stack spacing={1}>
           <Typography variant='h6'>Professional</Typography>
-          <AllStarTeamPlayer player={passerData[2]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={passerProData[0]} fetching={passersFetching} />
           <AllStarTeamPlayer player={rusherProData[0]} fetching={rushersFetching} />
-          <AllStarTeamPlayer player={rusherProData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherProData[2]} fetching={rushersFetching} />
           <AllStarTeamPlayer player={receiverProData[0]} fetching={receiversFetching} />
-          <AllStarTeamPlayer player={receiverProData[1]} fetching={receiversFetching} />
           <AllStarTeamPlayer player={receiverProData[2]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverProData[3]} fetching={receiversFetching} />
         </Stack>
       </Grid>
       <Grid xs={12} md={6} lg={3}>
         <Stack spacing={1}>
           <Typography variant='h6'>Veteran</Typography>
-          <AllStarTeamPlayer player={passerData[3]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={passerVetData[0]} fetching={passersFetching} />
           <AllStarTeamPlayer player={rusherVetData[0]} fetching={rushersFetching} />
-          <AllStarTeamPlayer player={rusherVetData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherVetData[2]} fetching={rushersFetching} />
           <AllStarTeamPlayer player={receiverVetData[0]} fetching={receiversFetching} />
-          <AllStarTeamPlayer player={receiverVetData[1]} fetching={receiversFetching} />
           <AllStarTeamPlayer player={receiverVetData[2]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverVetData[3]} fetching={receiversFetching} />
+        </Stack>
+      </Grid>
+      <Grid xs={12} sx={{ pb: 0 }}>
+        <Divider variant='middle'>
+          <Typography variant='h5'>2nd Team All Stars</Typography>
+        </Divider>
+      </Grid>
+      <Grid xs={12} md={6} lg={3}>
+        <Stack spacing={1}>
+          <Typography variant='h6'>Rookie</Typography>
+          <AllStarTeamPlayer player={passerRookieData[1]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={rusherRookieData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherRookieData[3]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={receiverRookieData[1]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverRookieData[4]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverRookieData[5]} fetching={receiversFetching} />
+        </Stack>
+      </Grid>
+      <Grid xs={12} md={6} lg={3}>
+        <Stack spacing={1}>
+          <Typography variant='h6'>Sophomore</Typography>
+          <AllStarTeamPlayer player={passerSophData[1]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={rusherSophData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherSophData[3]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={receiverSophData[1]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverSophData[4]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverSophData[5]} fetching={receiversFetching} />
+        </Stack>
+      </Grid>
+      <Grid xs={12} md={6} lg={3}>
+        <Stack spacing={1}>
+          <Typography variant='h6'>Professional</Typography>
+          <AllStarTeamPlayer player={passerProData[1]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={rusherProData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherProData[3]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={receiverProData[1]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverProData[4]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverProData[5]} fetching={receiversFetching} />
+        </Stack>
+      </Grid>
+      <Grid xs={12} md={6} lg={3}>
+        <Stack spacing={1}>
+          <Typography variant='h6'>Veteran</Typography>
+          <AllStarTeamPlayer player={passerVetData[1]} fetching={passersFetching} />
+          <AllStarTeamPlayer player={rusherVetData[1]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={rusherVetData[3]} fetching={rushersFetching} />
+          <AllStarTeamPlayer player={receiverVetData[1]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverVetData[4]} fetching={receiversFetching} />
+          <AllStarTeamPlayer player={receiverVetData[5]} fetching={receiversFetching} />
         </Stack>
       </Grid>
     </Grid>
