@@ -10,7 +10,7 @@ export const getPassingGmRating = (x: any): number => {
 };
 
 export const getReceivingGmRating = (x: any): number => {
-  return Math.round(+(+x.yards / +x.games_played) + 2.0 * +x.touchdowns - +x.drops - +x.fumbles_lost);
+  return Math.round(2.0 * +(+x.yards / +x.games_played) + 2.0 * +x.touchdowns - +x.drops - +x.fumbles_lost);
 };
 
 export const getRushingGmRating = (x: any): number => {
