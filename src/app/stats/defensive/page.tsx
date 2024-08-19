@@ -249,18 +249,6 @@ export default function PlayerRushingStats() {
           pinnable: false,
         },
         {
-          field: 'test',
-          headerName: 'TEST',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-          valueGetter: (value, row) => {
-            if (+row.targets <= 0) return 0.0;
-            return +((+row.receptions_allowed / +row.targets) * 100.0 ?? 0.0).toFixed(1);
-          },
-          valueFormatter: (value: number) => `${value}%`,
-        },
-        {
           field: 'gm_rating',
           headerName: 'GM RTG',
           flex: 1,
