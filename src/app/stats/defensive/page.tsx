@@ -112,14 +112,6 @@ export default function PlayerRushingStats() {
           disableColumnMenu: true,
         },
         {
-          field: 'targets',
-          headerName: 'TARG',
-          width: 110,
-          type: 'number',
-          pinnable: false,
-          disableColumnMenu: true,
-        },
-        {
           field: 'passes_defended',
           headerName: 'PD',
           width: 110,
@@ -216,20 +208,6 @@ export default function PlayerRushingStats() {
         {
           field: 'hurries',
           headerName: 'HRY',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-        },
-        {
-          field: 'receptions_allowed',
-          headerName: 'RECALW',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-        },
-        {
-          field: 'targets',
-          headerName: 'TARG',
           flex: 1,
           type: 'number',
           pinnable: false,
