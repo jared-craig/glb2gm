@@ -5,7 +5,7 @@ import { useState } from 'react';
 const tierOptions = ['Rookie', 'Sophomore', 'Professional', 'Veteran'];
 
 function CustomGridToolbar({ tierFilter }: any) {
-  const [tier, setTier] = useState<string>(window.localStorage.getItem('tier') || 'Veteran');
+  const [tier, setTier] = useState<string>(typeof window !== 'undefined' ? localStorage.getItem('tier') || 'Veteran' : 'Veteran');
   const MenuProps = {
     PaperProps: {
       style: {
@@ -17,7 +17,7 @@ function CustomGridToolbar({ tierFilter }: any) {
   const handleTierSelectChange = (event: SelectChangeEvent<string>) => {
     tierFilter(event.target.value);
     setTier(event.target.value);
-    window.localStorage.setItem('tier', tier);
+    if (typeof window !== 'undefined') localStorage.setItem('tier', tier);
   };
 
   return (

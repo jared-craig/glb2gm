@@ -15,7 +15,7 @@ export default function PlayerReceivingStats() {
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerReceivingData[]>([]);
   const [rows, setRows] = useState<PlayerReceivingData[]>([]);
-  const [tier, setTier] = useState<string>(window.localStorage.getItem('tier') || 'Veteran');
+  const [tier, setTier] = useState<string>(typeof window !== 'undefined' ? localStorage.getItem('tier') || 'Veteran' : 'Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/receiving');
@@ -31,7 +31,7 @@ export default function PlayerReceivingStats() {
 
   useEffect(() => {
     setRows(data.filter((x: PlayerReceivingData) => x.tier === tier));
-    window.localStorage.setItem('tier', tier);
+    if (typeof window !== 'undefined') localStorage.setItem('tier', tier);
   }, [tier]);
 
   const columns: GridColDef[] = !desktop

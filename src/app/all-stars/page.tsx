@@ -18,7 +18,7 @@ interface AllData {
 }
 
 export default function TopTeam() {
-  const [teamChoice, setTeamChoice] = useState<string>(window.localStorage.getItem('teamChoice') || 'offense');
+  const [teamChoice, setTeamChoice] = useState<string>(typeof window !== 'undefined' ? localStorage.getItem('teamChoice') || 'offense' : 'offense');
   const [allData, setAllData] = useState<AllData>();
   const [passerRookieData, setPasserRookieData] = useState<(PlayerPassingData | undefined)[]>([]);
   const [passerSophData, setPasserSophData] = useState<(PlayerPassingData | undefined)[]>([]);
@@ -241,7 +241,7 @@ export default function TopTeam() {
   }, [allData]);
 
   useEffect(() => {
-    window.localStorage.setItem('teamChoice', teamChoice);
+    if (typeof window !== 'undefined') localStorage.setItem('teamChoice', teamChoice);
   }, [teamChoice]);
 
   return (
