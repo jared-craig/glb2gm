@@ -120,3 +120,59 @@ model ReceivingTest {
   fumbles_lost      Int
   tier              String  @db.NVarChar(Max)
 }
+
+model Defensive {
+  id                   Int     @id(map: "PK_Defensive")
+  player_name          String  @db.NVarChar(Max)
+  team_name            String  @db.NVarChar(Max)
+  position             String  @db.NVarChar(50)
+  games_played         Int
+  tackles              Int
+  tackle_assists       Int
+  missed_tackles       Int
+  sticks               Int
+  forced_fumbles       Int
+  fumble_recoveries    Int
+  tackles_for_loss     Int
+  defensive_touchdowns Int
+  times_pancaked       Int
+  reverse_pancakes     Int
+  sacks                Decimal @db.Decimal(18, 1)
+  sack_yards           Decimal @db.Decimal(18, 1)
+  hurries              Int
+  targets              Int
+  receptions_allowed   Int
+  passes_defended      Int
+  passes_knocked_loose Int
+  interceptions        Int
+  interception_yards   Decimal @db.Decimal(18, 1)
+  tier                 String  @db.NVarChar(Max)
+}
+
+model DefensiveTest {
+  id                   Int     @id(map: "PK_DefensiveTest")
+  player_name          String  @db.NVarChar(Max)
+  team_name            String  @db.NVarChar(Max)
+  position             String  @db.NVarChar(50)
+  games_played         Int
+  tackles              Int
+  tackle_assists       Int
+  missed_tackles       Int
+  sticks               Int
+  forced_fumbles       Int
+  fumble_recoveries    Int
+  tackles_for_loss     Int
+  defensive_touchdowns Int
+  times_pancaked       Int
+  reverse_pancakes     Int
+  sacks                Decimal @db.Decimal(18, 1)
+  sack_yards           Decimal @db.Decimal(18, 1)
+  hurries              Int
+  targets              Int
+  receptions_allowed   Int
+  passes_defended      Int
+  passes_knocked_loose Int
+  interceptions        Int
+  interception_yards   Decimal @db.Decimal(18, 1)
+  tier                 String  @db.NVarChar(Max)
+}

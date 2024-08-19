@@ -15,7 +15,7 @@ export default function PlayerRushingStats() {
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerRushingData[]>([]);
   const [rows, setRows] = useState<PlayerRushingData[]>([]);
-  const [tier, setTier] = useState<string>('Veteran');
+  const [tier, setTier] = useState<string>(typeof window !== 'undefined' ? localStorage.getItem('tier') || 'Veteran' : 'Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/rushing');
@@ -31,6 +31,7 @@ export default function PlayerRushingStats() {
 
   useEffect(() => {
     setRows(data.filter((x: PlayerRushingData) => x.tier === tier));
+    if (typeof window !== 'undefined') localStorage.setItem('tier', tier);
   }, [tier]);
 
   const columns: GridColDef[] = !desktop
@@ -267,7 +268,7 @@ export default function PlayerRushingStats() {
         },
         {
           field: 'gm_rating',
-          headerName: 'GM RATING',
+          headerName: 'GM RTG',
           flex: 1,
           type: 'number',
           pinnable: false,
