@@ -15,7 +15,7 @@ export default function PlayerRushingStats() {
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerDefensiveData[]>([]);
   const [rows, setRows] = useState<PlayerDefensiveData[]>([]);
-  const [tier, setTier] = useState<string>(localStorage.getItem('tier') || 'Veteran');
+  const [tier, setTier] = useState<string>(window.localStorage.getItem('tier') || 'Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/defensive');
@@ -31,7 +31,7 @@ export default function PlayerRushingStats() {
 
   useEffect(() => {
     setRows(data.filter((x: PlayerDefensiveData) => x.tier === tier));
-    localStorage.setItem('tier', tier);
+    window.localStorage.setItem('tier', tier);
   }, [tier]);
 
   const columns: GridColDef[] = !desktop

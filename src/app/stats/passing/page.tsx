@@ -15,7 +15,7 @@ export default function PlayerPassingStats() {
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerPassingData[]>([]);
   const [rows, setRows] = useState<PlayerPassingData[]>([]);
-  const [tier, setTier] = useState<string>(localStorage.getItem('tier') || 'Veteran');
+  const [tier, setTier] = useState<string>(window.localStorage.getItem('tier') || 'Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/passing');
@@ -31,7 +31,7 @@ export default function PlayerPassingStats() {
 
   useEffect(() => {
     setRows(data.filter((x: PlayerPassingData) => x.tier === tier));
-    localStorage.setItem('tier', tier);
+    window.localStorage.setItem('tier', tier);
   }, [tier]);
 
   const columns: GridColDef[] = !desktop
