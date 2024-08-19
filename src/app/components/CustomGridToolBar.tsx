@@ -1,11 +1,11 @@
-import { Box, FormControl, ListItemText, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { FormControl, ListItemText, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { GridToolbarContainer, GridToolbarQuickFilter } from '@mui/x-data-grid-pro';
 import { useState } from 'react';
 
 const tierOptions = ['Rookie', 'Sophomore', 'Professional', 'Veteran'];
 
 function CustomGridToolbar({ tierFilter }: any) {
-  const [tier, setTier] = useState<string>('Veteran');
+  const [tier, setTier] = useState<string>(localStorage.getItem('tier') || 'Veteran');
   const MenuProps = {
     PaperProps: {
       style: {
@@ -17,6 +17,7 @@ function CustomGridToolbar({ tierFilter }: any) {
   const handleTierSelectChange = (event: SelectChangeEvent<string>) => {
     tierFilter(event.target.value);
     setTier(event.target.value);
+    localStorage.setItem('tier', tier);
   };
 
   return (

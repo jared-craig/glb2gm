@@ -3,25 +3,25 @@
 import { DataGridPro, GridColDef, GridRenderCellParams, GridRowModel } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
-import { PlayerReceivingData } from './playerReceivingData';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
-import { getReceivingDropsPerReception, getReceivingGmRating } from '../statCalculations';
+import { getDefensiveGmRating } from '../statCalculations';
+import { PlayerDefensiveData } from './playerDefensiveData';
 
-export default function PlayerReceivingStats() {
+export default function PlayerRushingStats() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
   const [fetched, setFetched] = useState<boolean>(false);
-  const [data, setData] = useState<PlayerReceivingData[]>([]);
-  const [rows, setRows] = useState<PlayerReceivingData[]>([]);
+  const [data, setData] = useState<PlayerDefensiveData[]>([]);
+  const [rows, setRows] = useState<PlayerDefensiveData[]>([]);
   const [tier, setTier] = useState<string>(localStorage.getItem('tier') || 'Veteran');
 
   const fetchData = async () => {
-    const res = await fetch('/api/receiving');
+    const res = await fetch('/api/defensive');
     const data = await res.json();
     setData(data);
-    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier));
+    setRows(data.filter((x: PlayerDefensiveData) => x.tier === tier));
     setFetched(true);
   };
 
@@ -30,7 +30,7 @@ export default function PlayerReceivingStats() {
   }, []);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier));
+    setRows(data.filter((x: PlayerDefensiveData) => x.tier === tier));
     localStorage.setItem('tier', tier);
   }, [tier]);
 
@@ -48,43 +48,64 @@ export default function PlayerReceivingStats() {
           disableColumnMenu: true,
         },
         {
-          field: 'yards',
-          headerName: 'YARDS',
+          field: 'sacks',
+          headerName: 'SACKS',
           width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
-          field: 'average',
-          headerName: 'YPR',
+          field: 'tackles',
+          headerName: 'TK',
           width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
-          field: 'yards_per_game',
-          headerName: 'YPG',
-          width: 110,
-          type: 'number',
-          pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
-            return +(+row.yards / +row.games_played).toFixed(1);
-          },
-          disableColumnMenu: true,
-        },
-        {
-          field: 'touchdowns',
-          headerName: 'TD',
+          field: 'tackles_for_loss',
+          headerName: 'TFL',
           width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
-          field: 'receptions',
-          headerName: 'REC',
+          field: 'sticks',
+          headerName: 'STICK',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'interceptions',
+          headerName: 'INT',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'forced_fumbles',
+          headerName: 'FF',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'fumble_recoveries',
+          headerName: 'FUMR',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'hurries',
+          headerName: 'HRY',
           width: 110,
           type: 'number',
           pinnable: false,
@@ -92,84 +113,23 @@ export default function PlayerReceivingStats() {
         },
         {
           field: 'targets',
-          headerName: 'TAR',
+          headerName: 'TARG',
           width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
-          field: 'catch_rate',
-          headerName: 'REC%',
-          width: 110,
-          type: 'number',
-          pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
-            return +((row.receptions / row.targets) * 100.0).toFixed(1);
-          },
-          valueFormatter: (value) => `${value}%`,
-          disableColumnMenu: true,
-        },
-        {
-          field: 'receptions_per_touchdown',
-          headerName: 'REC/TD',
-          width: 110,
-          type: 'number',
-          pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
-            return +(row.receptions / row.touchdowns).toFixed(2);
-          },
-          disableColumnMenu: true,
-        },
-        {
-          field: 'targets_per_touchdown',
-          headerName: 'TAR/TD',
-          width: 110,
-          type: 'number',
-          pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
-            return +(row.targets / row.touchdowns).toFixed(2);
-          },
-          disableColumnMenu: true,
-        },
-        {
-          field: 'yards_after_catch',
-          headerName: 'YAC',
+          field: 'passes_defended',
+          headerName: 'PD',
           width: 110,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
-          field: 'drops',
-          headerName: 'DROPS',
-          width: 110,
-          type: 'number',
-          pinnable: false,
-          disableColumnMenu: true,
-        },
-        {
-          field: 'drops_per_receptions',
-          headerName: 'D/REC',
-          width: 110,
-          type: 'number',
-          pinnable: false,
-          valueGetter: (value, row) => {
-            return getReceivingDropsPerReception(row);
-          },
-          disableColumnMenu: true,
-        },
-        {
-          field: 'fumbles',
-          headerName: 'FUM',
-          width: 110,
-          type: 'number',
-          pinnable: false,
-          disableColumnMenu: true,
-        },
-        {
-          field: 'fumbles_lost',
-          headerName: 'FUML',
+          field: 'passes_knocked_loose',
+          headerName: 'KL',
           width: 110,
           type: 'number',
           pinnable: false,
@@ -182,7 +142,7 @@ export default function PlayerReceivingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row: GridRowModel) => {
-            return getReceivingGmRating(row);
+            return getDefensiveGmRating(row);
           },
           disableColumnMenu: true,
         },
@@ -205,118 +165,100 @@ export default function PlayerReceivingStats() {
           pinnable: false,
         },
         {
-          field: 'yards',
-          headerName: 'YARDS',
+          field: 'sacks',
+          headerName: 'SACKS',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'average',
-          headerName: 'YPR',
+          field: 'tackles',
+          headerName: 'TK',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'yards_per_game',
-          headerName: 'YPG',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
-            return +(+row.yards / +row.games_played).toFixed(1);
-          },
-        },
-        {
-          field: 'touchdowns',
-          headerName: 'TD',
+          field: 'tackles_for_loss',
+          headerName: 'TFL',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'receptions',
-          headerName: 'REC',
+          field: 'sticks',
+          headerName: 'STICK',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'interceptions',
+          headerName: 'INT',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'forced_fumbles',
+          headerName: 'FF',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'fumble_recoveries',
+          headerName: 'FUMR',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'hurries',
+          headerName: 'HRY',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'receptions_allowed',
+          headerName: 'RECALW',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
           field: 'targets',
-          headerName: 'TAR',
+          headerName: 'TARG',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'catch_rate',
-          headerName: 'REC%',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
-            return +((row.receptions / row.targets) * 100.0).toFixed(1);
-          },
-          valueFormatter: (value) => `${value}%`,
-        },
-        {
-          field: 'receptions_per_touchdown',
-          headerName: 'REC/TD',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
-            return +(row.receptions / row.touchdowns).toFixed(2);
-          },
-        },
-        {
-          field: 'targets_per_touchdown',
-          headerName: 'TAR/TD',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
-            return +(row.targets / row.touchdowns).toFixed(2);
-          },
-        },
-        {
-          field: 'yards_after_catch',
-          headerName: 'YAC',
+          field: 'passes_defended',
+          headerName: 'PD',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'drops',
-          headerName: 'DROPS',
+          field: 'passes_knocked_loose',
+          headerName: 'KL',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'drops_per_receptions',
-          headerName: 'D/REC',
+          field: 'test',
+          headerName: 'TEST',
           flex: 1,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return getReceivingDropsPerReception(row);
+            if (+row.targets <= 0) return 0.0;
+            return +((+row.receptions_allowed / +row.targets) * 100.0 ?? 0.0).toFixed(1);
           },
-        },
-        {
-          field: 'fumbles',
-          headerName: 'FUM',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-        },
-        {
-          field: 'fumbles_lost',
-          headerName: 'FUML',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
+          valueFormatter: (value: number) => `${value}%`,
         },
         {
           field: 'gm_rating',
@@ -325,7 +267,7 @@ export default function PlayerReceivingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return getReceivingGmRating(row);
+            return getDefensiveGmRating(row);
           },
         },
       ];

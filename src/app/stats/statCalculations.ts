@@ -1,3 +1,17 @@
+export const getDefensiveGmRating = (x: any): number => {
+  const passDef = +x.passes_defended + +x.passes_knocked_loose - +x.receptions_allowed;
+  return Math.round(
+    1.0 * +x.tackles +
+      1.0 * +x.tackles_for_loss +
+      5.0 * +x.sacks +
+      0.25 * +x.hurries +
+      5.0 * +x.interceptions +
+      3.0 * +x.forced_fumbles +
+      2.0 * +x.fumble_recoveries +
+      (passDef > 0 ? 10.0 * passDef : 0.0)
+  );
+};
+
 export const getPassingGmRating = (x: any): number => {
   return Math.round(
     +(+x.yards / +x.games_played) +

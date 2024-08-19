@@ -15,7 +15,7 @@ export default function PlayerPassingStats() {
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerPassingData[]>([]);
   const [rows, setRows] = useState<PlayerPassingData[]>([]);
-  const [tier, setTier] = useState<string>('Veteran');
+  const [tier, setTier] = useState<string>(localStorage.getItem('tier') || 'Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/passing');
@@ -31,6 +31,7 @@ export default function PlayerPassingStats() {
 
   useEffect(() => {
     setRows(data.filter((x: PlayerPassingData) => x.tier === tier));
+    localStorage.setItem('tier', tier);
   }, [tier]);
 
   const columns: GridColDef[] = !desktop
@@ -234,7 +235,7 @@ export default function PlayerPassingStats() {
         },
         {
           field: 'gm_rating',
-          headerName: 'GM RATING',
+          headerName: 'GM RTG',
           flex: 1,
           type: 'number',
           pinnable: false,
