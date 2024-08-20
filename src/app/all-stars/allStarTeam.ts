@@ -1,3 +1,4 @@
+import { PlayerBlockingData } from '../stats/blocking/playerBlockingData';
 import { PlayerDefensiveData } from '../stats/defensive/playerDefensiveData';
 import { PlayerPassingData } from '../stats/passing/playerPassingData';
 import { PlayerReceivingData } from '../stats/receiving/playerReceivingData';
@@ -10,6 +11,11 @@ export interface AllStarOffenseTeam {
   te: PlayerReceivingData;
   wr1: PlayerReceivingData;
   wr2: PlayerReceivingData;
+  c: PlayerBlockingData;
+  g1: PlayerBlockingData;
+  g2: PlayerBlockingData;
+  ot1: PlayerBlockingData;
+  ot2: PlayerBlockingData;
 }
 
 export interface AllStarDefenseTeam {
