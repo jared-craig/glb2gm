@@ -5,16 +5,18 @@ import { PlayerReceivingData } from '../stats/receiving/playerReceivingData';
 import { PlayerPassingData } from '../stats/passing/playerPassingData';
 import { PlayerRushingData } from '../stats/rushing/playerRushingData';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { getDefensiveGmRating, getPassingGmRating, getReceivingGmRating, getRushingGmRating } from '../stats/statCalculations';
+import { getBlockingGmRating, getDefensiveGmRating, getPassingGmRating, getReceivingGmRating, getRushingGmRating } from '../stats/statCalculations';
 import { Divider, FormControl, FormControlLabel, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 import AllStarTeamPlayer from './AllStarTeamPlayer';
 import { PlayerDefensiveData } from '../stats/defensive/playerDefensiveData';
+import { PlayerBlockingData } from '../stats/blocking/playerBlockingData';
 
 interface AllData {
   passData: PlayerPassingData[];
   rushData: PlayerRushingData[];
   recData: PlayerReceivingData[];
   defData: PlayerDefensiveData[];
+  blockData: PlayerBlockingData[];
 }
 
 export default function TopTeam() {
@@ -36,10 +38,15 @@ export default function TopTeam() {
   const [defenderSophData, setDefenderSophData] = useState<(PlayerDefensiveData | undefined)[]>([]);
   const [defenderProData, setDefenderProData] = useState<(PlayerDefensiveData | undefined)[]>([]);
   const [defenderVetData, setDefenderVetData] = useState<(PlayerDefensiveData | undefined)[]>([]);
+  const [blockerRookieData, setBlockerRookieData] = useState<(PlayerBlockingData | undefined)[]>([]);
+  const [blockerSophData, setBlockerSophData] = useState<(PlayerBlockingData | undefined)[]>([]);
+  const [blockerProData, setBlockerProData] = useState<(PlayerBlockingData | undefined)[]>([]);
+  const [blockerVetData, setBlockerVetData] = useState<(PlayerBlockingData | undefined)[]>([]);
   const [passersFetching, setPassersFetching] = useState<boolean>(true);
   const [rushersFetching, setRushersFetching] = useState<boolean>(true);
   const [receiversFetching, setReceiversFetching] = useState<boolean>(true);
   const [defendersFetching, setDefendersFetching] = useState<boolean>(true);
+  const [blockersFetching, setBlockersFetching] = useState<boolean>(true);
 
   const matchById = (array1: any[], array2: any[], statToPull: string, propToAdd: string) => {
     let baseArray = JSON.parse(JSON.stringify(array1));
@@ -63,8 +70,10 @@ export default function TopTeam() {
     const recData: PlayerReceivingData[] = await recRes.json();
     const defRes = await fetch('/api/defensive');
     const defData: PlayerDefensiveData[] = await defRes.json();
+    const blockRes = await fetch('/api/blocking');
+    const blockData: PlayerBlockingData[] = await blockRes.json();
 
-    setAllData({ passData, rushData, recData, defData });
+    setAllData({ passData, rushData, recData, defData, blockData });
   };
 
   const fetchPasserData = async () => {
@@ -229,6 +238,51 @@ export default function TopTeam() {
     setTimeout(() => setDefendersFetching(false), 1000);
   };
 
+  const fetchBlockingData = async () => {
+    if (!allData) return;
+
+    const tops = allData.blockData.sort((a: PlayerBlockingData, b: PlayerBlockingData) => (getBlockingGmRating(a) > getBlockingGmRating(b) ? -1 : 1));
+
+    let rookies: (PlayerBlockingData | undefined)[] = [];
+    let sophs: (PlayerBlockingData | undefined)[] = [];
+    let pros: (PlayerBlockingData | undefined)[] = [];
+    let vets: (PlayerBlockingData | undefined)[] = [];
+
+    const rookieCs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'C').slice(0, 2);
+    rookies = [...rookies, ...rookieCs];
+    const rookieGs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'G').slice(0, 4);
+    rookies = [...rookies, ...rookieGs];
+    const rookieOTs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'OT').slice(0, 4);
+    rookies = [...rookies, ...rookieOTs];
+    setBlockerRookieData(rookies);
+
+    const sophCs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'C').slice(0, 2);
+    sophs = [...sophs, ...sophCs];
+    const sophGs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'G').slice(0, 4);
+    sophs = [...sophs, ...sophGs];
+    const sophOTs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'OT').slice(0, 4);
+    sophs = [...sophs, ...sophOTs];
+    setBlockerSophData(sophs);
+
+    const proCs = tops.filter((x) => x.tier === 'Professional' && x.position === 'C').slice(0, 2);
+    pros = [...pros, ...proCs];
+    const proGs = tops.filter((x) => x.tier === 'Professional' && x.position === 'G').slice(0, 4);
+    pros = [...pros, ...proGs];
+    const proOTs = tops.filter((x) => x.tier === 'Professional' && x.position === 'OT').slice(0, 4);
+    pros = [...pros, ...proOTs];
+    setBlockerProData(pros);
+
+    const vetCs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'C').slice(0, 2);
+    vets = [...vets, ...vetCs];
+    const vetGs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'G').slice(0, 4);
+    vets = [...vets, ...vetGs];
+    const vetOTs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'OT').slice(0, 4);
+    vets = [...vets, ...vetOTs];
+    setBlockerVetData(vets);
+
+    setTimeout(() => setBlockersFetching(false), 1000);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -238,6 +292,7 @@ export default function TopTeam() {
     fetchRusherData();
     fetchReceiverData();
     fetchDefensiveData();
+    fetchBlockingData();
   }, [allData]);
 
   return (
@@ -266,6 +321,11 @@ export default function TopTeam() {
               <AllStarTeamPlayer player={receiverRookieData[0]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverRookieData[2]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverRookieData[3]} fetching={receiversFetching} />
+              <AllStarTeamPlayer player={blockerRookieData[0]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerRookieData[2]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerRookieData[3]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerRookieData[6]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerRookieData[7]} fetching={blockersFetching} />
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
@@ -277,6 +337,11 @@ export default function TopTeam() {
               <AllStarTeamPlayer player={receiverSophData[0]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverSophData[2]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverSophData[3]} fetching={receiversFetching} />
+              <AllStarTeamPlayer player={blockerSophData[0]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerSophData[2]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerSophData[3]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerSophData[6]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerSophData[7]} fetching={blockersFetching} />
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
@@ -288,6 +353,11 @@ export default function TopTeam() {
               <AllStarTeamPlayer player={receiverProData[0]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverProData[2]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverProData[3]} fetching={receiversFetching} />
+              <AllStarTeamPlayer player={blockerProData[0]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerProData[2]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerProData[3]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerProData[6]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerProData[7]} fetching={blockersFetching} />
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
@@ -299,6 +369,11 @@ export default function TopTeam() {
               <AllStarTeamPlayer player={receiverVetData[0]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverVetData[2]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverVetData[3]} fetching={receiversFetching} />
+              <AllStarTeamPlayer player={blockerVetData[0]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerVetData[2]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerVetData[3]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerVetData[6]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerVetData[7]} fetching={blockersFetching} />
             </Stack>
           </Grid>
           <Grid xs={12} sx={{ pb: 0 }}>
@@ -315,6 +390,11 @@ export default function TopTeam() {
               <AllStarTeamPlayer player={receiverRookieData[1]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverRookieData[4]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverRookieData[5]} fetching={receiversFetching} />
+              <AllStarTeamPlayer player={blockerRookieData[1]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerRookieData[4]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerRookieData[5]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerRookieData[8]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerRookieData[9]} fetching={blockersFetching} />
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
@@ -326,6 +406,11 @@ export default function TopTeam() {
               <AllStarTeamPlayer player={receiverSophData[1]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverSophData[4]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverSophData[5]} fetching={receiversFetching} />
+              <AllStarTeamPlayer player={blockerSophData[1]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerSophData[4]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerSophData[5]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerSophData[8]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerSophData[9]} fetching={blockersFetching} />
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
@@ -337,6 +422,11 @@ export default function TopTeam() {
               <AllStarTeamPlayer player={receiverProData[1]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverProData[4]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverProData[5]} fetching={receiversFetching} />
+              <AllStarTeamPlayer player={blockerProData[1]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerProData[4]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerProData[5]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerProData[8]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerProData[9]} fetching={blockersFetching} />
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
@@ -348,6 +438,11 @@ export default function TopTeam() {
               <AllStarTeamPlayer player={receiverVetData[1]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverVetData[4]} fetching={receiversFetching} />
               <AllStarTeamPlayer player={receiverVetData[5]} fetching={receiversFetching} />
+              <AllStarTeamPlayer player={blockerVetData[1]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerVetData[4]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerVetData[5]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerVetData[8]} fetching={blockersFetching} />
+              <AllStarTeamPlayer player={blockerVetData[9]} fetching={blockersFetching} />
             </Stack>
           </Grid>
         </>

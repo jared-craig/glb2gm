@@ -1,3 +1,7 @@
+export const getBlockingGmRating = (x: any): number => {
+  return Math.round(2.0 * +x.pancakes - +x.reverse_pancaked - 0.25 * +x.hurries_allowed - +x.sacks_allowed);
+};
+
 export const getDefensiveGmRating = (x: any): number => {
   return Math.round(
     1.0 * +x.tackles +

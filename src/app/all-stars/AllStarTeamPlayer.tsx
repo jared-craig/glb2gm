@@ -53,6 +53,11 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
     case 'WR':
       stats = { YD: player.yards, TD: player.touchdowns };
       break;
+    case 'C':
+    case 'G':
+    case 'OT':
+      stats = { CAKE: player.pancakes, RCAKED: player.reverse_pancaked, HALW: player.hurries_allowed, SALW: player.sacks_allowed };
+      break;
     case 'DT':
     case 'DE':
     case 'LB':

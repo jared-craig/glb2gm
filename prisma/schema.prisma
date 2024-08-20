@@ -176,3 +176,31 @@ model DefensiveTest {
   interception_yards   Decimal @db.Decimal(18, 1)
   tier                 String  @db.NVarChar(Max)
 }
+
+model Blocking {
+  id               Int    @id(map: "PK_Blocking")
+  player_name      String @db.NVarChar(Max)
+  team_name        String @db.NVarChar(Max)
+  position         String @db.NVarChar(50)
+  games_played     Int
+  plays            Int
+  pancakes         Int
+  reverse_pancaked Int
+  hurries_allowed  Int
+  sacks_allowed    Int
+  tier             String @db.NVarChar(Max)
+}
+
+model BlockingTest {
+  id               Int    @id(map: "PK_BlockingTest")
+  player_name      String @db.NVarChar(Max)
+  team_name        String @db.NVarChar(Max)
+  position         String @db.NVarChar(50)
+  games_played     Int
+  plays            Int
+  pancakes         Int
+  reverse_pancaked Int
+  hurries_allowed  Int
+  sacks_allowed    Int
+  tier             String @db.NVarChar(Max)
+}
