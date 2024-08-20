@@ -2,7 +2,7 @@
 
 import { DataGridPro, GridColDef, GridRenderCellParams, GridRowModel } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
-import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getDefensiveGmRating } from '../statCalculations';
@@ -177,11 +177,18 @@ export default function PlayerRushingStats() {
         {
           field: 'player_name',
           headerName: 'NAME',
-          flex: 1.5,
+          flex: 2,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
-              <strong>{params.value}</strong>
-            </Link>
+            <Stack>
+              <Link
+                href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`}
+                target='_blank'
+                style={{ color: 'inherit', textDecoration: 'inherit' }}
+              >
+                <strong>{params.value}</strong>
+              </Link>
+              <Typography variant='caption'>{params.row.team_name}</Typography>
+            </Stack>
           ),
         },
         {
@@ -308,10 +315,11 @@ export default function PlayerRushingStats() {
         pagination
         pageSizeOptions={[15, 30, 50, 100]}
         density='compact'
+        getRowHeight={({ id, densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
         disableRowSelectionOnClick
         disableDensitySelector
         getCellClassName={() => {
-          return desktop ? '' : 'mobile-text';
+          return desktop ? 'desktop-text' : 'mobile-text';
         }}
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
