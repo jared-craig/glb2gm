@@ -1,12 +1,13 @@
 export const getDefensiveGmRating = (x: any): number => {
   return Math.round(
     1.0 * +x.tackles +
-      1.0 * +x.tackles_for_loss +
-      5.0 * +x.sacks +
+      1.0 * +x.tackles_for_loss -
+      1.0 * +x.missed_tackles +
+      4.0 * +x.sacks +
       0.25 * +x.hurries +
-      5.0 * +x.interceptions +
+      4.0 * +x.interceptions +
       3.0 * +x.forced_fumbles +
-      2.0 * +x.fumble_recoveries +
+      1.0 * +x.fumble_recoveries +
       1.0 * +x.passes_defended +
       1.0 * +x.passes_knocked_loose
   );

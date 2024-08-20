@@ -72,6 +72,14 @@ export default function PlayerRushingStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'missed_tackles',
+          headerName: 'MSTK',
+          width: 110,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
           field: 'sticks',
           headerName: 'STICK',
           width: 110,
@@ -173,6 +181,13 @@ export default function PlayerRushingStats() {
         {
           field: 'tackles_for_loss',
           headerName: 'TFL',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'missed_tackles',
+          headerName: 'MSTK',
           flex: 1,
           type: 'number',
           pinnable: false,
