@@ -15,7 +15,7 @@ export default function PlayerRushingStats() {
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerDefensiveData[]>([]);
   const [rows, setRows] = useState<PlayerDefensiveData[]>([]);
-  const [tier, setTier] = useState<string>(typeof window !== 'undefined' ? localStorage.getItem('tier') || 'Veteran' : 'Veteran');
+  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/defensive');
@@ -31,7 +31,6 @@ export default function PlayerRushingStats() {
 
   useEffect(() => {
     setRows(data.filter((x: PlayerDefensiveData) => x.tier === tier));
-    if (typeof window !== 'undefined') localStorage.setItem('tier', tier);
   }, [tier]);
 
   const columns: GridColDef[] = !desktop
@@ -48,9 +47,16 @@ export default function PlayerRushingStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'position',
+          headerName: 'POS',
+          width: 100,
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
           field: 'sacks',
           headerName: 'SACKS',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -58,7 +64,7 @@ export default function PlayerRushingStats() {
         {
           field: 'tackles',
           headerName: 'TK',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -66,7 +72,7 @@ export default function PlayerRushingStats() {
         {
           field: 'tackles_for_loss',
           headerName: 'TFL',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -74,15 +80,27 @@ export default function PlayerRushingStats() {
         {
           field: 'missed_tackles',
           headerName: 'MSTK',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
+          field: 'tackle_percentage',
+          headerName: 'TACK%',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+          valueGetter: (value, row: GridRowModel) => {
+            return (+row.tackles / (+row.tackles + +row.missed_tackles)) * 100.0;
+          },
+          valueFormatter: (value) => `${value} %`,
+        },
+        {
           field: 'sticks',
           headerName: 'STICK',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -90,7 +108,7 @@ export default function PlayerRushingStats() {
         {
           field: 'interceptions',
           headerName: 'INT',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -98,7 +116,7 @@ export default function PlayerRushingStats() {
         {
           field: 'forced_fumbles',
           headerName: 'FF',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -106,7 +124,7 @@ export default function PlayerRushingStats() {
         {
           field: 'fumble_recoveries',
           headerName: 'FUMR',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -114,7 +132,15 @@ export default function PlayerRushingStats() {
         {
           field: 'hurries',
           headerName: 'HRY',
-          width: 110,
+          width: 120,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'reverse_pancakes',
+          headerName: 'REVP',
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -122,7 +148,7 @@ export default function PlayerRushingStats() {
         {
           field: 'passes_defended',
           headerName: 'PD',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -130,7 +156,7 @@ export default function PlayerRushingStats() {
         {
           field: 'passes_knocked_loose',
           headerName: 'KL',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -141,10 +167,10 @@ export default function PlayerRushingStats() {
           width: 120,
           type: 'number',
           pinnable: false,
+          disableColumnMenu: true,
           valueGetter: (value, row: GridRowModel) => {
             return getDefensiveGmRating(row);
           },
-          disableColumnMenu: true,
         },
       ]
     : [
@@ -193,6 +219,17 @@ export default function PlayerRushingStats() {
           pinnable: false,
         },
         {
+          field: 'tackle_percentage',
+          headerName: 'TACK%',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return (+row.tackles / (+row.tackles + +row.missed_tackles)) * 100.0;
+          },
+          valueFormatter: (value: number) => `${value.toFixed(1)}%`,
+        },
+        {
           field: 'sticks',
           headerName: 'STICK',
           flex: 1,
@@ -223,6 +260,13 @@ export default function PlayerRushingStats() {
         {
           field: 'hurries',
           headerName: 'HRY',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'reverse_pancakes',
+          headerName: 'REVP',
           flex: 1,
           type: 'number',
           pinnable: false,
@@ -266,6 +310,9 @@ export default function PlayerRushingStats() {
         density='compact'
         disableRowSelectionOnClick
         disableDensitySelector
+        getCellClassName={() => {
+          return desktop ? '' : 'mobile-text';
+        }}
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{

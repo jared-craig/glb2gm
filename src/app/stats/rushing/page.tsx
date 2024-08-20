@@ -15,7 +15,7 @@ export default function PlayerRushingStats() {
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerRushingData[]>([]);
   const [rows, setRows] = useState<PlayerRushingData[]>([]);
-  const [tier, setTier] = useState<string>(typeof window !== 'undefined' ? localStorage.getItem('tier') || 'Veteran' : 'Veteran');
+  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/rushing');
@@ -31,7 +31,6 @@ export default function PlayerRushingStats() {
 
   useEffect(() => {
     setRows(data.filter((x: PlayerRushingData) => x.tier === tier));
-    if (typeof window !== 'undefined') localStorage.setItem('tier', tier);
   }, [tier]);
 
   const columns: GridColDef[] = !desktop
@@ -48,9 +47,16 @@ export default function PlayerRushingStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'position',
+          headerName: 'POS',
+          width: 100,
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
           field: 'yards',
           headerName: 'YARDS',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -58,7 +64,7 @@ export default function PlayerRushingStats() {
         {
           field: 'average',
           headerName: 'YPC',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -66,7 +72,7 @@ export default function PlayerRushingStats() {
         {
           field: 'yards_per_game',
           headerName: 'YPG',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row: GridRowModel) => {
@@ -77,7 +83,7 @@ export default function PlayerRushingStats() {
         {
           field: 'rushes',
           headerName: 'RUSH',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -85,7 +91,7 @@ export default function PlayerRushingStats() {
         {
           field: 'touchdowns',
           headerName: 'TD',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -93,7 +99,7 @@ export default function PlayerRushingStats() {
         {
           field: 'rushes_per_touchdown',
           headerName: 'R/TD',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
@@ -104,7 +110,7 @@ export default function PlayerRushingStats() {
         {
           field: 'broken_tackles',
           headerName: 'BTK',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -112,7 +118,7 @@ export default function PlayerRushingStats() {
         {
           field: 'broken_tackles_per_rush',
           headerName: 'BTK/R',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
@@ -123,7 +129,7 @@ export default function PlayerRushingStats() {
         {
           field: 'tackles_for_loss',
           headerName: 'TFL',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -131,7 +137,7 @@ export default function PlayerRushingStats() {
         {
           field: 'fumbles',
           headerName: 'FUM',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -139,7 +145,7 @@ export default function PlayerRushingStats() {
         {
           field: 'fumbles_lost',
           headerName: 'FUML',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -291,6 +297,9 @@ export default function PlayerRushingStats() {
         density='compact'
         disableRowSelectionOnClick
         disableDensitySelector
+        getCellClassName={() => {
+          return desktop ? '' : 'mobile-text';
+        }}
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{
