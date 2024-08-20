@@ -5,11 +5,12 @@ export const getDefensiveGmRating = (x: any): number => {
       1.0 * +x.missed_tackles +
       4.0 * +x.sacks +
       0.25 * +x.hurries +
-      4.0 * +x.interceptions +
+      5.0 * +x.interceptions +
       3.0 * +x.forced_fumbles +
       1.0 * +x.fumble_recoveries +
       1.0 * +x.passes_defended +
-      1.0 * +x.passes_knocked_loose
+      1.0 * +x.passes_knocked_loose +
+      0.5 * +x.interception_yards
   );
 };
 

@@ -18,7 +18,7 @@ interface AllData {
 }
 
 export default function TopTeam() {
-  const [teamChoice, setTeamChoice] = useState<string>(typeof window !== 'undefined' ? localStorage.getItem('teamChoice') || 'offense' : 'offense');
+  const [teamChoice, setTeamChoice] = useState<string>('offense');
   const [allData, setAllData] = useState<AllData>();
   const [passerRookieData, setPasserRookieData] = useState<(PlayerPassingData | undefined)[]>([]);
   const [passerSophData, setPasserSophData] = useState<(PlayerPassingData | undefined)[]>([]);
@@ -240,10 +240,6 @@ export default function TopTeam() {
     fetchDefensiveData();
   }, [allData]);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') localStorage.setItem('teamChoice', teamChoice);
-  }, [teamChoice]);
-
   return (
     <Grid container rowSpacing={2} disableEqualOverflow>
       <Grid xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -262,7 +258,7 @@ export default function TopTeam() {
             </Divider>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Rookie</Typography>
               <AllStarTeamPlayer player={passerRookieData[0]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherRookieData[0]} fetching={rushersFetching} />
@@ -273,7 +269,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Sophomore</Typography>
               <AllStarTeamPlayer player={passerSophData[0]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherSophData[0]} fetching={rushersFetching} />
@@ -284,7 +280,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Professional</Typography>
               <AllStarTeamPlayer player={passerProData[0]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherProData[0]} fetching={rushersFetching} />
@@ -295,7 +291,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Veteran</Typography>
               <AllStarTeamPlayer player={passerVetData[0]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherVetData[0]} fetching={rushersFetching} />
@@ -311,7 +307,7 @@ export default function TopTeam() {
             </Divider>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Rookie</Typography>
               <AllStarTeamPlayer player={passerRookieData[1]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherRookieData[1]} fetching={rushersFetching} />
@@ -322,7 +318,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Sophomore</Typography>
               <AllStarTeamPlayer player={passerSophData[1]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherSophData[1]} fetching={rushersFetching} />
@@ -333,7 +329,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Professional</Typography>
               <AllStarTeamPlayer player={passerProData[1]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherProData[1]} fetching={rushersFetching} />
@@ -344,7 +340,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Veteran</Typography>
               <AllStarTeamPlayer player={passerVetData[1]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherVetData[1]} fetching={rushersFetching} />
@@ -363,7 +359,7 @@ export default function TopTeam() {
             </Divider>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Rookie</Typography>
               <AllStarTeamPlayer player={defenderRookieData[0]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderRookieData[1]} fetching={defendersFetching} />
@@ -379,7 +375,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Sophomore</Typography>
               <AllStarTeamPlayer player={defenderSophData[0]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderSophData[1]} fetching={defendersFetching} />
@@ -395,7 +391,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Professional</Typography>
               <AllStarTeamPlayer player={defenderProData[0]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderProData[1]} fetching={defendersFetching} />
@@ -411,7 +407,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Veteran</Typography>
               <AllStarTeamPlayer player={defenderVetData[0]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderVetData[1]} fetching={defendersFetching} />
@@ -432,7 +428,7 @@ export default function TopTeam() {
             </Divider>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Rookie</Typography>
               <AllStarTeamPlayer player={defenderRookieData[2]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderRookieData[3]} fetching={defendersFetching} />
@@ -448,7 +444,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Sophomore</Typography>
               <AllStarTeamPlayer player={defenderSophData[2]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderSophData[3]} fetching={defendersFetching} />
@@ -464,7 +460,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Professional</Typography>
               <AllStarTeamPlayer player={defenderProData[2]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderProData[3]} fetching={defendersFetching} />
@@ -480,7 +476,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
           <Grid xs={12} md={6} lg={3}>
-            <Stack spacing={1}>
+            <Stack spacing={0.5}>
               <Typography variant='h6'>Veteran</Typography>
               <AllStarTeamPlayer player={defenderVetData[2]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderVetData[3]} fetching={defendersFetching} />

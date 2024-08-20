@@ -15,7 +15,7 @@ export default function PlayerPassingStats() {
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerPassingData[]>([]);
   const [rows, setRows] = useState<PlayerPassingData[]>([]);
-  const [tier, setTier] = useState<string>(typeof window !== 'undefined' ? localStorage.getItem('tier') || 'Veteran' : 'Veteran');
+  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/passing');
@@ -31,7 +31,6 @@ export default function PlayerPassingStats() {
 
   useEffect(() => {
     setRows(data.filter((x: PlayerPassingData) => x.tier === tier));
-    if (typeof window !== 'undefined') localStorage.setItem('tier', tier);
   }, [tier]);
 
   const columns: GridColDef[] = !desktop
@@ -50,7 +49,7 @@ export default function PlayerPassingStats() {
         {
           field: 'yards',
           headerName: 'YARDS',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -58,7 +57,7 @@ export default function PlayerPassingStats() {
         {
           field: 'yards_per_attempt',
           headerName: 'YPA',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -66,7 +65,7 @@ export default function PlayerPassingStats() {
         {
           field: 'yards_per_game',
           headerName: 'YPG',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row: GridRowModel) => {
@@ -77,7 +76,7 @@ export default function PlayerPassingStats() {
         {
           field: 'completion_percentage',
           headerName: 'PCT',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueFormatter: (value: number) => `${value}%`,
@@ -86,7 +85,7 @@ export default function PlayerPassingStats() {
         {
           field: 'touchdowns',
           headerName: 'TD',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -94,7 +93,7 @@ export default function PlayerPassingStats() {
         {
           field: 'attempts_per_touchdowns',
           headerName: 'A/TD',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
@@ -105,7 +104,7 @@ export default function PlayerPassingStats() {
         {
           field: 'interceptions',
           headerName: 'INT',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -113,7 +112,7 @@ export default function PlayerPassingStats() {
         {
           field: 'attempts',
           headerName: 'ATT',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -121,7 +120,7 @@ export default function PlayerPassingStats() {
         {
           field: 'completions',
           headerName: 'COMP',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -258,6 +257,9 @@ export default function PlayerPassingStats() {
         density='compact'
         disableRowSelectionOnClick
         disableDensitySelector
+        getCellClassName={() => {
+          return desktop ? '' : 'mobile-text';
+        }}
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{

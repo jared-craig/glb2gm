@@ -15,7 +15,7 @@ export default function PlayerReceivingStats() {
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerReceivingData[]>([]);
   const [rows, setRows] = useState<PlayerReceivingData[]>([]);
-  const [tier, setTier] = useState<string>(typeof window !== 'undefined' ? localStorage.getItem('tier') || 'Veteran' : 'Veteran');
+  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/receiving');
@@ -31,7 +31,6 @@ export default function PlayerReceivingStats() {
 
   useEffect(() => {
     setRows(data.filter((x: PlayerReceivingData) => x.tier === tier));
-    if (typeof window !== 'undefined') localStorage.setItem('tier', tier);
   }, [tier]);
 
   const columns: GridColDef[] = !desktop
@@ -48,9 +47,16 @@ export default function PlayerReceivingStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'position',
+          headerName: 'POS',
+          width: 100,
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
           field: 'yards',
           headerName: 'YARDS',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -58,7 +64,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'average',
           headerName: 'YPR',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -66,7 +72,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'yards_per_game',
           headerName: 'YPG',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row: GridRowModel) => {
@@ -77,7 +83,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'touchdowns',
           headerName: 'TD',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -85,7 +91,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'receptions',
           headerName: 'REC',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -93,7 +99,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'targets',
           headerName: 'TAR',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -101,7 +107,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'catch_rate',
           headerName: 'REC%',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row: GridRowModel) => {
@@ -113,7 +119,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'receptions_per_touchdown',
           headerName: 'REC/TD',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row: GridRowModel) => {
@@ -124,7 +130,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'targets_per_touchdown',
           headerName: 'TAR/TD',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row: GridRowModel) => {
@@ -135,7 +141,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'yards_after_catch',
           headerName: 'YAC',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -143,7 +149,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'drops',
           headerName: 'DROPS',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -151,7 +157,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'drops_per_receptions',
           headerName: 'D/REC',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
@@ -162,7 +168,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'fumbles',
           headerName: 'FUM',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -170,7 +176,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'fumbles_lost',
           headerName: 'FUML',
-          width: 110,
+          width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -343,6 +349,9 @@ export default function PlayerReceivingStats() {
         density='compact'
         disableRowSelectionOnClick
         disableDensitySelector
+        getCellClassName={() => {
+          return desktop ? '' : 'mobile-text';
+        }}
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{
