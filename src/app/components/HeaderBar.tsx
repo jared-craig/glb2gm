@@ -56,7 +56,7 @@ function HeaderBar() {
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
           <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'flex-start' }}>
-            <Image src={logo} width={40} height={40} alt='logo' />
+            <Image src={logo} width={40} height={40} alt='logo' priority={true} />
           </Box>
           <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
             <Typography variant='h4' sx={{ lineHeight: 1.5 }}>

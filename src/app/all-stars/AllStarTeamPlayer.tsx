@@ -78,9 +78,7 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
     <Stack>
       <Typography variant='body2'>
         <Link href={`https://glb2.warriorgeneral.com/game/player/${player.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
-          <strong>
-            {player.position ?? 'QB'} {player.player_name}
-          </strong>
+          <strong>{player.position ?? 'QB'}</strong> {player.player_name}
         </Link>
       </Typography>
       <Stack direction='row' spacing={1}>
