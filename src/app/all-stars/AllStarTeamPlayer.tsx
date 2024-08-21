@@ -10,7 +10,7 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
   if (fetching)
     return (
       <Stack>
-        <Typography variant='body2'>
+        <Typography variant='body1'>
           <Skeleton width={'80%'} />
         </Typography>
         <Typography variant='caption'>
@@ -25,7 +25,7 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
   if (!player)
     return (
       <Stack>
-        <Typography variant='body2'>
+        <Typography variant='body1'>
           <strong>N/A</strong>
         </Typography>
         <Typography variant='caption'>N/A</Typography>
@@ -76,11 +76,13 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
 
   return (
     <Stack>
-      <Typography variant='body2'>
-        <Link href={`https://glb2.warriorgeneral.com/game/player/${player.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
-          <strong>{player.position ?? 'QB'}</strong> {player.player_name}
-        </Link>
-      </Typography>
+      <Stack direction='row' alignItems='center' spacing={1}>
+        <Typography variant='body1'>
+          <Link href={`https://glb2.warriorgeneral.com/game/player/${player.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <strong>{player.position}</strong> {player.player_name}
+          </Link>
+        </Typography>
+      </Stack>
       <Stack direction='row' spacing={1}>
         {stats ? (
           Object.entries(stats).map(([key, value]: any) => (
