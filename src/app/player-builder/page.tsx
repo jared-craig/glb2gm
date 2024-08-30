@@ -328,7 +328,7 @@ export default function PlayerBuilder() {
         </Grid>
         <Grid size={{ xs: 6, md: 6 }}>
           <Typography>
-            Height: {Math.floor(hbData.Height / 12)}' {hbData.Height % 12}''
+            Height: {Math.floor(hbData.Height / 12)}&apos; {hbData.Height % 12}&apos;&apos;
           </Typography>
         </Grid>
         <Grid size={{ xs: 6, md: 6 }}>
