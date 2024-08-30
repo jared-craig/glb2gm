@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
 const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 24,
+  height: 30.75,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
     backgroundColor: theme.palette.grey[200],
@@ -34,13 +34,13 @@ export default function SkillBar(props: SkillBarProps) {
         sx={{
           position: 'absolute',
           top: '50%',
-          left: '8%',
+          left: '50%',
           transform: 'translate(-50%, -50%)',
         }}
       >
-        <Typography variant='body2'>{skillLevel}</Typography>
+        <Typography sx={{ textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black' }}>{skillLevel}</Typography>
       </Box>
-      <Box
+      {/* <Box
         sx={{
           position: 'absolute',
           top: '50%',
@@ -49,7 +49,7 @@ export default function SkillBar(props: SkillBarProps) {
         }}
       >
         <Typography variant='body2'>{skillCost}</Typography>
-      </Box>
+      </Box> */}
     </Box>
   );
 }
