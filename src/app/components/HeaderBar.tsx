@@ -15,7 +15,7 @@ import Image from 'next/image';
 import logo from '../assets/logo-no-background.png';
 import Link from 'next/link';
 
-const pages = ['All Stars', 'Passing Stats', 'Rushing Stats', 'Receiving Stats', 'Defensive Stats'];
+const pages = ['All Stars', 'Passing Stats', 'Rushing Stats', 'Receiving Stats', 'Defensive Stats', 'Player Builder'];
 
 function HeaderBar() {
   const router = useRouter();
@@ -47,6 +47,9 @@ function HeaderBar() {
         break;
       case 'Defensive Stats':
         router.push('/stats/defensive');
+        break;
+      case 'Player Builder':
+        router.push('/player-builder');
         break;
     }
   };
