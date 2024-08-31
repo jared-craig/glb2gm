@@ -82,4 +82,8 @@ export const TRAIT_LOOKUP: Lookup = {
   nerves_of_steel: 'Nerves of Steel',
   soft_hands: 'Soft Hands',
   wr_shifty: 'Shifty',
+  egotist: 'Egotist',
+  meathead: 'Meathead',
+  bruiser: 'Bruiser',
+  early_bloomer: 'Early Bloomer',
 };
