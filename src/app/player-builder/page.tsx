@@ -6,7 +6,8 @@ import { Fragment, useEffect, useState } from 'react';
 import { SKILL_LOOKUP, TRAIT_LOOKUP } from './lookups';
 import SkillBar from '../components/SkillBar';
 import { Player } from './player';
-import { getDefaultFactors } from './defaultFactors';
+import { getFactors } from './factors';
+import { getTemplates, Template } from './templates';
 
 interface PlayerBuilderData {
   skills: any;
@@ -36,6 +37,8 @@ export default function PlayerBuilder() {
   const [data, setData] = useState<PlayerBuilderData>({ skills: null, traits: null });
   const [filteredData, setFilteredData] = useState<PlayerBuilderData>({ skills: null, traits: null });
   const [selectedPosition, setSelectedPosition] = useState<string>('');
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('');
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [player, setPlayer] = useState<Player>();
   const [remSkillPoints, setRemSkillPoints] = useState<number>(210000);
   const [remCapBoosts, setRemCapBoosts] = useState<number>(7);
@@ -148,8 +151,6 @@ export default function PlayerBuilder() {
 
     const skillsEntries = Object.entries(data.skills).filter(([key, value]) => (value as any).positions.includes(selectedPosition));
 
-    console.log(skillsEntries);
-
     skillsEntries.sort((a: any, b: any) => {
       const groupIndexA = groupOrder[selectedPosition].indexOf(a[1].group);
       const groupIndexB = groupOrder[selectedPosition].indexOf(b[1].group);
@@ -181,15 +182,19 @@ export default function PlayerBuilder() {
     let filteredSkills: any[] = [];
 
     for (const [key, value] of Object.entries(filteredData.skills)) {
-      filteredSkills = [...filteredSkills, { key, value }];
+      filteredSkills = [...filteredSkills, { key, value }].filter((x) => factors[x.key] < 20.0);
     }
 
-    while (skillPoints > 0) {
+    while (skillPoints > 0 && filteredSkills.length > 0) {
       filteredSkills.sort((a, b) =>
         CalcCostSP(a.key, player, 1, suggestedBuild[a.key]) * factors[a.key] < CalcCostSP(b.key, player, 1, suggestedBuild[b.key]) * factors[b.key] ? -1 : 1
       );
 
-      if (skillPoints - CalcCostSP(filteredSkills[0].key, player, 1, suggestedBuild[filteredSkills[0].key]) < 0) break;
+      if (skillPoints - CalcCostSP(filteredSkills[0].key, player, 1, suggestedBuild[filteredSkills[0].key]) < 0) {
+        filteredSkills.shift();
+        continue;
+      }
+
       skillPoints -= CalcCostSP(filteredSkills[0].key, player, 1, suggestedBuild[filteredSkills[0].key]);
       suggestedBuild[filteredSkills[0].key]++;
 
@@ -215,7 +220,7 @@ export default function PlayerBuilder() {
   const factorChange = (skill: string, change: number) => {
     setFactors((prevState) => ({
       ...prevState,
-      [skill]: prevState ? prevState[skill] + change : change,
+      [skill]: prevState ? (prevState[skill] + change < 0.0 ? 0.0 : prevState[skill] + change > 20.0 ? 20.0 : prevState[skill] + change) : change,
     }));
   };
 
@@ -223,80 +228,26 @@ export default function PlayerBuilder() {
     setSelectedPosition(event.target.value as string);
   };
 
+  const handleTemplateChange = (event: SelectChangeEvent) => {
+    setSelectedTemplate(event.target.value as string);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
 
   useEffect(() => {
-    switch (selectedPosition) {
-      case 'QB':
-        setPlayer({
-          position: 'QB',
-          height: 78,
-          weight: 253,
-          strength: 5,
-          speed: 1,
-          agility: 10,
-          stamina: 5,
-          awareness: 4,
-          confidence: 10,
-          trait1: 'superstar_glam',
-          trait2: 'qb_pocket_passer',
-          trait3: 'qb_precision_passer',
-        });
-        break;
-      case 'HB':
-        setPlayer({
-          position: 'HB',
-          height: 66,
-          weight: 184,
-          strength: 9,
-          speed: 1,
-          agility: 9,
-          stamina: 9,
-          awareness: 6,
-          confidence: 1,
-          trait1: 'superstar_glam',
-          trait2: 'hb_rushing_back',
-          trait3: 'unpredictable',
-        });
-        break;
-      case 'TE':
-        setPlayer({
-          position: 'TE',
-          height: 80,
-          weight: 276,
-          strength: 1,
-          speed: 2,
-          agility: 7,
-          stamina: 5,
-          awareness: 10,
-          confidence: 10,
-          trait1: 'superstar_avg',
-          trait2: 'te_receiver',
-          trait3: 'nerves_of_steel',
-        });
-        break;
-      case 'WR':
-        setPlayer({
-          position: 'WR',
-          height: 78,
-          weight: 195,
-          strength: 1,
-          speed: 1,
-          agility: 7,
-          stamina: 6,
-          awareness: 10,
-          confidence: 10,
-          trait1: 'superstar_avg',
-          trait2: 'soft_hands',
-          trait3: 'wr_shifty',
-        });
-        break;
-    }
+    setSelectedTemplate('');
+    setTemplates(getTemplates(selectedPosition));
     filterAndSortSkills();
-    setFactors(getDefaultFactors(selectedPosition));
   }, [selectedPosition]);
+
+  useEffect(() => {
+    if (!selectedPosition || !selectedTemplate) return;
+
+    setPlayer(templates.find((x) => x.templateName === selectedTemplate));
+    setFactors(getFactors(selectedPosition, selectedTemplate));
+  }, [selectedTemplate]);
 
   useEffect(() => {
     buildPlayer();
@@ -310,35 +261,39 @@ export default function PlayerBuilder() {
         </Grid>
         <Grid size={{ xs: 12 }} textAlign='center'>
           <Typography variant='body2'>
-            Notes: Player is static for now. Numbers multiply the SP cost of taking the next point for algorithm consideration.
+            Numbers multiply the SP cost of taking the next point for algorithm consideration.
+            <br />A value of 20.0 or greater will not be considered.
           </Typography>
         </Grid>
-        {data && (
-          <Grid size={{ xs: 2 }}>
-            <FormControl sx={{ minWidth: 120 }}>
-              <InputLabel id='position-select-label'>Position</InputLabel>
-              <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
-                <MenuItem value={'QB'}>QB</MenuItem>
-                <MenuItem value={'HB'}>HB</MenuItem>
-                <MenuItem value={'TE'}>TE</MenuItem>
-                <MenuItem value={'WR'}>WR</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
+        {data.skills && data.traits && (
+          <Box width={350} mb={1}>
+            <Stack direction='row' justifyContent='space-between' mb={1}>
+              <FormControl sx={{ minWidth: 150 }}>
+                <InputLabel id='position-select-label'>Position</InputLabel>
+                <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
+                  <MenuItem value={'QB'}>QB</MenuItem>
+                  <MenuItem value={'HB'}>HB</MenuItem>
+                  <MenuItem value={'TE'}>TE</MenuItem>
+                  <MenuItem value={'WR'}>WR</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl sx={{ minWidth: 150 }} disabled={!selectedPosition}>
+                <InputLabel id='template-select-label'>Template</InputLabel>
+                <Select labelId='template-select-label' id='template-select' value={selectedTemplate} label='Template' onChange={handleTemplateChange}>
+                  {templates.map((x) => (
+                    <MenuItem key={x.templateName} value={x.templateName}>
+                      {x.templateName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Stack>
+          </Box>
         )}
       </Grid>
-      {selectedPosition && selectedPosition.length > 0 && factors && player && (
+      {selectedPosition && selectedTemplate && factors && player && (
         <>
-          {/* <Grid container mb={2} rowGap={1}>
-            {Object.entries(factors).map(([key, value]) => (
-              <Grid size={{ xs: 6 }} key={key}>
-                <Typography>
-                  {key}: {value}
-                </Typography>
-              </Grid>
-            ))}
-          </Grid> */}
-          <Box maxWidth={350} mb={1}>
+          <Box width={350} mb={1}>
             <Stack direction='row' justifyContent='space-between' mb={1}>
               <Typography>
                 Height: {Math.floor(player.height / 12)}&apos; {player.height % 12}&apos;&apos;
