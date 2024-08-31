@@ -266,9 +266,9 @@ export default function PlayerBuilder() {
           </Typography>
         </Grid>
         {data.skills && data.traits && (
-          <Box width={350} mb={1}>
+          <Box width={350} mt={1}>
             <Stack direction='row' justifyContent='space-between' mb={1}>
-              <FormControl sx={{ minWidth: 150 }}>
+              <FormControl sx={{ minWidth: 150 }} size='small'>
                 <InputLabel id='position-select-label'>Position</InputLabel>
                 <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
                   <MenuItem value={'QB'}>QB</MenuItem>
@@ -277,7 +277,7 @@ export default function PlayerBuilder() {
                   <MenuItem value={'WR'}>WR</MenuItem>
                 </Select>
               </FormControl>
-              <FormControl sx={{ minWidth: 150 }} disabled={!selectedPosition}>
+              <FormControl sx={{ minWidth: 150 }} size='small' disabled={!selectedPosition}>
                 <InputLabel id='template-select-label'>Template</InputLabel>
                 <Select labelId='template-select-label' id='template-select' value={selectedTemplate} label='Template' onChange={handleTemplateChange}>
                   {templates.map((x) => (
