@@ -73,6 +73,7 @@ export const SKILL_LOOKUP: Lookup = {
 export const TRAIT_LOOKUP: Lookup = {
   superstar_glam: 'Superstar',
   superstar_avg: 'Superstar',
+  superstar_nonglam: 'Superstar',
   hb_rushing_back: 'Rusher',
   hb_unpredictable: 'Unpr-edic-table',
   unpredictable: 'Unpr-edic-table',
@@ -86,4 +87,6 @@ export const TRAIT_LOOKUP: Lookup = {
   meathead: 'Meathead',
   bruiser: 'Bruiser',
   early_bloomer: 'Early Bloomer',
+  jittery: 'Jittery',
+  dl_technique_man: 'Technique Man',
 };

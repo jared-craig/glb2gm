@@ -16,6 +16,7 @@ export interface Template {
 
 export const getTemplates = (position: string): Template[] => {
   const templates: Template[] = [
+    // QB
     {
       position: 'QB',
       templateName: 'Pocket',
@@ -31,6 +32,7 @@ export const getTemplates = (position: string): Template[] => {
       trait2: 'qb_pocket_passer',
       trait3: 'qb_precision_passer',
     },
+    // HB
     {
       position: 'HB',
       templateName: 'Slombo',
@@ -91,6 +93,7 @@ export const getTemplates = (position: string): Template[] => {
       trait2: 'early_bloomer',
       trait3: 'egotist',
     },
+    // TE
     {
       position: 'TE',
       templateName: 'Possession',
@@ -106,6 +109,7 @@ export const getTemplates = (position: string): Template[] => {
       trait2: 'te_receiver',
       trait3: 'nerves_of_steel',
     },
+    // WR
     {
       position: 'WR',
       templateName: 'Possession',
@@ -120,6 +124,22 @@ export const getTemplates = (position: string): Template[] => {
       trait1: 'superstar_avg',
       trait2: 'soft_hands',
       trait3: 'wr_shifty',
+    },
+    // DE
+    {
+      position: 'DE',
+      templateName: 'Spin',
+      height: 71,
+      weight: 240,
+      strength: 1,
+      speed: 6,
+      agility: 10,
+      stamina: 5,
+      awareness: 10,
+      confidence: 3,
+      trait1: 'superstar_nonglam',
+      trait2: 'dl_technique_man',
+      trait3: 'jittery',
     },
   ];
 

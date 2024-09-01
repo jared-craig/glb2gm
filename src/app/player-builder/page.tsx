@@ -275,6 +275,7 @@ export default function PlayerBuilder() {
                   <MenuItem value={'HB'}>HB</MenuItem>
                   <MenuItem value={'TE'}>TE</MenuItem>
                   <MenuItem value={'WR'}>WR</MenuItem>
+                  <MenuItem value={'DE'}>DE</MenuItem>
                 </Select>
               </FormControl>
               <FormControl sx={{ minWidth: 150 }} size='small' disabled={!selectedPosition}>

@@ -1,9 +1,8 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
 const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 30.75,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
     backgroundColor: theme.palette.grey[200],
@@ -27,9 +26,13 @@ interface SkillBarProps {
 
 export default function SkillBar(props: SkillBarProps) {
   const { skillLevel, skillCost } = props;
+
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down('lg'));
+
   return (
     <Box sx={{ position: 'relative' }}>
-      <CustomLinearProgress variant='determinate' value={skillLevel} />
+      <CustomLinearProgress variant='determinate' sx={{ height: mobile ? 16 : 30.75 }} value={skillLevel} />
       <Box
         sx={{
           position: 'absolute',
