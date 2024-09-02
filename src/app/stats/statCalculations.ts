@@ -6,7 +6,7 @@ export const getDefensiveGmRating = (x: any): number => {
   return Math.round(
     1.0 * +x.tackles +
       1.0 * +x.tackles_for_loss -
-      1.0 * +x.missed_tackles +
+      1.5 * +x.missed_tackles +
       4.0 * +x.sacks +
       0.25 * +x.hurries +
       5.0 * +x.interceptions +
