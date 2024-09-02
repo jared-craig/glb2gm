@@ -42,6 +42,7 @@ export default function PlayerBuilder() {
   const [player, setPlayer] = useState<Player>();
   const [remSkillPoints, setRemSkillPoints] = useState<number>(210000);
   const [remCapBoosts, setRemCapBoosts] = useState<number>(7);
+  const [capBoostsSpent, setCapBoostsSpent] = useState<{ [key: string]: number }>({});
   const [build, setBuild] = useState<any>();
   const [factors, setFactors] = useState<{ [key: string]: number }>();
 
@@ -214,6 +215,7 @@ export default function PlayerBuilder() {
 
     setRemSkillPoints(skillPoints);
     setRemCapBoosts(capBoosts);
+    setCapBoostsSpent(capBoostsSpent);
     setBuild(suggestedBuild);
   };
 
@@ -351,7 +353,12 @@ export default function PlayerBuilder() {
                     </Stack>
                   </Grid>
                   <Grid size={{ xs: 12, lg: 2 }} sx={{ mb: 1 }}>
-                    <SkillBar skillLevel={value as number} skillCost={(value as number) === 100 ? 0 : CalcCostSP(key, player, 1, value as number)} />
+                    <SkillBar
+                      skillLevel={value as number}
+                      maxSkillLevel={FindMaxLevel(key, player, capBoostsSpent)}
+                      skillCost={(value as number) === 100 ? 0 : CalcCostSP(key, player, 1, value as number)}
+                      capBoostsSpent={capBoostsSpent[key]}
+                    />
                   </Grid>
                 </Fragment>
               ))}

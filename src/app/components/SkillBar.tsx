@@ -21,18 +21,20 @@ const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
 
 interface SkillBarProps {
   skillLevel: number;
+  maxSkillLevel: number;
   skillCost: number;
+  capBoostsSpent: number;
 }
 
 export default function SkillBar(props: SkillBarProps) {
-  const { skillLevel, skillCost } = props;
+  const { skillLevel, maxSkillLevel, skillCost, capBoostsSpent } = props;
 
   const theme = useTheme();
   const mobile = useMediaQuery(theme.breakpoints.down('lg'));
 
   return (
     <Box sx={{ position: 'relative' }}>
-      <CustomLinearProgress variant='determinate' sx={{ height: mobile ? 16 : 30.75 }} value={skillLevel} />
+      <CustomLinearProgress variant='determinate' sx={{ height: mobile ? 18 : 30.75 }} value={skillLevel} />
       <Box
         sx={{
           position: 'absolute',
@@ -41,7 +43,9 @@ export default function SkillBar(props: SkillBarProps) {
           transform: 'translate(-50%, -50%)',
         }}
       >
-        <Typography sx={{ textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black' }}>{skillLevel}</Typography>
+        <Typography sx={{ textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black' }}>
+          {skillLevel} of {maxSkillLevel} {capBoostsSpent && `(${capBoostsSpent})`}
+        </Typography>
       </Box>
       {/* <Box
         sx={{
