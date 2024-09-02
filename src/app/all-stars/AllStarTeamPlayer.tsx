@@ -6,6 +6,18 @@ interface AllStarTeamPlayerProps {
   fetching: boolean;
 }
 
+const THRESHOLDS = {
+  QB_RUSH_YARDS_RATIO: 0.1,
+  QB_RUSH_TDS: 1,
+  SACKS: 2,
+  HURRIES: 2,
+  INTS: 1,
+  PDS: 5,
+  KLS: 5,
+  TACKLES: 10,
+  STICK_RATIO: 0.75,
+};
+
 export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlayerProps) {
   if (fetching)
     return (
@@ -37,8 +49,8 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
   switch (player?.position) {
     case 'QB':
       stats = { YD: player.yards, TD: player.touchdowns, INT: player.interceptions };
-      if (+player.rush_yards / +player.yards >= 0.1) stats.RUSHYD = player.rush_yards;
-      if (player.rush_touchdowns > 5) stats.RUSHTD = player.rush_touchdowns;
+      if (+player.rush_yards / +player.yards >= THRESHOLDS.QB_RUSH_YARDS_RATIO) stats.RUSHYD = player.rush_yards;
+      if (player.rush_touchdowns >= THRESHOLDS.QB_RUSH_TDS) stats.RUSHTD = player.rush_touchdowns;
       break;
     case 'FB':
     case 'HB':
@@ -64,29 +76,29 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
     case 'CB':
     case 'SS':
     case 'FS':
-      if (player.sacks >= 10) stats.SACK = player.sacks;
-      if (player.hurries >= 10) stats.HRY = player.hurries;
-      if (player.interceptions >= 5) stats.INT = player.interceptions;
-      if (player.passes_defended >= 10) stats.PD = player.passes_defended;
-      if (player.passes_knocked_loose >= 10) stats.KL = player.passes_knocked_loose;
-      if (player.tackles >= 100) stats.TK = player.tackles;
-      if (player.tackles >= 100 && +player.sticks / +player.tackles >= 0.75) stats.STICK = player.sticks;
+      if (player.sacks >= THRESHOLDS.SACKS) stats.SACK = player.sacks;
+      if (player.hurries >= THRESHOLDS.HURRIES) stats.HRY = player.hurries;
+      if (player.interceptions >= THRESHOLDS.INTS) stats.INT = player.interceptions;
+      if (player.passes_defended >= THRESHOLDS.PDS) stats.PD = player.passes_defended;
+      if (player.passes_knocked_loose >= THRESHOLDS.KLS) stats.KL = player.passes_knocked_loose;
+      if (player.tackles >= THRESHOLDS.TACKLES) stats.TK = player.tackles;
+      if (player.tackles >= THRESHOLDS.TACKLES && +player.sticks / +player.tackles >= THRESHOLDS.STICK_RATIO) stats.STICK = player.sticks;
       break;
   }
 
   return (
     <Stack>
-      <Stack direction='row' alignItems='center' spacing={1}>
+      <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
         <Typography variant='body1'>
           <Link href={`https://glb2.warriorgeneral.com/game/player/${player.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
             <strong>{player.position}</strong> {player.player_name}
           </Link>
         </Typography>
       </Stack>
-      <Typography variant='caption' pl={1}>
+      <Typography variant='caption' sx={{ pl: 1 }}>
         {player.team_name}
       </Typography>
-      <Stack direction='row' spacing={1} pl={2}>
+      <Stack direction='row' spacing={1} sx={{ pl: 2 }}>
         {stats ? (
           Object.entries(stats).map(([key, value]: any) => (
             <Typography variant='caption' key={key}>

@@ -257,11 +257,11 @@ export default function PlayerBuilder() {
 
   return (
     <Box>
-      <Grid container mb={2} rowGap={1}>
-        <Grid size={{ xs: 12 }} textAlign='center'>
+      <Grid container rowGap={1} sx={{ mb: 2 }}>
+        <Grid size={{ xs: 12 }} sx={{ textAlign: 'center' }}>
           <Typography variant='h6'>Player Builder is a work in progress...</Typography>
         </Grid>
-        <Grid size={{ xs: 12 }} textAlign='center'>
+        <Grid size={{ xs: 12 }} sx={{ textAlign: 'center' }}>
           <Typography variant='body2'>
             Numbers multiply the SP cost of taking the next point for algorithm consideration.
             <br />A value of 20.0 or greater will not be considered.
@@ -269,7 +269,7 @@ export default function PlayerBuilder() {
         </Grid>
         {data.skills && data.traits && (
           <Box width={350} mt={1}>
-            <Stack direction='row' justifyContent='space-between' mb={1}>
+            <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
               <FormControl sx={{ minWidth: 150 }} size='small'>
                 <InputLabel id='position-select-label'>Position</InputLabel>
                 <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
@@ -297,21 +297,21 @@ export default function PlayerBuilder() {
       {selectedPosition && selectedTemplate && factors && player && (
         <>
           <Box width={350} mb={1}>
-            <Stack direction='row' justifyContent='space-between' mb={1}>
+            <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
               <Typography>
                 Height: {Math.floor(player.height / 12)}&apos; {player.height % 12}&apos;&apos;
               </Typography>
               <Typography>Weight: {player.weight} lbs.</Typography>
             </Stack>
-            <Stack direction='row' justifyContent='space-between'>
+            <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
               <Typography>Strength: {player.strength}</Typography>
               <Typography>Speed: {player.speed}</Typography>
             </Stack>
-            <Stack direction='row' justifyContent='space-between'>
+            <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
               <Typography>Agility: {player.agility}</Typography>
               <Typography>Stamina: {player.stamina}</Typography>
             </Stack>
-            <Stack direction='row' justifyContent='space-between' mb={1}>
+            <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
               <Typography>Awareness: {player.awareness}</Typography>
               <Typography>Confidence: {player.confidence}</Typography>
             </Stack>
@@ -325,7 +325,7 @@ export default function PlayerBuilder() {
               <Grid size={{ xs: 6 }}>
                 <Typography variant='h6'>Skill Points: {remSkillPoints}</Typography>
               </Grid>
-              <Grid size={{ xs: 6 }} mb={1}>
+              <Grid size={{ xs: 6 }} sx={{ mb: 1 }}>
                 <Typography variant='h6'>Cap Boosts: {remCapBoosts}</Typography>
               </Grid>
               {Object.entries(build).map(([key, value]) => (
