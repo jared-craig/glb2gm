@@ -1,9 +1,10 @@
 export const getBlockingGmRating = (x: any): number => {
-  return Math.round(+x.pancakes - +x.reverse_pancaked - 0.25 * +x.hurries_allowed - +x.sacks_allowed);
+  const gm = Math.round(+x.pancakes - +x.reverse_pancaked - 0.25 * +x.hurries_allowed - +x.sacks_allowed);
+  return gm > 0 ? gm : 0;
 };
 
 export const getDefensiveGmRating = (x: any): number => {
-  return Math.round(
+  const gm = Math.round(
     1.0 * +x.tackles +
       1.0 * +x.tackles_for_loss -
       1.5 * +x.missed_tackles +
@@ -16,10 +17,11 @@ export const getDefensiveGmRating = (x: any): number => {
       1.0 * +x.passes_knocked_loose +
       0.25 * +x.interception_yards
   );
+  return gm > 0 ? gm : 0;
 };
 
 export const getPassingGmRating = (x: any): number => {
-  return Math.round(
+  const gm = Math.round(
     +(+x.yards / +x.games_played) +
       2.0 * +x.touchdowns -
       2.0 * +x.interceptions +
@@ -27,20 +29,23 @@ export const getPassingGmRating = (x: any): number => {
       0.5 * +x.sacks +
       (+x.rush_yards > 0 && +x.rush_touchdowns > 0 ? +(+x.rush_yards / +x.games_played) + 2.0 * +x.rush_touchdowns : 0.0)
   );
+  return gm > 0 ? gm : 0;
 };
 
 export const getReceivingGmRating = (x: any): number => {
-  return Math.round(2.0 * +(+x.yards / +x.games_played) + 2.0 * +x.touchdowns - +x.drops - +x.fumbles_lost);
+  const gm = Math.round(2.0 * +(+x.yards / +x.games_played) + 2.0 * +x.touchdowns - +x.drops - +x.fumbles_lost);
+  return gm > 0 ? gm : 0;
 };
 
 export const getRushingGmRating = (x: any): number => {
-  return Math.round(
+  const gm = Math.round(
     +(+x.yards / +x.games_played) +
       2.0 * +x.touchdowns +
       150.0 * +x.average -
       +x.fumbles_lost +
       (+x.rec_yards > 0 && +x.rec_touchdowns > 0 ? +(+x.rec_yards / +x.games_played) + 2.0 * +x.rec_touchdowns : 0.0)
   );
+  return gm > 0 ? gm : 0;
 };
 
 export const getReceivingDropsPerReception = (x: any): number => {
