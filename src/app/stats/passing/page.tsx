@@ -274,7 +274,7 @@ export default function PlayerPassingStats() {
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           filter: {
             filterModel: {
-              items: [{ field: 'attempts', operator: '>=', value: '100' }],
+              items: [{ field: 'attempts', operator: '>=', value: '10' }],
             },
           },
           pagination: { paginationModel: { pageSize: 15 } },

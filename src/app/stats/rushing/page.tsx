@@ -314,7 +314,7 @@ export default function PlayerRushingStats() {
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           filter: {
             filterModel: {
-              items: [{ field: 'rushes', operator: '>=', value: '100' }],
+              items: [{ field: 'rushes', operator: '>=', value: '10' }],
             },
           },
           pagination: { paginationModel: { pageSize: 15 } },
