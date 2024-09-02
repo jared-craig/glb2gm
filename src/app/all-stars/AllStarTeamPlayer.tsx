@@ -83,7 +83,10 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
           </Link>
         </Typography>
       </Stack>
-      <Stack direction='row' spacing={1}>
+      <Typography variant='caption' pl={1}>
+        {player.team_name}
+      </Typography>
+      <Stack direction='row' spacing={1} pl={2}>
         {stats ? (
           Object.entries(stats).map(([key, value]: any) => (
             <Typography variant='caption' key={key}>
@@ -94,7 +97,6 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
           <Typography variant='caption'>N/A</Typography>
         )}
       </Stack>
-      <Typography variant='caption'>{player.team_name}</Typography>
     </Stack>
   );
 }
