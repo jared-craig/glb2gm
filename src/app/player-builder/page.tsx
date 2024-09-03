@@ -256,7 +256,7 @@ export default function PlayerBuilder() {
   }, [factors]);
 
   return (
-    <Box>
+    <Box sx={{ overflow: 'hidden' }}>
       <Grid container rowGap={1} sx={{ mb: 2 }}>
         <Grid size={{ xs: 12 }} sx={{ textAlign: 'center' }}>
           <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>Player Builder is a work in progress...</Typography>
@@ -330,38 +330,57 @@ export default function PlayerBuilder() {
               <Grid size={{ xs: 6 }}>
                 <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>Cap Boosts: {remCapBoosts}</Typography>
               </Grid>
-              {Object.entries(build).map(([key, value]) => (
-                <Fragment key={key}>
-                  <Grid size={{ xs: 6, lg: 2 }} sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{SKILL_LOOKUP[key]}</Typography>
+              {groupOrder[selectedPosition].map((group) => (
+                <Fragment key={group}>
+                  <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
+                    <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>{group}</Typography>
                   </Grid>
-                  <Grid size={{ xs: 6, lg: 2 }}>
-                    <Stack direction='row' spacing={1} sx={{ height: 38.75, alignItems: 'center', justifyContent: 'flex-end' }}>
-                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{factors[key]?.toFixed(1)}</Typography>
-                      <ButtonGroup size='small'>
-                        <Button variant='outlined' onClick={() => factorChange(key, -1)}>
-                          --
-                        </Button>
-                        <Button variant='outlined' onClick={() => factorChange(key, -0.1)}>
-                          -
-                        </Button>
-                        <Button variant='outlined' onClick={() => factorChange(key, 0.1)}>
-                          +
-                        </Button>
-                        <Button variant='outlined' onClick={() => factorChange(key, 1.0)}>
-                          ++
-                        </Button>
-                      </ButtonGroup>
-                    </Stack>
-                  </Grid>
-                  <Grid size={{ xs: 12, lg: 2 }}>
-                    <SkillBar
-                      skillLevel={value as number}
-                      maxSkillLevel={FindMaxLevel(key, player, capBoostsSpent)}
-                      skillCost={(value as number) === 100 ? 0 : CalcCostSP(key, player, 1, value as number)}
-                      capBoostsSpent={capBoostsSpent[key]}
-                    />
-                  </Grid>
+                  {Object.entries(data.skills)
+                    .filter(([key, value]) => (value as any).group === group && (value as any).positions.includes(selectedPosition))
+                    .sort((a: any, b: any) => {
+                      const groupIndexA = groupOrder[selectedPosition].indexOf(a[1].group);
+                      const groupIndexB = groupOrder[selectedPosition].indexOf(b[1].group);
+
+                      if (groupIndexA !== groupIndexB) {
+                        return groupIndexA - groupIndexB;
+                      } else {
+                        return a[1].priority - b[1].priority;
+                      }
+                    })
+                    .map(([key, value]) => (
+                      <Fragment key={key}>
+                        <Grid size={{ xs: 6, lg: 2 }} sx={{ display: 'flex', alignItems: 'center' }}>
+                          <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{SKILL_LOOKUP[key]}</Typography>
+                        </Grid>
+                        <Grid size={{ xs: 6, lg: 2 }}>
+                          <Stack direction='row' spacing={1} sx={{ height: 38.75, alignItems: 'center', justifyContent: 'flex-end' }}>
+                            <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{factors[key]?.toFixed(1)}</Typography>
+                            <ButtonGroup size='small'>
+                              <Button variant='outlined' onClick={() => factorChange(key, -1)}>
+                                --
+                              </Button>
+                              <Button variant='outlined' onClick={() => factorChange(key, -0.1)}>
+                                -
+                              </Button>
+                              <Button variant='outlined' onClick={() => factorChange(key, 0.1)}>
+                                +
+                              </Button>
+                              <Button variant='outlined' onClick={() => factorChange(key, 1.0)}>
+                                ++
+                              </Button>
+                            </ButtonGroup>
+                          </Stack>
+                        </Grid>
+                        <Grid size={{ xs: 12, lg: 2 }}>
+                          <SkillBar
+                            skillLevel={build[key]}
+                            maxSkillLevel={FindMaxLevel(key, player, capBoostsSpent)}
+                            skillCost={build[key] === 100 ? 0 : CalcCostSP(key, player, 1, build[key])}
+                            capBoostsSpent={capBoostsSpent[key]}
+                          />
+                        </Grid>
+                      </Fragment>
+                    ))}
                 </Fragment>
               ))}
             </Grid>
