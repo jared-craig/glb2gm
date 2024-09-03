@@ -23,27 +23,29 @@ export const getDefensiveGmRating = (x: any): number => {
 export const getPassingGmRating = (x: any): number => {
   const gm = Math.round(
     +(+x.yards / +x.games_played) +
-      2.0 * +x.touchdowns -
+      10.0 * +(+x.touchdowns / +x.games_played) -
       2.0 * +x.interceptions +
       10.0 * +x.yards_per_attempt -
       0.5 * +x.sacks +
-      (+x.rush_yards > 0 && +x.rush_touchdowns > 0 ? +(+x.rush_yards / +x.games_played) + 2.0 * +x.rush_touchdowns : 0.0)
+      (+x.rush_yards > 0 ? +(+x.rush_yards / +x.games_played) : 0.0) +
+      (+x.rush_touchdowns > 0 ? 10.0 * +(+x.rush_touchdowns / +x.games_played) : 0.0)
   );
   return gm > 0 ? gm : 0;
 };
 
 export const getReceivingGmRating = (x: any): number => {
-  const gm = Math.round(2.0 * +(+x.yards / +x.games_played) + 2.0 * +x.touchdowns - +x.drops - +x.fumbles_lost);
+  const gm = Math.round(2.0 * +(+x.yards / +x.games_played) + 10.0 * +(+x.touchdowns / +x.games_played) - +x.drops - +x.fumbles_lost);
   return gm > 0 ? gm : 0;
 };
 
 export const getRushingGmRating = (x: any): number => {
   const gm = Math.round(
     +(+x.yards / +x.games_played) +
-      2.0 * +x.touchdowns +
-      150.0 * +x.average -
+      10.0 * +(+x.touchdowns / +x.games_played) +
+      100.0 * +x.average -
       +x.fumbles_lost +
-      (+x.rec_yards > 0 && +x.rec_touchdowns > 0 ? +(+x.rec_yards / +x.games_played) + 2.0 * +x.rec_touchdowns : 0.0)
+      (+x.rec_yards > 0 ? +(+x.rec_yards / +x.games_played) : 0.0) +
+      (+x.rec_touchdowns > 0 ? 10.0 * +(+x.rec_touchdowns / +x.games_played) : 0.0)
   );
   return gm > 0 ? gm : 0;
 };
@@ -51,3 +53,5 @@ export const getRushingGmRating = (x: any): number => {
 export const getReceivingDropsPerReception = (x: any): number => {
   return +(+x.drops / +x.receptions).toFixed(2);
 };
+
+export const GAMES_PLAYED = 1.0;
