@@ -40,7 +40,7 @@ export default function SkillBar(props: SkillBarProps) {
           position: 'absolute',
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -45%)',
+          transform: 'translate(-50%, -35%)',
         }}
       >
         <Typography variant='body2' sx={{ textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black' }}>
