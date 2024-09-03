@@ -13,7 +13,7 @@ import {
   getReceivingGmRating,
   getRushingGmRating,
 } from '../stats/statCalculations';
-import { Divider, FormControl, FormControlLabel, Radio, RadioGroup, Stack, Typography } from '@mui/material';
+import { Divider, FormControl, FormControlLabel, Radio, RadioGroup, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import AllStarTeamPlayer from './AllStarTeamPlayer';
 import { PlayerDefensiveData } from '../stats/defensive/playerDefensiveData';
 import { PlayerBlockingData } from '../stats/blocking/playerBlockingData';
@@ -34,6 +34,9 @@ const THRESHOLDS = {
 };
 
 export default function TopTeam() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [teamChoice, setTeamChoice] = useState<string>('offense');
   const [allData, setAllData] = useState<AllData>();
   const [passerRookieData, setPasserRookieData] = useState<(PlayerPassingData | undefined)[]>([]);
@@ -325,7 +328,7 @@ export default function TopTeam() {
   }, [allData]);
 
   return (
-    <Grid container rowGap={2}>
+    <Grid container rowGap={{ xs: 1, lg: 2 }}>
       <Grid sx={{ display: 'flex', justifyContent: 'center' }} size={12}>
         <FormControl>
           <RadioGroup row name='offense-or-defense-radio-buttons-group' value={teamChoice} onChange={(x) => setTeamChoice(x.target.value)}>
@@ -348,8 +351,10 @@ export default function TopTeam() {
               lg: 3,
             }}
           >
-            <Stack spacing={1}>
-              <Typography variant='h6'>Rookie</Typography>
+            <Stack spacing={{ xs: 0.5, lg: 1 }}>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Rookie</Typography>
+              </Divider>
               <AllStarTeamPlayer player={passerRookieData[0]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherRookieData[0]} fetching={rushersFetching} />
               <AllStarTeamPlayer player={rusherRookieData[2]} fetching={rushersFetching} />
@@ -371,7 +376,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Sophomore</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Sophomore</Typography>
+              </Divider>
               <AllStarTeamPlayer player={passerSophData[0]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherSophData[0]} fetching={rushersFetching} />
               <AllStarTeamPlayer player={rusherSophData[2]} fetching={rushersFetching} />
@@ -393,7 +400,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Professional</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Professional</Typography>
+              </Divider>
               <AllStarTeamPlayer player={passerProData[0]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherProData[0]} fetching={rushersFetching} />
               <AllStarTeamPlayer player={rusherProData[2]} fetching={rushersFetching} />
@@ -415,7 +424,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Veteran</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Veteran</Typography>
+              </Divider>
               <AllStarTeamPlayer player={passerVetData[0]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherVetData[0]} fetching={rushersFetching} />
               <AllStarTeamPlayer player={rusherVetData[2]} fetching={rushersFetching} />
@@ -442,7 +453,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Rookie</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Rookie</Typography>
+              </Divider>
               <AllStarTeamPlayer player={passerRookieData[1]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherRookieData[1]} fetching={rushersFetching} />
               <AllStarTeamPlayer player={rusherRookieData[3]} fetching={rushersFetching} />
@@ -464,7 +477,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Sophomore</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Sophomore</Typography>
+              </Divider>
               <AllStarTeamPlayer player={passerSophData[1]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherSophData[1]} fetching={rushersFetching} />
               <AllStarTeamPlayer player={rusherSophData[3]} fetching={rushersFetching} />
@@ -486,7 +501,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Professional</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Professional</Typography>
+              </Divider>
               <AllStarTeamPlayer player={passerProData[1]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherProData[1]} fetching={rushersFetching} />
               <AllStarTeamPlayer player={rusherProData[3]} fetching={rushersFetching} />
@@ -508,7 +525,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Veteran</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Veteran</Typography>
+              </Divider>
               <AllStarTeamPlayer player={passerVetData[1]} fetching={passersFetching} />
               <AllStarTeamPlayer player={rusherVetData[1]} fetching={rushersFetching} />
               <AllStarTeamPlayer player={rusherVetData[3]} fetching={rushersFetching} />
@@ -538,7 +557,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Rookie</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Rookie</Typography>
+              </Divider>
               <AllStarTeamPlayer player={defenderRookieData[0]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderRookieData[1]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderRookieData[4]} fetching={defendersFetching} />
@@ -560,7 +581,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Sophomore</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Sophomore</Typography>
+              </Divider>
               <AllStarTeamPlayer player={defenderSophData[0]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderSophData[1]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderSophData[4]} fetching={defendersFetching} />
@@ -582,7 +605,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Professional</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Professional</Typography>
+              </Divider>
               <AllStarTeamPlayer player={defenderProData[0]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderProData[1]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderProData[4]} fetching={defendersFetching} />
@@ -604,7 +629,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Veteran</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Veteran</Typography>
+              </Divider>
               <AllStarTeamPlayer player={defenderVetData[0]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderVetData[1]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderVetData[4]} fetching={defendersFetching} />
@@ -631,7 +658,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Rookie</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Rookie</Typography>
+              </Divider>
               <AllStarTeamPlayer player={defenderRookieData[2]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderRookieData[3]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderRookieData[6]} fetching={defendersFetching} />
@@ -653,7 +682,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Sophomore</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Sophomore</Typography>
+              </Divider>
               <AllStarTeamPlayer player={defenderSophData[2]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderSophData[3]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderSophData[6]} fetching={defendersFetching} />
@@ -675,7 +706,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Professional</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Professional</Typography>
+              </Divider>
               <AllStarTeamPlayer player={defenderProData[2]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderProData[3]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderProData[6]} fetching={defendersFetching} />
@@ -697,7 +730,9 @@ export default function TopTeam() {
             }}
           >
             <Stack spacing={1}>
-              <Typography variant='h6'>Veteran</Typography>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Veteran</Typography>
+              </Divider>
               <AllStarTeamPlayer player={defenderVetData[2]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderVetData[3]} fetching={defendersFetching} />
               <AllStarTeamPlayer player={defenderVetData[6]} fetching={defendersFetching} />
