@@ -259,7 +259,7 @@ export default function PlayerBuilder() {
     <Box>
       <Grid container rowGap={1} sx={{ mb: 2 }}>
         <Grid size={{ xs: 12 }} sx={{ textAlign: 'center' }}>
-          <Typography variant='h6'>Player Builder is a work in progress...</Typography>
+          <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>Player Builder is a work in progress...</Typography>
         </Grid>
         <Grid size={{ xs: 12 }} sx={{ textAlign: 'center' }}>
           <Typography variant='body2'>
@@ -298,61 +298,63 @@ export default function PlayerBuilder() {
         <>
           <Box width={350} mb={1}>
             <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
-              <Typography>
+              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
                 Height: {Math.floor(player.height / 12)}&apos; {player.height % 12}&apos;&apos;
               </Typography>
-              <Typography>Weight: {player.weight} lbs.</Typography>
+              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Weight: {player.weight} lbs.</Typography>
             </Stack>
             <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-              <Typography>Strength: {player.strength}</Typography>
-              <Typography>Speed: {player.speed}</Typography>
+              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Strength: {player.strength}</Typography>
+              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Speed: {player.speed}</Typography>
             </Stack>
             <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-              <Typography>Agility: {player.agility}</Typography>
-              <Typography>Stamina: {player.stamina}</Typography>
+              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Agility: {player.agility}</Typography>
+              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Stamina: {player.stamina}</Typography>
             </Stack>
             <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
-              <Typography>Awareness: {player.awareness}</Typography>
-              <Typography>Confidence: {player.confidence}</Typography>
+              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Awareness: {player.awareness}</Typography>
+              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Confidence: {player.confidence}</Typography>
             </Stack>
-            <Typography>{TRAIT_LOOKUP[player.trait1]}</Typography>
-            <Typography>{TRAIT_LOOKUP[player.trait2]}</Typography>
-            <Typography>{TRAIT_LOOKUP[player.trait3]}</Typography>
+            <Stack sx={{ mb: 1 }}>
+              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 1: {TRAIT_LOOKUP[player.trait1]}</Typography>
+              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 2: {TRAIT_LOOKUP[player.trait2]}</Typography>
+              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 3: {TRAIT_LOOKUP[player.trait3]}</Typography>
+            </Stack>
           </Box>
 
           {build && (
-            <Grid container rowGap={1} columnSpacing={2}>
+            <Grid container rowGap={{ xs: 0.5, lg: 2 }} columnSpacing={2}>
               <Grid size={{ xs: 6 }}>
-                <Typography variant='h6'>Skill Points: {remSkillPoints}</Typography>
+                <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>Skill Points: {remSkillPoints}</Typography>
               </Grid>
-              <Grid size={{ xs: 6 }} sx={{ mb: 1 }}>
-                <Typography variant='h6'>Cap Boosts: {remCapBoosts}</Typography>
+              <Grid size={{ xs: 6 }}>
+                <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>Cap Boosts: {remCapBoosts}</Typography>
               </Grid>
               {Object.entries(build).map(([key, value]) => (
                 <Fragment key={key}>
-                  <Grid size={{ xs: 6, lg: 2 }}>
-                    <Typography>{SKILL_LOOKUP[key]}</Typography>
+                  <Grid size={{ xs: 6, lg: 2 }} sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{SKILL_LOOKUP[key]}</Typography>
                   </Grid>
                   <Grid size={{ xs: 6, lg: 2 }}>
-                    <Stack direction='row' spacing={1} alignItems='center' justifyContent='flex-end'>
-                      <Typography>{factors[key]?.toFixed(1)}</Typography>
-                      <ButtonGroup>
-                        <Button size='small' variant='outlined' onClick={() => factorChange(key, -1)}>
+                    <Stack direction='row' spacing={1} sx={{ height: 38.75, alignItems: 'center', justifyContent: 'flex-end' }}>
+                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{factors[key]?.toFixed(1)}</Typography>
+                      <ButtonGroup size='small'>
+                        <Button variant='outlined' onClick={() => factorChange(key, -1)}>
                           --
                         </Button>
-                        <Button size='small' variant='outlined' onClick={() => factorChange(key, -0.1)}>
+                        <Button variant='outlined' onClick={() => factorChange(key, -0.1)}>
                           -
                         </Button>
-                        <Button size='small' variant='outlined' onClick={() => factorChange(key, 0.1)}>
+                        <Button variant='outlined' onClick={() => factorChange(key, 0.1)}>
                           +
                         </Button>
-                        <Button size='small' variant='outlined' onClick={() => factorChange(key, 1.0)}>
+                        <Button variant='outlined' onClick={() => factorChange(key, 1.0)}>
                           ++
                         </Button>
                       </ButtonGroup>
                     </Stack>
                   </Grid>
-                  <Grid size={{ xs: 12, lg: 2 }} sx={{ mb: 1 }}>
+                  <Grid size={{ xs: 12, lg: 2 }}>
                     <SkillBar
                       skillLevel={value as number}
                       maxSkillLevel={FindMaxLevel(key, player, capBoostsSpent)}
