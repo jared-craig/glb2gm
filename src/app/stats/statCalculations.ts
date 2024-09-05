@@ -54,4 +54,4 @@ export const getReceivingDropsPerReception = (x: any): number => {
   return +(+x.drops / +x.receptions).toFixed(2);
 };
 
-export const GAMES_PLAYED = 1.0;
+export const GAMES_PLAYED = 2.0;
