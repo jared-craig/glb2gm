@@ -1,5 +1,6 @@
 import { Skeleton, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
+import { GAMES_PLAYED } from '../stats/statCalculations';
 
 interface AllStarTeamPlayerProps {
   player: any;
@@ -9,13 +10,14 @@ interface AllStarTeamPlayerProps {
 const THRESHOLDS = {
   QB_RUSH_YARDS_RATIO: 0.1,
   QB_RUSH_TDS: 1,
-  SACKS: 2,
+  SACKS: 1,
   HURRIES: 2,
-  INTS: 1,
-  PDS: 5,
-  KLS: 5,
-  TACKLES: 10,
+  INTS: 0.5,
+  PDS: 1,
+  KLS: 1,
+  TACKLES: 5,
   STICK_RATIO: 0.75,
+  BTK_RATIO: 0.5,
 };
 
 export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlayerProps) {
@@ -57,9 +59,10 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
       stats = {
         YD: +player.yards + +(player.rec_yards ?? 0),
         YPC: player.average,
+        YPG: +player.yards / +player.games_played,
         TD: +player.touchdowns + +(player.rec_touchdowns ?? 0),
-        BTK: player.broken_tackles,
       };
+      if (+player.broken_tackles / +player.rushes >= THRESHOLDS.BTK_RATIO) stats.BTK = player.broken_tackles;
       break;
     case 'TE':
     case 'WR':
@@ -76,12 +79,12 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
     case 'CB':
     case 'SS':
     case 'FS':
-      if (player.sacks >= THRESHOLDS.SACKS) stats.SACK = player.sacks;
-      if (player.hurries >= THRESHOLDS.HURRIES) stats.HRY = player.hurries;
-      if (player.interceptions >= THRESHOLDS.INTS) stats.INT = player.interceptions;
-      if (player.passes_defended >= THRESHOLDS.PDS) stats.PD = player.passes_defended;
-      if (player.passes_knocked_loose >= THRESHOLDS.KLS) stats.KL = player.passes_knocked_loose;
-      if (player.tackles >= THRESHOLDS.TACKLES) stats.TK = player.tackles;
+      if (player.sacks >= THRESHOLDS.SACKS * GAMES_PLAYED) stats.SACK = player.sacks;
+      if (player.hurries >= THRESHOLDS.HURRIES * GAMES_PLAYED) stats.HRY = player.hurries;
+      if (player.interceptions >= THRESHOLDS.INTS * GAMES_PLAYED) stats.INT = player.interceptions;
+      if (player.passes_defended >= THRESHOLDS.PDS * GAMES_PLAYED) stats.PD = player.passes_defended;
+      if (player.passes_knocked_loose >= THRESHOLDS.KLS * GAMES_PLAYED) stats.KL = player.passes_knocked_loose;
+      if (player.tackles >= THRESHOLDS.TACKLES * GAMES_PLAYED) stats.TK = player.tackles;
       if (player.tackles >= THRESHOLDS.TACKLES && +player.sticks / +player.tackles >= THRESHOLDS.STICK_RATIO) stats.STICK = player.sticks;
       break;
   }
