@@ -15,7 +15,7 @@ import Image from 'next/image';
 import logo from '../assets/logo-no-background.png';
 import Link from 'next/link';
 
-const pages = ['All Stars', 'Passing Stats', 'Rushing Stats', 'Receiving Stats', 'Defensive Stats', 'Player Builder'];
+const pages = ['All Stars', 'Player Builder', 'Passing Stats', 'Rushing Stats', 'Receiving Stats', 'Defensive Stats'];
 
 function HeaderBar() {
   const router = useRouter();
