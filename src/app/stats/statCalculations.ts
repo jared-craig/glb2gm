@@ -1,5 +1,5 @@
 export const getBlockingGmRating = (x: any): number => {
-  const gm = Math.round(+x.pancakes - +x.reverse_pancaked - 0.25 * +x.hurries_allowed - +x.sacks_allowed);
+  const gm = Math.round(10.0 * +x.pancakes - 10.0 * +x.reverse_pancaked - 0.5 * +x.hurries_allowed - +x.sacks_allowed);
   return gm > 0 ? gm : 0;
 };
 
@@ -24,9 +24,7 @@ export const getPassingGmRating = (x: any): number => {
   const gm = Math.round(
     +(+x.yards / +x.games_played) +
       10.0 * +(+x.touchdowns / +x.games_played) -
-      2.0 * +x.interceptions +
-      10.0 * +x.yards_per_attempt -
-      0.5 * +x.sacks +
+      5.0 * +(+x.interceptions / +x.games_played) +
       (+x.rush_yards > 0 ? +(+x.rush_yards / +x.games_played) : 0.0) +
       (+x.rush_touchdowns > 0 ? 10.0 * +(+x.rush_touchdowns / +x.games_played) : 0.0)
   );
