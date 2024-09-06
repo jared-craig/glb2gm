@@ -40,9 +40,6 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
         <Typography variant='caption'>
           <Skeleton width={'80%'} />
         </Typography>
-        <Typography variant='caption'>
-          <Skeleton width={'80%'} />
-        </Typography>
       </Stack>
     );
 
@@ -52,7 +49,6 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
           <strong>N/A</strong>
         </Typography>
-        <Typography variant='caption'>N/A</Typography>
         <Typography variant='caption'>N/A</Typography>
         <Typography variant='caption'>N/A</Typography>
       </Stack>
