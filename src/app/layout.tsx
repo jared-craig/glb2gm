@@ -36,7 +36,7 @@ export default function RootLayout({
               sx={{
                 flexGrow: 1,
                 overflow: 'auto',
-                m: 2,
+                m: 1,
               }}
             >
               {children}

@@ -15,7 +15,7 @@ import Image from 'next/image';
 import logo from '../assets/logo-no-background.png';
 import Link from 'next/link';
 
-const pages = ['All Stars', 'Player Builder', 'Passing Stats', 'Rushing Stats', 'Receiving Stats', 'Defensive Stats', 'Blocking Stats'];
+const pages = ['All Stars', 'Player Builder', 'Stats'];
 
 function HeaderBar() {
   const router = useRouter();
@@ -39,21 +39,24 @@ function HeaderBar() {
       case 'Player Builder':
         router.push('/player-builder');
         break;
-      case 'Passing Stats':
-        router.push('/stats/passing');
+      case 'Stats':
+        router.push('/stats');
         break;
-      case 'Rushing Stats':
-        router.push('/stats/rushing');
-        break;
-      case 'Receiving Stats':
-        router.push('/stats/receiving');
-        break;
-      case 'Defensive Stats':
-        router.push('/stats/defensive');
-        break;
-      case 'Blocking Stats':
-        router.push('/stats/blocking');
-        break;
+      // case 'Passing Stats':
+      //   router.push('/stats/passing');
+      //   break;
+      // case 'Rushing Stats':
+      //   router.push('/stats/rushing');
+      //   break;
+      // case 'Receiving Stats':
+      //   router.push('/stats/receiving');
+      //   break;
+      // case 'Defensive Stats':
+      //   router.push('/stats/defensive');
+      //   break;
+      // case 'Blocking Stats':
+      //   router.push('/stats/blocking');
+      //   break;
     }
   };
 
