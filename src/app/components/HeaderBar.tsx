@@ -15,7 +15,7 @@ import Image from 'next/image';
 import logo from '../assets/logo-no-background.png';
 import Link from 'next/link';
 
-const pages = ['All Stars', 'Player Builder', 'Stats'];
+const pages = ['All Stars', 'Player Builder', 'Player Stats'];
 
 function HeaderBar() {
   const router = useRouter();
@@ -39,7 +39,7 @@ function HeaderBar() {
       case 'Player Builder':
         router.push('/player-builder');
         break;
-      case 'Stats':
+      case 'Player Stats':
         router.push('/stats');
         break;
       // case 'Passing Stats':
