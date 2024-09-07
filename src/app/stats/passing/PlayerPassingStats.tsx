@@ -260,7 +260,7 @@ export default function PlayerPassingStats() {
         autoHeight
         sortingOrder={['desc', 'asc']}
         pagination
-        pageSizeOptions={[15, 30, 50, 100]}
+        pageSizeOptions={[10, 25, 50, 100]}
         density='compact'
         getRowHeight={({ id, densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
         disableRowSelectionOnClick
@@ -277,7 +277,7 @@ export default function PlayerPassingStats() {
               items: [{ field: 'attempts', operator: '>=', value: '10' }],
             },
           },
-          pagination: { paginationModel: { pageSize: 15 } },
+          pagination: { paginationModel: { pageSize: 10 } },
           pinnedColumns: {
             left: ['player_name'],
           },
