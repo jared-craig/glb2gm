@@ -1,5 +1,10 @@
 export const getBlockingGmRating = (x: any): number => {
-  const gm = Math.round(10.0 * +x.pancakes - 10.0 * +x.reverse_pancaked - 0.5 * +x.hurries_allowed - +x.sacks_allowed);
+  const gm = Math.round(
+    10.0 * ((+x.pancakes / +x.plays) * 1000.0) -
+      10.0 * ((+x.reverse_pancaked / +x.plays) * 1000.0) -
+      0.5 * ((+x.hurries_allowed / +x.plays) * 1000.0) -
+      (+x.sacks_allowed / +x.plays) * 1000.0
+  );
   return gm > 0 ? gm : 0;
 };
 

@@ -15,7 +15,7 @@ import Image from 'next/image';
 import logo from '../assets/logo-no-background.png';
 import Link from 'next/link';
 
-const pages = ['All Stars', 'Player Builder', 'Passing Stats', 'Rushing Stats', 'Receiving Stats', 'Defensive Stats'];
+const pages = ['All Stars', 'Player Builder', 'Passing Stats', 'Rushing Stats', 'Receiving Stats', 'Defensive Stats', 'Blocking Stats'];
 
 function HeaderBar() {
   const router = useRouter();
@@ -36,6 +36,9 @@ function HeaderBar() {
       case 'All Stars':
         router.push('/all-stars');
         break;
+      case 'Player Builder':
+        router.push('/player-builder');
+        break;
       case 'Passing Stats':
         router.push('/stats/passing');
         break;
@@ -48,8 +51,8 @@ function HeaderBar() {
       case 'Defensive Stats':
         router.push('/stats/defensive');
         break;
-      case 'Player Builder':
-        router.push('/player-builder');
+      case 'Blocking Stats':
+        router.push('/stats/blocking');
         break;
     }
   };
