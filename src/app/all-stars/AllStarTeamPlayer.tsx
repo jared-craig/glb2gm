@@ -68,7 +68,7 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
       stats = {
         YD: +player.yards + +(player.rec_yards ?? 0),
         YPC: player.average,
-        YPG: (+player.yards / +player.games_played).toFixed(1),
+        YPG: (+player.yards + +(player.rec_yards ?? 0)) / +player.games_played).toFixed(1),
         TD: +player.touchdowns + +(player.rec_touchdowns ?? 0),
       };
       if (+player.broken_tackles / +player.rushes >= THRESHOLDS.BTK_RATIO) stats.BTK = player.broken_tackles;
