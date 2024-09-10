@@ -354,7 +354,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -378,7 +378,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -402,7 +402,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -426,7 +426,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -455,7 +455,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -479,7 +479,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -503,7 +503,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -527,7 +527,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -560,7 +560,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -584,7 +584,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -608,7 +608,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -632,7 +632,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -661,7 +661,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -685,7 +685,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -709,7 +709,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
@@ -733,7 +733,7 @@ export default function TopTeam() {
             size={{
               xs: 12,
               md: 6,
-              lg: 3,
+              xl: 3,
             }}
           >
             <Stack spacing={{ xs: 0.5 }}>
