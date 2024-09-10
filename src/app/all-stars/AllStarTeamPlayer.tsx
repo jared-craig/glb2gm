@@ -25,7 +25,7 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
   if (fetching)
     return (
       <Stack>
-        <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
+        <Typography sx={{ typography: { xs: 'body2' } }}>
           <Skeleton width={'80%'} />
         </Typography>
         <Typography variant='caption'>
@@ -40,7 +40,7 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
   if (!player)
     return (
       <Stack>
-        <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
+        <Typography sx={{ typography: { xs: 'body2' } }}>
           <strong>N/A</strong>
         </Typography>
         <Typography variant='caption'>N/A</Typography>
@@ -99,7 +99,7 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
   return (
     <Stack>
       <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
-        <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
+        <Typography sx={{ typography: { xs: 'body2' } }}>
           <Link href={`https://glb2.warriorgeneral.com/game/player/${player.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
             <strong>{player.position}</strong> {player.player_name}
           </Link>
