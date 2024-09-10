@@ -1,17 +1,11 @@
 import { Skeleton, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
-import {
-  GAMES_PLAYED,
-  getBlockingGmRating,
-  getDefensiveGmRating,
-  getPassingGmRating,
-  getReceivingGmRating,
-  getRushingGmRating,
-} from '../stats/statCalculations';
+import { getBlockingGmRating, getDefensiveGmRating, getPassingGmRating, getReceivingGmRating, getRushingGmRating } from '../stats/statCalculations';
 
 interface AllStarTeamPlayerProps {
   player: any;
   fetching: boolean;
+  gamesPlayed: number;
 }
 
 const THRESHOLDS = {
@@ -27,7 +21,7 @@ const THRESHOLDS = {
   BTK_RATIO: 0.5,
 };
 
-export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlayerProps) {
+export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: AllStarTeamPlayerProps) {
   if (fetching)
     return (
       <Stack>
@@ -91,12 +85,12 @@ export default function AllStarTeamPlayer({ player, fetching }: AllStarTeamPlaye
     case 'CB':
     case 'SS':
     case 'FS':
-      if (player.sacks >= THRESHOLDS.SACKS * GAMES_PLAYED) stats.SACK = player.sacks;
-      if (player.hurries >= THRESHOLDS.HURRIES * GAMES_PLAYED) stats.HRY = player.hurries;
-      if (player.interceptions >= THRESHOLDS.INTS * GAMES_PLAYED) stats.INT = player.interceptions;
-      if (player.passes_defended >= THRESHOLDS.PDS * GAMES_PLAYED) stats.PD = player.passes_defended;
-      if (player.passes_knocked_loose >= THRESHOLDS.KLS * GAMES_PLAYED) stats.KL = player.passes_knocked_loose;
-      if (player.tackles >= THRESHOLDS.TACKLES * GAMES_PLAYED) stats.TK = player.tackles;
+      if (player.sacks >= THRESHOLDS.SACKS * gamesPlayed) stats.SACK = player.sacks;
+      if (player.hurries >= THRESHOLDS.HURRIES * gamesPlayed) stats.HRY = player.hurries;
+      if (player.interceptions >= THRESHOLDS.INTS * gamesPlayed) stats.INT = player.interceptions;
+      if (player.passes_defended >= THRESHOLDS.PDS * gamesPlayed) stats.PD = player.passes_defended;
+      if (player.passes_knocked_loose >= THRESHOLDS.KLS * gamesPlayed) stats.KL = player.passes_knocked_loose;
+      if (player.tackles >= THRESHOLDS.TACKLES * gamesPlayed) stats.TK = player.tackles;
       if (player.tackles >= THRESHOLDS.TACKLES && +player.sticks / +player.tackles >= THRESHOLDS.STICK_RATIO) stats.STICK = player.sticks;
       rating = getDefensiveGmRating(player);
       break;

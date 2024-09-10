@@ -56,5 +56,3 @@ export const getRushingGmRating = (x: any): number => {
 export const getReceivingDropsPerReception = (x: any): number => {
   return +(+x.drops / +x.receptions).toFixed(2);
 };
-
-export const GAMES_PLAYED = 5.0;
