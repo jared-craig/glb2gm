@@ -73,6 +73,46 @@ export default function TopTeam() {
     return baseArray;
   };
 
+  const sortByRating = (stat: string, a: any, b: any): number => {
+    let ratingDiff = 0;
+    switch (stat) {
+      case 'passing':
+        ratingDiff = getPassingGmRating(b) - getPassingGmRating(a);
+        if (ratingDiff === 0) return +b.yards - +a.yards;
+        return ratingDiff;
+      case 'rushing':
+        ratingDiff = getRushingGmRating(b) - getRushingGmRating(a);
+        if (ratingDiff === 0) return +b.yards - +a.yards;
+        return ratingDiff;
+      case 'receiving':
+        ratingDiff = getReceivingGmRating(b) - getReceivingGmRating(a);
+        if (ratingDiff === 0) return +b.yards - +a.yards;
+        return ratingDiff;
+      case 'blocking':
+        ratingDiff = getBlockingGmRating(b) - getBlockingGmRating(a);
+        if (ratingDiff === 0) return +b.pancakes - +a.pancakes;
+        return ratingDiff;
+      case 'defensive':
+        ratingDiff = getDefensiveGmRating(b) - getDefensiveGmRating(a);
+        if (ratingDiff === 0) {
+          switch (a.position) {
+            case 'DT':
+            case 'DE':
+              return +b.sacks - +a.sacks;
+            case 'LB':
+              return +b.interceptions + +b.tackles - +b.missed_tackles - (+a.interceptions + +a.tackles - +a.missed_tackles);
+            case 'CB':
+            case 'FS':
+            case 'SS':
+              return +b.interceptions - +a.interceptions;
+          }
+        }
+        return ratingDiff;
+      default:
+        return 0;
+    }
+  };
+
   const fetchData = async () => {
     const passRes = await fetch('/api/passing');
     const passData: PlayerPassingData[] = await passRes.json();
@@ -96,9 +136,7 @@ export default function TopTeam() {
     const allDataWithRushYards = matchById(allData.passData, allData.rushData, 'yards', 'rush_yards');
     const allDataWithRushYardsAndTd = matchById(allDataWithRushYards, allData.rushData, 'touchdowns', 'rush_touchdowns');
 
-    const tops: PlayerPassingData[] = allDataWithRushYardsAndTd.sort((a: PlayerPassingData, b: PlayerPassingData) =>
-      getPassingGmRating(a) > getPassingGmRating(b) ? -1 : 1
-    );
+    const tops: PlayerPassingData[] = allDataWithRushYardsAndTd.sort((a: PlayerPassingData, b: PlayerPassingData) => sortByRating('passing', a, b));
 
     let rookies: (PlayerPassingData | undefined)[] = [];
     let sophs: (PlayerPassingData | undefined)[] = [];
@@ -108,12 +146,15 @@ export default function TopTeam() {
     const rookieQBs = tops.filter((x) => x.tier === 'Rookie' && x.attempts >= thresholds.PASS_ATTEMPTS).slice(0, 2);
     rookies = rookieQBs.length > 0 ? [...rookies, ...rookieQBs] : [...rookies, ...[undefined, undefined]];
     setPasserRookieData(rookies);
+
     const sophQBs = tops.filter((x) => x.tier === 'Sophomore' && x.attempts >= thresholds.PASS_ATTEMPTS).slice(0, 2);
     sophs = sophQBs.length > 0 ? [...sophs, ...sophQBs] : [...sophs, ...[undefined, undefined]];
     setPasserSophData(sophs);
+
     const proQBs = tops.filter((x) => x.tier === 'Professional' && x.attempts >= thresholds.PASS_ATTEMPTS).slice(0, 2);
     pros = proQBs.length > 0 ? [...pros, ...proQBs] : [...pros, ...[undefined, undefined]];
     setPasserProData(pros);
+
     const vetQBs = tops.filter((x) => x.tier === 'Veteran' && x.attempts >= thresholds.PASS_ATTEMPTS).slice(0, 2);
     vets = vetQBs.length > 0 ? [...vets, ...vetQBs] : [...vets, ...[undefined, undefined]];
     setPasserVetData(vets);
@@ -127,9 +168,7 @@ export default function TopTeam() {
     const allDataWithRecYards = matchById(allData.rushData, allData.recData, 'yards', 'rec_yards');
     const allDataWithRecYardsAndTd = matchById(allDataWithRecYards, allData.recData, 'touchdowns', 'rec_touchdowns');
 
-    const tops: PlayerRushingData[] = allDataWithRecYardsAndTd.sort((a: PlayerRushingData, b: PlayerRushingData) =>
-      getRushingGmRating(a) > getRushingGmRating(b) ? -1 : 1
-    );
+    const tops: PlayerRushingData[] = allDataWithRecYardsAndTd.sort((a: PlayerRushingData, b: PlayerRushingData) => sortByRating('rushing', a, b));
 
     let rookies: (PlayerRushingData | undefined)[] = [];
     let sophs: (PlayerRushingData | undefined)[] = [];
@@ -166,7 +205,7 @@ export default function TopTeam() {
   const fetchReceiverData = async () => {
     if (!allData || !thresholds) return;
 
-    const tops = allData.recData.sort((a: PlayerReceivingData, b: PlayerReceivingData) => (getReceivingGmRating(a) > getReceivingGmRating(b) ? -1 : 1));
+    const tops = allData.recData.sort((a: PlayerReceivingData, b: PlayerReceivingData) => sortByRating('receiving', a, b));
 
     let rookies: (PlayerReceivingData | undefined)[] = [];
     let sophs: (PlayerReceivingData | undefined)[] = [];
@@ -203,7 +242,7 @@ export default function TopTeam() {
   const fetchDefensiveData = async () => {
     if (!allData || !gamesPlayed) return;
 
-    const tops = allData.defData.sort((a: PlayerDefensiveData, b: PlayerDefensiveData) => (getDefensiveGmRating(a) > getDefensiveGmRating(b) ? -1 : 1));
+    const tops = allData.defData.sort((a: PlayerDefensiveData, b: PlayerDefensiveData) => sortByRating('defensive', a, b));
 
     let rookies: (PlayerDefensiveData | undefined)[] = [];
     let sophs: (PlayerDefensiveData | undefined)[] = [];
@@ -268,7 +307,7 @@ export default function TopTeam() {
   const fetchBlockingData = async () => {
     if (!allData || !thresholds) return;
 
-    const tops = allData.blockData.sort((a: PlayerBlockingData, b: PlayerBlockingData) => (getBlockingGmRating(a) > getBlockingGmRating(b) ? -1 : 1));
+    const tops = allData.blockData.sort((a: PlayerBlockingData, b: PlayerBlockingData) => sortByRating('blocking', a, b));
 
     let rookies: (PlayerBlockingData | undefined)[] = [];
     let sophs: (PlayerBlockingData | undefined)[] = [];

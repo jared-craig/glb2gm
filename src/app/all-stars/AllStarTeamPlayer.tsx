@@ -12,13 +12,13 @@ const THRESHOLDS = {
   QB_RUSH_YARDS_RATIO: 0.1,
   QB_RUSH_TDS: 1,
   SACKS: 1,
-  HURRIES: 2,
-  INTS: 0.5,
-  PDS: 1,
-  KLS: 1,
-  TACKLES: 5,
+  HURRIES: 1,
+  INTS: 0.25,
+  PDS: 0.5,
+  KLS: 0.5,
+  TACKLES: 2,
   STICK_RATIO: 0.75,
-  BTK_RATIO: 0.5,
+  BTK_RATIO: 0.66,
 };
 
 export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: AllStarTeamPlayerProps) {
