@@ -136,25 +136,25 @@ export default function TopTeam() {
     let pros: (PlayerRushingData | undefined)[] = [];
     let vets: (PlayerRushingData | undefined)[] = [];
 
-    const rookieFBs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 2.0).slice(0, 2);
+    const rookieFBs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 5.0).slice(0, 2);
     rookies = rookieFBs.length > 0 ? [...rookies, ...rookieFBs] : [...rookies, ...[undefined, undefined]];
     const rookieHBs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'HB' && x.rushes >= thresholds.CARRIES).slice(0, 2);
     rookies = rookieHBs.length > 0 ? [...rookies, ...rookieHBs] : [...rookies, ...[undefined, undefined]];
     setRusherRookieData(rookies);
 
-    const sophFBs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 2.0).slice(0, 2);
+    const sophFBs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 5.0).slice(0, 2);
     sophs = sophFBs.length > 0 ? [...sophs, ...sophFBs] : [...sophs, ...[undefined, undefined]];
     const sophHBs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'HB' && x.rushes >= thresholds.CARRIES).slice(0, 2);
     sophs = sophHBs.length > 0 ? [...sophs, ...sophHBs] : [...sophs, ...[undefined, undefined]];
     setRusherSophData(sophs);
 
-    const proFBs = tops.filter((x) => x.tier === 'Professional' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 2.0).slice(0, 2);
+    const proFBs = tops.filter((x) => x.tier === 'Professional' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 5.0).slice(0, 2);
     pros = proFBs.length > 0 ? [...pros, ...proFBs] : [...pros, ...[undefined, undefined]];
     const proHBs = tops.filter((x) => x.tier === 'Professional' && x.position === 'HB' && x.rushes >= thresholds.CARRIES).slice(0, 2);
     pros = proHBs.length > 0 ? [...pros, ...proHBs] : [...pros, ...[undefined, undefined]];
     setRusherProData(pros);
 
-    const vetFBs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 2.0).slice(0, 2);
+    const vetFBs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 5.0).slice(0, 2);
     vets = vetFBs.length > 0 ? [...vets, ...vetFBs] : [...vets, ...[undefined, undefined]];
     const vetHBs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'HB' && x.rushes >= thresholds.CARRIES).slice(0, 2);
     vets = vetHBs.length > 0 ? [...vets, ...vetHBs] : [...vets, ...[undefined, undefined]];
@@ -318,8 +318,8 @@ export default function TopTeam() {
     if (!gamesPlayed) return;
 
     setThresholds({
-      PASS_ATTEMPTS: 5 * gamesPlayed,
-      CARRIES: 5 * gamesPlayed,
+      PASS_ATTEMPTS: 10 * gamesPlayed,
+      CARRIES: 10 * gamesPlayed,
       RECEPTIONS: 1 * gamesPlayed,
       BLOCKER_PLAYS: 25 * gamesPlayed,
     });
