@@ -1,12 +1,14 @@
 'use client';
 
-import { List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
+import { Container, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
+import Link from 'next/link';
+import ForumIcon from '@mui/icons-material/Forum';
 
 export default function Home() {
   return (
-    <Stack spacing={2}>
+    <Container maxWidth='xl'>
       <Stack spacing={3}>
-        <Typography variant='h6'>Welcome to GLB2GM!</Typography>
+        <Typography variant='h5'>Welcome to GLB2GM!</Typography>
         <Typography variant='body1'>
           App is currently in <i>development</i>
         </Typography>
@@ -24,10 +26,16 @@ export default function Home() {
             </ListItem>
           </List>
         </Stack>
-        <Typography variant='caption'>
-          Developed by <strong>MadKingCraig</strong>
+        <Typography variant='body1'>
+          Join the GLB2 Academy Discord{' '}
+          <Link href='https://discord.gg/3dNcAhxmrx' target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <ForumIcon />
+          </Link>
         </Typography>
       </Stack>
-    </Stack>
+      <Typography variant='caption' sx={{ position: 'fixed', bottom: '20px', right: '20px' }}>
+        Developed by <strong>MadKingCraig</strong>
+      </Typography>
+    </Container>
   );
 }
