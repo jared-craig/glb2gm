@@ -70,6 +70,17 @@ export default function PlayerRushingStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'cake_ratio',
+          headerName: 'C/R',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(+row.pancakes / +row.reverse_pancaked).toFixed(2);
+          },
+        },
+        {
           field: 'hurries_allowed',
           headerName: 'HALW',
           width: 120,
@@ -142,6 +153,16 @@ export default function PlayerRushingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+        },
+        {
+          field: 'cake_ratio',
+          headerName: 'C/R',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(+row.pancakes / +row.reverse_pancaked).toFixed(2);
+          },
         },
         {
           field: 'hurries_allowed',
