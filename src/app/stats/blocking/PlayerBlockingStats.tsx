@@ -122,11 +122,11 @@ export default function PlayerRushingStats() {
           headerName: 'NAME',
           flex: 2,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Stack>
+            <Stack sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               <Link
                 href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`}
                 target='_blank'
-                style={{ color: 'inherit', textDecoration: 'inherit' }}
+                style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
               >
                 <strong>{params.value}</strong>
               </Link>
