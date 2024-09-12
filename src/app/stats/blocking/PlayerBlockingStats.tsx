@@ -196,6 +196,11 @@ export default function PlayerRushingStats() {
         slotProps={{ toolbar: { tierFilter: setTier } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
+          filter: {
+            filterModel: {
+              items: [{ field: 'plays', operator: '>=', value: '25' }],
+            },
+          },
           pagination: { paginationModel: { pageSize: !desktop ? 12 : 15 } },
           pinnedColumns: {
             left: ['player_name'],
