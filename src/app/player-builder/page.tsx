@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Button, ButtonGroup, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, Divider, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Fragment, useEffect, useState } from 'react';
 import { SKILL_LOOKUP, TRAIT_LOOKUP } from './lookups';
@@ -296,7 +296,7 @@ export default function PlayerBuilder() {
       </Grid>
       {selectedPosition && selectedTemplate && factors && player && (
         <>
-          <Box width={350} mb={1}>
+          <Box sx={{ width: 350, mb: 2 }}>
             <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
               <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
                 Height: {Math.floor(player.height / 12)}&apos; {player.height % 12}&apos;&apos;
@@ -315,7 +315,7 @@ export default function PlayerBuilder() {
               <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Awareness: {player.awareness}</Typography>
               <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Confidence: {player.confidence}</Typography>
             </Stack>
-            <Stack sx={{ mb: 1 }}>
+            <Stack>
               <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 1: {TRAIT_LOOKUP[player.trait1]}</Typography>
               <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 2: {TRAIT_LOOKUP[player.trait2]}</Typography>
               <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 3: {TRAIT_LOOKUP[player.trait3]}</Typography>
@@ -323,7 +323,7 @@ export default function PlayerBuilder() {
           </Box>
 
           {build && (
-            <Grid container rowGap={{ xs: 0.5, lg: 2 }} columnSpacing={2}>
+            <Grid container rowGap={{ xs: 0.5, lg: 1 }} columnSpacing={2}>
               <Grid size={{ xs: 6 }}>
                 <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>Skill Points: {remSkillPoints}</Typography>
               </Grid>
@@ -332,8 +332,11 @@ export default function PlayerBuilder() {
               </Grid>
               {groupOrder[selectedPosition].map((group) => (
                 <Fragment key={group}>
-                  <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
-                    <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>{group}</Typography>
+                  <Grid size={{ xs: 12 }} sx={{ mt: 1 }}>
+                    <Typography>
+                      <strong>{group}</strong>
+                    </Typography>
+                    <Divider sx={{ my: 1 }} />
                   </Grid>
                   {Object.entries(data.skills)
                     .filter(([key, value]) => (value as any).group === group && (value as any).positions.includes(selectedPosition))
