@@ -75,8 +75,8 @@ export default function PlayerBuilder() {
     return level;
   };
 
-  const FindMaxLevel = (skill: string, playerData: Player, capBoostsSpent: any) => {
-    if (!filteredData.skills[skill]) return;
+  const FindMaxLevel = (skill: string, playerData: Player, capBoostsSpent: any): number => {
+    if (!filteredData.skills[skill]) return 100;
 
     var maxlevel = 33;
     maxlevel -= Math.pow(playerData.strength, 1.3) * (filteredData.skills[skill].attributes.strength || 0);
