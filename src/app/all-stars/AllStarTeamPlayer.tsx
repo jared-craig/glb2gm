@@ -27,7 +27,7 @@ const THRESHOLDS = {
   STICK_RATIO: 0.75,
   BTK_RATIO: 0.66,
   FIFTY_PLUS: 1,
-  TB_RATIO: 0.4,
+  TB_RATIO: 0.33,
 };
 
 export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: AllStarTeamPlayerProps) {
@@ -105,7 +105,7 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
       break;
     case 'K':
       stats = {
-        FG: player.fg_made,
+        FGM: player.fg_made,
         FGA: player.fg_attempts,
         'FG%': `${((+player.fg_made / +player.fg_attempts) * 100.0).toFixed(1)}%`,
       };

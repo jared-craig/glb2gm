@@ -48,7 +48,7 @@ export default function PlayerPassingStats() {
         },
         {
           field: 'fg_made',
-          headerName: 'FG',
+          headerName: 'FGM',
           width: 120,
           type: 'number',
           pinnable: false,
@@ -150,7 +150,7 @@ export default function PlayerPassingStats() {
         },
         {
           field: 'fg_made',
-          headerName: 'FG',
+          headerName: 'FGM',
           flex: 1,
           type: 'number',
           pinnable: false,
