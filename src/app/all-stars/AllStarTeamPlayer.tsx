@@ -1,6 +1,13 @@
 import { Skeleton, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
-import { getBlockingGmRating, getDefensiveGmRating, getPassingGmRating, getReceivingGmRating, getRushingGmRating } from '../stats/statCalculations';
+import {
+  getBlockingGmRating,
+  getDefensiveGmRating,
+  getKickingGmRating,
+  getPassingGmRating,
+  getReceivingGmRating,
+  getRushingGmRating,
+} from '../stats/statCalculations';
 
 interface AllStarTeamPlayerProps {
   player: any;
@@ -19,6 +26,8 @@ const THRESHOLDS = {
   TACKLES: 2,
   STICK_RATIO: 0.75,
   BTK_RATIO: 0.66,
+  FIFTY_PLUS: 1,
+  TB_RATIO: 0.4,
 };
 
 export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: AllStarTeamPlayerProps) {
@@ -93,6 +102,17 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
       if (player.tackles >= THRESHOLDS.TACKLES * gamesPlayed) stats.TK = player.tackles;
       if (player.tackles >= THRESHOLDS.TACKLES && +player.sticks / +player.tackles >= THRESHOLDS.STICK_RATIO) stats.STICK = player.sticks;
       rating = getDefensiveGmRating(player);
+      break;
+    case 'K':
+      stats = {
+        FG: player.fg_made,
+        FGA: player.fg_attempts,
+        'FG%': `${((+player.fg_made / +player.fg_attempts) * 100.0).toFixed(1)}%`,
+      };
+      if (player.fifty_plus_made >= THRESHOLDS.FIFTY_PLUS) stats['50+'] = player.fifty_plus_made;
+      const touchbackPercent = +player.touchbacks / +player.kickoffs;
+      if (touchbackPercent >= THRESHOLDS.TB_RATIO) stats['TB%'] = (touchbackPercent * 100.0).toFixed(1);
+      rating = getKickingGmRating(player);
       break;
   }
 

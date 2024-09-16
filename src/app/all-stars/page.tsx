@@ -5,11 +5,19 @@ import { PlayerReceivingData } from '../stats/receiving/playerReceivingData';
 import { PlayerPassingData } from '../stats/passing/playerPassingData';
 import { PlayerRushingData } from '../stats/rushing/playerRushingData';
 import Grid from '@mui/material/Grid2';
-import { getBlockingGmRating, getDefensiveGmRating, getPassingGmRating, getReceivingGmRating, getRushingGmRating } from '../stats/statCalculations';
+import {
+  getBlockingGmRating,
+  getDefensiveGmRating,
+  getKickingGmRating,
+  getPassingGmRating,
+  getReceivingGmRating,
+  getRushingGmRating,
+} from '../stats/statCalculations';
 import { Divider, FormControl, FormControlLabel, Radio, RadioGroup, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import AllStarTeamPlayer from './AllStarTeamPlayer';
 import { PlayerDefensiveData } from '../stats/defensive/playerDefensiveData';
 import { PlayerBlockingData } from '../stats/blocking/playerBlockingData';
+import { PlayerKickingData } from '../stats/kicking/playerKickingData';
 
 interface AllData {
   passData: PlayerPassingData[];
@@ -17,6 +25,7 @@ interface AllData {
   recData: PlayerReceivingData[];
   defData: PlayerDefensiveData[];
   blockData: PlayerBlockingData[];
+  kickData: PlayerKickingData[];
 }
 
 interface Thresholds {
@@ -54,11 +63,16 @@ export default function TopTeam() {
   const [blockerSophData, setBlockerSophData] = useState<(PlayerBlockingData | undefined)[]>([]);
   const [blockerProData, setBlockerProData] = useState<(PlayerBlockingData | undefined)[]>([]);
   const [blockerVetData, setBlockerVetData] = useState<(PlayerBlockingData | undefined)[]>([]);
+  const [kickerRookieData, setKickerRookieData] = useState<(PlayerKickingData | undefined)[]>([]);
+  const [kickerSophData, setKickerSophData] = useState<(PlayerKickingData | undefined)[]>([]);
+  const [kickerProData, setKickerProData] = useState<(PlayerKickingData | undefined)[]>([]);
+  const [kickerVetData, setKickerVetData] = useState<(PlayerKickingData | undefined)[]>([]);
   const [passersFetching, setPassersFetching] = useState<boolean>(true);
   const [rushersFetching, setRushersFetching] = useState<boolean>(true);
   const [receiversFetching, setReceiversFetching] = useState<boolean>(true);
   const [defendersFetching, setDefendersFetching] = useState<boolean>(true);
   const [blockersFetching, setBlockersFetching] = useState<boolean>(true);
+  const [kickersFetching, setKickersFetching] = useState<boolean>(true);
 
   const matchById = (array1: any[], array2: any[], statToPull: string, propToAdd: string) => {
     let baseArray = JSON.parse(JSON.stringify(array1));
@@ -108,6 +122,10 @@ export default function TopTeam() {
           }
         }
         return ratingDiff;
+      case 'kicking':
+        ratingDiff = getKickingGmRating(b) - getKickingGmRating(a);
+        if (ratingDiff === 0) return +b.fg_made - +a.fg_made;
+        return ratingDiff;
       default:
         return 0;
     }
@@ -124,10 +142,12 @@ export default function TopTeam() {
     const defData: PlayerDefensiveData[] = await defRes.json();
     const blockRes = await fetch('/api/blocking');
     const blockData: PlayerBlockingData[] = await blockRes.json();
+    const kickRes = await fetch('/api/kicking');
+    const kickData: PlayerKickingData[] = await kickRes.json();
 
     setGamesPlayed(Math.max(...passData.map((x) => x.games_played)));
 
-    setAllData({ passData, rushData, recData, defData, blockData });
+    setAllData({ passData, rushData, recData, defData, blockData, kickData });
   };
 
   const fetchPasserData = async () => {
@@ -349,6 +369,35 @@ export default function TopTeam() {
     setTimeout(() => setBlockersFetching(false), 1000);
   };
 
+  const fetchKickingData = async () => {
+    if (!allData || !thresholds) return;
+
+    const tops: PlayerKickingData[] = allData.kickData.sort((a: PlayerKickingData, b: PlayerKickingData) => sortByRating('kicking', a, b));
+
+    let rookies: (PlayerKickingData | undefined)[] = [];
+    let sophs: (PlayerKickingData | undefined)[] = [];
+    let pros: (PlayerKickingData | undefined)[] = [];
+    let vets: (PlayerKickingData | undefined)[] = [];
+
+    const rookieKs = tops.filter((x) => x.tier === 'Rookie').slice(0, 2);
+    rookies = rookieKs.length > 0 ? [...rookies, ...rookieKs] : [...rookies, ...[undefined, undefined]];
+    setKickerRookieData(rookies);
+
+    const sophKs = tops.filter((x) => x.tier === 'Sophomore').slice(0, 2);
+    sophs = sophKs.length > 0 ? [...sophs, ...sophKs] : [...sophs, ...[undefined, undefined]];
+    setKickerSophData(sophs);
+
+    const proKs = tops.filter((x) => x.tier === 'Professional').slice(0, 2);
+    pros = proKs.length > 0 ? [...pros, ...proKs] : [...pros, ...[undefined, undefined]];
+    setKickerProData(pros);
+
+    const vetKs = tops.filter((x) => x.tier === 'Veteran').slice(0, 2);
+    vets = vetKs.length > 0 ? [...vets, ...vetKs] : [...vets, ...[undefined, undefined]];
+    setKickerVetData(vets);
+
+    setTimeout(() => setKickersFetching(false), 1000);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -370,6 +419,7 @@ export default function TopTeam() {
     fetchReceiverData();
     fetchDefensiveData();
     fetchBlockingData();
+    fetchKickingData();
   }, [thresholds]);
 
   return (
@@ -586,6 +636,67 @@ export default function TopTeam() {
               <AllStarTeamPlayer player={defenderVetData[19]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
+          <Grid sx={{ pb: 0 }} size={12}>
+            <Divider variant='middle'>
+              <Typography variant='h6'>Special Teams</Typography>
+            </Divider>
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+              xl: 3,
+            }}
+          >
+            <Stack spacing={{ xs: 0.5 }}>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Rookie</Typography>
+              </Divider>
+              <AllStarTeamPlayer player={kickerRookieData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+            </Stack>
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+              xl: 3,
+            }}
+          >
+            <Stack spacing={{ xs: 0.5 }}>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Sophomore</Typography>
+              </Divider>
+              <AllStarTeamPlayer player={kickerSophData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+            </Stack>
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+              xl: 3,
+            }}
+          >
+            <Stack spacing={{ xs: 0.5 }}>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Professional</Typography>
+              </Divider>
+              <AllStarTeamPlayer player={kickerProData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+            </Stack>
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+              xl: 3,
+            }}
+          >
+            <Stack spacing={{ xs: 0.5 }}>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Veteran</Typography>
+              </Divider>
+              <AllStarTeamPlayer player={kickerVetData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+            </Stack>
+          </Grid>
         </>
       )}{' '}
       {teamChoice === 'second' && gamesPlayed && (
@@ -790,6 +901,67 @@ export default function TopTeam() {
               <AllStarTeamPlayer player={defenderVetData[17]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
               <AllStarTeamPlayer player={defenderVetData[20]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
               <AllStarTeamPlayer player={defenderVetData[21]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
+            </Stack>
+          </Grid>
+          <Grid sx={{ pb: 0 }} size={12}>
+            <Divider variant='middle'>
+              <Typography variant='h6'>Special Teams</Typography>
+            </Divider>
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+              xl: 3,
+            }}
+          >
+            <Stack spacing={{ xs: 0.5 }}>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Rookie</Typography>
+              </Divider>
+              <AllStarTeamPlayer player={kickerRookieData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+            </Stack>
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+              xl: 3,
+            }}
+          >
+            <Stack spacing={{ xs: 0.5 }}>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Sophomore</Typography>
+              </Divider>
+              <AllStarTeamPlayer player={kickerSophData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+            </Stack>
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+              xl: 3,
+            }}
+          >
+            <Stack spacing={{ xs: 0.5 }}>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Professional</Typography>
+              </Divider>
+              <AllStarTeamPlayer player={kickerProData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+            </Stack>
+          </Grid>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+              xl: 3,
+            }}
+          >
+            <Stack spacing={{ xs: 0.5 }}>
+              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
+                <Typography variant='h6'>Veteran</Typography>
+              </Divider>
+              <AllStarTeamPlayer player={kickerVetData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
         </>
