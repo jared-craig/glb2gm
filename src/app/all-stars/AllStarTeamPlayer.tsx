@@ -107,7 +107,7 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
       stats = {
         FGM: player.fg_made,
         FGA: player.fg_attempts,
-        'FG%': `${((+player.fg_made / +player.fg_attempts) * 100.0).toFixed(1)}%`,
+        'FG%': ((+player.fg_made / +player.fg_attempts) * 100.0).toFixed(1),
       };
       if (player.fifty_plus_made >= THRESHOLDS.FIFTY_PLUS) stats['50+'] = player.fifty_plus_made;
       const touchbackPercent = +player.touchbacks / +player.kickoffs;
