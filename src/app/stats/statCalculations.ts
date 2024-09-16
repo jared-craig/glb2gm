@@ -28,11 +28,10 @@ export const getDefensiveGmRating = (x: any): number => {
 export const getKickingGmRating = (x: any): number => {
   const gm = Math.round(
     100.0 * +(+x.fg_made / +x.fg_attempts) +
-      1.0 * +x.zero_to_nineteen_made +
-      2.0 * +x.twenty_to_twenty_nine_made +
-      3.0 * +x.thirty_to_thirty_nine_made +
-      4.0 * +x.forty_to_forty_nine_made +
-      5.0 * +x.fifty_plus_made +
+      1.0 * +x.twenty_to_twenty_nine_made +
+      2.0 * +x.thirty_to_thirty_nine_made +
+      3.0 * +x.forty_to_forty_nine_made +
+      4.0 * +x.fifty_plus_made +
       20.0 * +(+x.touchbacks / +x.kickoffs)
   );
   return gm > 0 ? gm : 0;
