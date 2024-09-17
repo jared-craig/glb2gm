@@ -5,7 +5,7 @@ export const getBlockingGmRating = (x: any): number => {
       0.5 * ((+x.hurries_allowed / +x.plays) * 1000.0) -
       (+x.sacks_allowed / +x.plays) * 1000.0
   );
-  return gm > 0 ? gm : 0;
+  return gm;
 };
 
 export const getDefensiveGmRating = (x: any): number => {
@@ -22,19 +22,25 @@ export const getDefensiveGmRating = (x: any): number => {
       1.0 * +x.passes_knocked_loose +
       0.25 * +x.interception_yards
   );
-  return gm > 0 ? gm : 0;
+  return gm;
 };
 
 export const getKickingGmRating = (x: any): number => {
   const gm = Math.round(
     100.0 * +(+x.fg_made / +x.fg_attempts) +
-      1.0 * +x.twenty_to_twenty_nine_made +
-      2.0 * +x.thirty_to_thirty_nine_made +
-      3.0 * +x.forty_to_forty_nine_made +
-      4.0 * +x.fifty_plus_made +
-      20.0 * +(+x.touchbacks / +x.kickoffs)
+      1.0 * +x.zero_to_nineteen_made -
+      5.0 * (+x.zero_to_nineteen_attempts - +x.zero_to_nineteen_made) +
+      2.0 * +x.twenty_to_twenty_nine_made -
+      4.0 * (+x.twenty_to_twenty_nine_attempts - +x.twenty_to_twenty_nine_made) +
+      3.0 * +x.thirty_to_thirty_nine_made -
+      3.0 * (+x.thirty_to_thirty_nine_attempts - +x.thirty_to_thirty_nine_made) +
+      4.0 * +x.forty_to_forty_nine_made -
+      2.0 * (+x.forty_to_forty_nine_attempts - +x.forty_to_forty_nine_made) +
+      5.0 * +x.fifty_plus_made -
+      1.0 * (+x.fifty_plus_attempts - +x.fifty_plus_made) +
+      10.0 * +(+x.touchbacks / +x.kickoffs)
   );
-  return gm > 0 ? gm : 0;
+  return gm;
 };
 
 export const getPassingGmRating = (x: any): number => {
@@ -45,12 +51,12 @@ export const getPassingGmRating = (x: any): number => {
       (+x.rush_yards > 0 ? +(+x.rush_yards / +x.games_played) : 0.0) +
       (+x.rush_touchdowns > 0 ? 10.0 * +(+x.rush_touchdowns / +x.games_played) : 0.0)
   );
-  return gm > 0 ? gm : 0;
+  return gm;
 };
 
 export const getReceivingGmRating = (x: any): number => {
   const gm = Math.round(2.0 * +(+x.yards / +x.games_played) + 10.0 * +(+x.touchdowns / +x.games_played) - +x.drops - +x.fumbles_lost);
-  return gm > 0 ? gm : 0;
+  return gm;
 };
 
 export const getRushingGmRating = (x: any): number => {
@@ -62,7 +68,7 @@ export const getRushingGmRating = (x: any): number => {
       (+x.rec_yards > 0 ? +(+x.rec_yards / +x.games_played) : 0.0) +
       (+x.rec_touchdowns > 0 ? 10.0 * +(+x.rec_touchdowns / +x.games_played) : 0.0)
   );
-  return gm > 0 ? gm : 0;
+  return gm;
 };
 
 export const getReceivingDropsPerReception = (x: any): number => {

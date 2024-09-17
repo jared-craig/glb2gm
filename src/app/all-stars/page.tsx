@@ -33,6 +33,7 @@ interface Thresholds {
   CARRIES: number;
   RECEPTIONS: number;
   BLOCKER_PLAYS: number;
+  FG_ATTEMPTS: number;
 }
 
 export default function TopTeam() {
@@ -379,19 +380,19 @@ export default function TopTeam() {
     let pros: (PlayerKickingData | undefined)[] = [];
     let vets: (PlayerKickingData | undefined)[] = [];
 
-    const rookieKs = tops.filter((x) => x.tier === 'Rookie').slice(0, 2);
+    const rookieKs = tops.filter((x) => x.tier === 'Rookie' && x.fg_attempts >= thresholds.FG_ATTEMPTS).slice(0, 2);
     rookies = rookieKs.length > 0 ? [...rookies, ...rookieKs] : [...rookies, ...[undefined, undefined]];
     setKickerRookieData(rookies);
 
-    const sophKs = tops.filter((x) => x.tier === 'Sophomore').slice(0, 2);
+    const sophKs = tops.filter((x) => x.tier === 'Sophomore' && x.fg_attempts >= thresholds.FG_ATTEMPTS).slice(0, 2);
     sophs = sophKs.length > 0 ? [...sophs, ...sophKs] : [...sophs, ...[undefined, undefined]];
     setKickerSophData(sophs);
 
-    const proKs = tops.filter((x) => x.tier === 'Professional').slice(0, 2);
+    const proKs = tops.filter((x) => x.tier === 'Professional' && x.fg_attempts >= thresholds.FG_ATTEMPTS).slice(0, 2);
     pros = proKs.length > 0 ? [...pros, ...proKs] : [...pros, ...[undefined, undefined]];
     setKickerProData(pros);
 
-    const vetKs = tops.filter((x) => x.tier === 'Veteran').slice(0, 2);
+    const vetKs = tops.filter((x) => x.tier === 'Veteran' && x.fg_attempts >= thresholds.FG_ATTEMPTS).slice(0, 2);
     vets = vetKs.length > 0 ? [...vets, ...vetKs] : [...vets, ...[undefined, undefined]];
     setKickerVetData(vets);
 
@@ -406,10 +407,11 @@ export default function TopTeam() {
     if (!gamesPlayed) return;
 
     setThresholds({
-      PASS_ATTEMPTS: 10 * gamesPlayed,
-      CARRIES: 10 * gamesPlayed,
-      RECEPTIONS: 1 * gamesPlayed,
-      BLOCKER_PLAYS: 25 * gamesPlayed,
+      PASS_ATTEMPTS: 10.0 * gamesPlayed,
+      CARRIES: 10.0 * gamesPlayed,
+      RECEPTIONS: 1.0 * gamesPlayed,
+      BLOCKER_PLAYS: 25.0 * gamesPlayed,
+      FG_ATTEMPTS: 1.0 * gamesPlayed,
     });
   }, [gamesPlayed]);
 
