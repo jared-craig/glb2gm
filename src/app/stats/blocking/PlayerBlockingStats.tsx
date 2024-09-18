@@ -214,7 +214,7 @@ export default function PlayerRushingStats() {
           return desktop ? 'desktop-text' : 'mobile-text';
         }}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tierFilter: setTier } }}
+        slotProps={{ toolbar: { tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           filter: {

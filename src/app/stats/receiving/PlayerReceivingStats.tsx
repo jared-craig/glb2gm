@@ -360,7 +360,7 @@ export default function PlayerReceivingStats() {
           return desktop ? 'desktop-text' : 'mobile-text';
         }}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tierFilter: setTier } }}
+        slotProps={{ toolbar: { tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           pagination: { paginationModel: { pageSize: !desktop ? 12 : 15 } },

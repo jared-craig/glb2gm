@@ -3,25 +3,25 @@
 import { DataGridPro, GridColDef, GridRenderCellParams, GridRowModel } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { PlayerKickingData } from './playerKickingData';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
-import { getKickingGmRating } from '../statCalculations';
+import { TeamData } from './teamData';
+import { getTeamGmRating } from '../stats/statCalculations';
 
 export default function PlayerPassingStats() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
   const [fetched, setFetched] = useState<boolean>(false);
-  const [data, setData] = useState<PlayerKickingData[]>([]);
-  const [rows, setRows] = useState<PlayerKickingData[]>([]);
+  const [data, setData] = useState<TeamData[]>([]);
+  const [rows, setRows] = useState<TeamData[]>([]);
   const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
-    const res = await fetch('/api/kicking');
+    const res = await fetch('/api/teams');
     const data = await res.json();
     setData(data);
-    setRows(data.filter((x: PlayerKickingData) => x.tier === tier));
+    setRows(tier !== 'All Tiers' ? data.filter((x: TeamData) => x.tier === tier) : data);
     setFetched(true);
   };
 
@@ -30,93 +30,61 @@ export default function PlayerPassingStats() {
   }, []);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerKickingData) => x.tier === tier));
+    setRows(tier !== 'All Tiers' ? data.filter((x: TeamData) => x.tier === tier) : data);
   }, [tier]);
 
   const columns: GridColDef[] = !desktop
     ? [
         {
-          field: 'player_name',
-          headerName: 'NAME',
+          field: 'team_name',
+          headerName: 'TEAM',
           width: 140,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <Link href={`https://glb2.warriorgeneral.com/game/team/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
             </Link>
           ),
           disableColumnMenu: true,
         },
         {
-          field: 'fg_made',
-          headerName: 'FGM',
+          field: 'tier_rank',
+          headerName: 'Tier',
           width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
-          field: 'fg_attempts',
-          headerName: 'FGA',
+          field: 'global_rank',
+          headerName: 'GLOBAL',
           width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
-          field: 'accuracy',
-          headerName: 'FG%',
-          width: 120,
-          type: 'number',
-          pinnable: false,
-          disableColumnMenu: true,
-          valueGetter: (value, row: GridRowModel) => {
-            return +((+row.fg_made / +row.fg_attempts) * 100.0).toFixed(1);
-          },
-          valueFormatter: (value) => `${value}%`,
-        },
-        {
-          field: 'forty_to_forty_nine_made',
-          headerName: '40-49',
+          field: 'wins',
+          headerName: 'W',
           width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
-          field: 'fifty_plus_made',
-          headerName: '50+',
+          field: 'losses',
+          headerName: 'L',
           width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
-          field: 'touchbacks',
-          headerName: 'TB',
+          field: 'ties',
+          headerName: 'T',
           width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
-        },
-        {
-          field: 'kickoffs',
-          headerName: 'KO',
-          width: 120,
-          type: 'number',
-          pinnable: false,
-          disableColumnMenu: true,
-        },
-        {
-          field: 'touchback_percent',
-          headerName: 'TB%',
-          width: 120,
-          type: 'number',
-          pinnable: false,
-          disableColumnMenu: true,
-          valueGetter: (value, row: GridRowModel) => {
-            return +((+row.touchbacks / +row.kickoffs) * 100.0).toFixed(1);
-          },
-          valueFormatter: (value) => `${value}%`,
         },
         {
           field: 'gm_rating',
@@ -125,94 +93,63 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return getKickingGmRating(row);
+            return getTeamGmRating(row);
           },
           disableColumnMenu: true,
         },
       ]
     : [
         {
-          field: 'player_name',
-          headerName: 'NAME',
+          field: 'team_name',
+          headerName: 'TEAM',
           flex: 2,
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Stack sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               <Link
-                href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`}
+                href={`https://glb2.warriorgeneral.com/game/team/${params.row.id}`}
                 target='_blank'
                 style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
               >
                 <strong>{params.value}</strong>
               </Link>
-              <Typography variant='caption'>{params.row.team_name}</Typography>
+              <Typography variant='caption'>{params.row.owner}</Typography>
             </Stack>
           ),
         },
         {
-          field: 'fg_made',
-          headerName: 'FGM',
+          field: 'tier_rank',
+          headerName: 'TIER',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'fg_attempts',
-          headerName: 'FGA',
+          field: 'global_rank',
+          headerName: 'GLOBAL',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'accuracy',
-          headerName: 'FG%',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
-            return +((+row.fg_made / +row.fg_attempts) * 100.0).toFixed(1);
-          },
-          valueFormatter: (value) => `${value}%`,
-        },
-        {
-          field: 'forty_to_forty_nine_made',
-          headerName: '40-49',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-          disableColumnMenu: true,
-        },
-        {
-          field: 'fifty_plus_made',
-          headerName: '50+',
-          flex: 1,
-          type: 'number',
-          pinnable: false,
-          disableColumnMenu: true,
-        },
-        {
-          field: 'touchbacks',
-          headerName: 'TB',
+          field: 'wins',
+          headerName: 'W',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'kickoffs',
-          headerName: 'KO',
+          field: 'losses',
+          headerName: 'L',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'touchback_percent',
-          headerName: 'TB%',
+          field: 'ties',
+          headerName: 'T',
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
-            return +((+row.touchbacks / +row.kickoffs) * 100.0).toFixed(1);
-          },
-          valueFormatter: (value) => `${value}%`,
         },
         {
           field: 'gm_rating',
@@ -221,7 +158,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return getKickingGmRating(row);
+            return getTeamGmRating(row);
           },
         },
       ];
@@ -243,12 +180,12 @@ export default function PlayerPassingStats() {
           return desktop ? 'desktop-text' : 'mobile-text';
         }}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
+        slotProps={{ toolbar: { tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran', 'All Tiers'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           pagination: { paginationModel: { pageSize: !desktop ? 12 : 15 } },
           pinnedColumns: {
-            left: ['player_name'],
+            left: ['team_name'],
           },
         }}
       />
