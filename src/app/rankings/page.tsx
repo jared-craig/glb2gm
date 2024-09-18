@@ -78,7 +78,7 @@ export default function PlayerPassingStats() {
         {
           field: 'offensive_total_yards',
           headerName: 'OFF TOTAL YDS',
-          width: 120,
+          width: 140,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -86,7 +86,7 @@ export default function PlayerPassingStats() {
         {
           field: 'offensive_rushing_yards',
           headerName: 'OFF RUSH YDS',
-          width: 120,
+          width: 140,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -94,7 +94,7 @@ export default function PlayerPassingStats() {
         {
           field: 'offensive_passing_yards',
           headerName: 'OFF PASS YDS',
-          width: 120,
+          width: 140,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -102,7 +102,7 @@ export default function PlayerPassingStats() {
         {
           field: 'defensive_total_yards',
           headerName: 'DEF TOTAL YDS',
-          width: 120,
+          width: 140,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -110,7 +110,7 @@ export default function PlayerPassingStats() {
         {
           field: 'defensive_rushing_yards',
           headerName: 'DEF RUSH YDS',
-          width: 120,
+          width: 140,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
@@ -118,7 +118,7 @@ export default function PlayerPassingStats() {
         {
           field: 'defensive_passing_yards',
           headerName: 'DEF PASS YDS',
-          width: 120,
+          width: 140,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
