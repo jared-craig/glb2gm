@@ -71,6 +71,11 @@ export const getRushingGmRating = (x: any): number => {
   return gm;
 };
 
+export const getTeamGmRating = (x: any): number => {
+  const gm = Math.round(2.0 * (100.0 - +x.global_rank) * (0.1 * (100.0 - +x.tier_rank)));
+  return gm;
+};
+
 export const getReceivingDropsPerReception = (x: any): number => {
   return +(+x.drops / +x.receptions).toFixed(2);
 };

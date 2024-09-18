@@ -2,9 +2,7 @@ import { FormControl, ListItemText, MenuItem, Select, SelectChangeEvent } from '
 import { GridToolbarContainer, GridToolbarQuickFilter } from '@mui/x-data-grid-pro';
 import { useState } from 'react';
 
-const tierOptions = ['Rookie', 'Sophomore', 'Professional', 'Veteran'];
-
-function CustomGridToolbar({ tierFilter }: any) {
+function CustomGridToolbar({ tierFilter, tierOptions }: any) {
   const [tier, setTier] = useState<string>('Veteran');
   const MenuProps = {
     PaperProps: {

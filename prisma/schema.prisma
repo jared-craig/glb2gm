@@ -270,3 +270,17 @@ model KickingTest {
   tier                           String   @db.NVarChar(Max)
   updated_at                     DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_KickingTest_updated_at") @db.DateTime
 }
+
+model Ladder {
+  id          Int      @id(map: "PK_Ladder")
+  team_name   String   @db.NVarChar(Max)
+  league      String   @db.NVarChar(Max)
+  owner       String   @db.NVarChar(Max)
+  wins        Int
+  losses      Int
+  ties        Int
+  global_rank Int
+  tier_rank   Int
+  tier        String   @db.NVarChar(Max)
+  updated_at  DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Ladder_updated_at") @db.DateTime
+}
