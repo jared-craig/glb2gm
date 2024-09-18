@@ -50,7 +50,7 @@ export default function PlayerPassingStats() {
         },
         {
           field: 'tier_rank',
-          headerName: 'Tier',
+          headerName: 'TIER',
           width: 120,
           type: 'number',
           pinnable: false,
