@@ -1,6 +1,6 @@
 'use client';
 
-import { DataGridPro, GridColDef, GridRenderCellParams, GridRowModel } from '@mui/x-data-grid-pro';
+import { DataGridPro, GridColDef, GridComparatorFn, GridRenderCellParams, GridRowModel } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
@@ -24,6 +24,8 @@ export default function PlayerPassingStats() {
     setRows(tier !== 'All Tiers' ? data.filter((x: TeamData) => x.tier === tier) : data);
     setFetched(true);
   };
+
+  const recordComparator: GridComparatorFn<string> = (v1, v2) => +v1.substring(0, v1.indexOf('-')) - +v2.substring(0, v2.indexOf('-'));
 
   useEffect(() => {
     fetchData();
@@ -63,24 +65,59 @@ export default function PlayerPassingStats() {
           disableColumnMenu: true,
         },
         {
-          field: 'wins',
-          headerName: 'W',
+          field: 'record',
+          headerName: 'W-L-T',
+          width: 120,
+          pinnable: false,
+          disableColumnMenu: true,
+          valueGetter: (value, row) => {
+            return `${row.wins}-${row.losses}-${row.ties}`;
+          },
+          sortComparator: recordComparator,
+        },
+        {
+          field: 'offensive_total_yards',
+          headerName: 'OFF TOTAL YDS',
           width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
-          field: 'losses',
-          headerName: 'L',
+          field: 'offensive_rushing_yards',
+          headerName: 'OFF RUSH YDS',
           width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
         },
         {
-          field: 'ties',
-          headerName: 'T',
+          field: 'offensive_passing_yards',
+          headerName: 'OFF PASS YDS',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'defensive_total_yards',
+          headerName: 'DEF TOTAL YDS',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'defensive_rushing_yards',
+          headerName: 'DEF RUSH YDS',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'defensive_passing_yards',
+          headerName: 'DEF PASS YDS',
           width: 120,
           type: 'number',
           pinnable: false,
@@ -131,22 +168,53 @@ export default function PlayerPassingStats() {
           pinnable: false,
         },
         {
-          field: 'wins',
-          headerName: 'W',
+          field: 'record',
+          headerName: 'W-L-T',
+          flex: 1,
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return `${row.wins}-${row.losses}-${row.ties}`;
+          },
+          sortComparator: recordComparator,
+        },
+        {
+          field: 'offensive_total_yards',
+          headerName: 'OFF TOTAL YDS',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'losses',
-          headerName: 'L',
+          field: 'offensive_rushing_yards',
+          headerName: 'OFF RUSH YDS',
           flex: 1,
           type: 'number',
           pinnable: false,
         },
         {
-          field: 'ties',
-          headerName: 'T',
+          field: 'offensive_passing_yards',
+          headerName: 'OFF PASS YDS',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'defensive_total_yards',
+          headerName: 'DEF TOTAL YDS',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'defensive_rushing_yards',
+          headerName: 'DEF RUSH YDS',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+        },
+        {
+          field: 'defensive_passing_yards',
+          headerName: 'DEF PASS YDS',
           flex: 1,
           type: 'number',
           pinnable: false,

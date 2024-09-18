@@ -8,5 +8,27 @@ export interface TeamData {
   ties: number;
   global_rank: number;
   tier_rank: number;
+  offensive_total_yards: number;
+  offensive_rushing_yards: number;
+  offensive_rushes: number;
+  offensive_passing_yards: number;
+  offensive_completions: number;
+  offensive_attempts: number;
+  offensive_sacks: number;
+  offensive_interceptions: number;
+  offensive_punts: number;
+  offensive_fumbles: number;
+  offensive_fumbles_lost: number;
+  defensive_total_yards: number;
+  defensive_rushing_yards: number;
+  defensive_rushes: number;
+  defensive_passing_yards: number;
+  defensive_completions: number;
+  defensive_attempts: number;
+  defensive_sacks: number;
+  defensive_interceptions: number;
+  defensive_punts: number;
+  defensive_fumbles: number;
+  defensive_fumbles_lost: number;
   tier: string;
 }
