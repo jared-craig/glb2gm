@@ -15,7 +15,7 @@ export default function PlayerPassingStats() {
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<TeamData[]>([]);
   const [rows, setRows] = useState<TeamData[]>([]);
-  const [tier, setTier] = useState<string>('Veteran');
+  const [tier, setTier] = useState<string>('All Tiers');
 
   const fetchData = async () => {
     const res = await fetch('/api/teams');
