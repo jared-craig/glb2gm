@@ -3,7 +3,7 @@ import { GridToolbarContainer, GridToolbarQuickFilter } from '@mui/x-data-grid-p
 import { useState } from 'react';
 
 function CustomGridToolbar({ tierFilter, tierOptions }: any) {
-  const [tier, setTier] = useState<string>('Veteran');
+  const [tier, setTier] = useState<string>(tierOptions[tierOptions.length - 1]);
   const MenuProps = {
     PaperProps: {
       style: {
