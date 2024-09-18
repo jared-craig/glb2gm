@@ -272,15 +272,73 @@ model KickingTest {
 }
 
 model Ladder {
-  id          Int      @id(map: "PK_Ladder")
-  team_name   String   @db.NVarChar(Max)
-  league      String   @db.NVarChar(Max)
-  owner       String   @db.NVarChar(Max)
-  wins        Int
-  losses      Int
-  ties        Int
-  global_rank Int
-  tier_rank   Int
-  tier        String   @db.NVarChar(Max)
-  updated_at  DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Ladder_updated_at") @db.DateTime
+  id                      Int      @id(map: "PK_Ladder")
+  team_name               String   @db.NVarChar(Max)
+  league                  String   @db.NVarChar(Max)
+  owner                   String   @db.NVarChar(Max)
+  wins                    Int
+  losses                  Int
+  ties                    Int
+  global_rank             Int
+  tier_rank               Int
+  offensive_total_yards   Decimal  @db.Decimal(18, 1)
+  offensive_rushing_yards Decimal  @db.Decimal(18, 1)
+  offensive_rushes        Int
+  offensive_passing_yards Decimal  @db.Decimal(18, 1)
+  offensive_completions   Int
+  offensive_attempts      Int
+  offensive_sacks         Int
+  offensive_interceptions Int
+  offensive_punts         Int
+  offensive_fumbles       Int
+  offensive_fumbles_lost  Int
+  defensive_total_yards   Decimal  @db.Decimal(18, 1)
+  defensive_rushing_yards Decimal  @db.Decimal(18, 1)
+  defensive_rushes        Int
+  defensive_passing_yards Decimal  @db.Decimal(18, 1)
+  defensive_completions   Int
+  defensive_attempts      Int
+  defensive_sacks         Int
+  defensive_interceptions Int
+  defensive_punts         Int
+  defensive_fumbles       Int
+  defensive_fumbles_lost  Int
+  tier                    String   @db.NVarChar(Max)
+  updated_at              DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Ladder_updated_at") @db.DateTime
+}
+
+model LadderTest {
+  id                      Int      @id(map: "PK_LadderTest")
+  team_name               String   @db.NVarChar(Max)
+  league                  String   @db.NVarChar(Max)
+  owner                   String   @db.NVarChar(Max)
+  wins                    Int
+  losses                  Int
+  ties                    Int
+  global_rank             Int
+  tier_rank               Int
+  offensive_total_yards   Decimal  @db.Decimal(18, 1)
+  offensive_rushing_yards Decimal  @db.Decimal(18, 1)
+  offensive_rushes        Int
+  offensive_passing_yards Decimal  @db.Decimal(18, 1)
+  offensive_completions   Int
+  offensive_attempts      Int
+  offensive_sacks         Int
+  offensive_interceptions Int
+  offensive_punts         Int
+  offensive_fumbles       Int
+  offensive_fumbles_lost  Int
+  defensive_total_yards   Decimal  @db.Decimal(18, 1)
+  defensive_rushing_yards Decimal  @db.Decimal(18, 1)
+  defensive_rushes        Int
+  defensive_passing_yards Decimal  @db.Decimal(18, 1)
+  defensive_completions   Int
+  defensive_attempts      Int
+  defensive_sacks         Int
+  defensive_interceptions Int
+  defensive_punts         Int
+  defensive_fumbles       Int
+  defensive_fumbles_lost  Int
+  tier                    String   @db.NVarChar(Max)
+  updated_at              DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_LadderTest_updated_at") @db.DateTime
 }
