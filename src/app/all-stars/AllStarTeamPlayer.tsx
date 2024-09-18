@@ -24,7 +24,7 @@ const THRESHOLDS = {
   PDS: 0.5,
   KLS: 0.5,
   TACKLES: 2,
-  STICK_RATIO: 0.75,
+  STICK_RATIO: 0.66,
   BTK_RATIO: 0.66,
   FIFTY_PLUS: 1,
   TB_RATIO: 0.33,
@@ -100,7 +100,7 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
       if (player.passes_defended >= THRESHOLDS.PDS * gamesPlayed) stats.PD = player.passes_defended;
       if (player.passes_knocked_loose >= THRESHOLDS.KLS * gamesPlayed) stats.KL = player.passes_knocked_loose;
       if (player.tackles >= THRESHOLDS.TACKLES * gamesPlayed) stats.TK = player.tackles;
-      if (player.tackles >= THRESHOLDS.TACKLES && +player.sticks / +player.tackles >= THRESHOLDS.STICK_RATIO) stats.STICK = player.sticks;
+      if (player.tackles >= THRESHOLDS.TACKLES * gamesPlayed && +player.sticks / +player.tackles >= THRESHOLDS.STICK_RATIO) stats.STICK = player.sticks;
       rating = getDefensiveGmRating(player);
       break;
     case 'K':

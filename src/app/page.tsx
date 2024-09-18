@@ -12,6 +12,7 @@ export default function Home() {
         <Typography variant='body1'>
           App is currently in <i>development</i>
         </Typography>
+        <Typography variant='body1'>Data is updated nightly</Typography>
         <Stack spacing={-1}>
           <Typography variant='body1'>Current Features:</Typography>
           <List>
