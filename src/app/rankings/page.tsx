@@ -42,7 +42,7 @@ export default function PlayerPassingStats() {
           headerName: 'TEAM',
           width: 140,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Link href={`https://glb2.warriorgeneral.com/game/team/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <Link href={`/team-details/${params.row.id}`} style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
             </Link>
           ),
@@ -143,8 +143,7 @@ export default function PlayerPassingStats() {
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Stack sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               <Link
-                href={`https://glb2.warriorgeneral.com/game/team/${params.row.id}`}
-                target='_blank'
+                href={`/team-details/${params.row.id}`}
                 style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
               >
                 <strong>{params.value}</strong>
