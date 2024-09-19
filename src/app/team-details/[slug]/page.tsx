@@ -61,7 +61,7 @@ export default function TeamDetails({ params }: { params: { slug: string } }) {
     <Container maxWidth='xl'>
       {(!teamData || !leagueData) && <LinearProgress sx={{ height: 32, borderRadius: 2 }} />}
       {teamData && leagueData && (
-        <Grid container rowSpacing={4}>
+        <Grid container rowSpacing={{ xs: 1, sm: 2 }}>
           <Grid size={{ xs: 12 }}>
             <Stack spacing={-0.5}>
               <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
