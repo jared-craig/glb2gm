@@ -74,6 +74,8 @@ export default function PlayerPassingStats() {
             return `${row.wins}-${row.losses}-${row.ties}`;
           },
           sortComparator: recordComparator,
+          headerAlign: 'right',
+          align: 'right',
         },
         {
           field: 'offensive_total_yards',
@@ -176,6 +178,8 @@ export default function PlayerPassingStats() {
             return `${row.wins}-${row.losses}-${row.ties}`;
           },
           sortComparator: recordComparator,
+          headerAlign: 'right',
+          align: 'right',
         },
         {
           field: 'offensive_total_yards',
