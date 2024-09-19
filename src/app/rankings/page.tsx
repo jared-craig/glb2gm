@@ -55,6 +55,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'global_rank',
@@ -63,6 +64,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'record',
@@ -108,6 +110,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'defensive_rushing_yards',
@@ -116,6 +119,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'defensive_passing_yards',
@@ -124,6 +128,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'gm_rating',
@@ -161,6 +166,7 @@ export default function PlayerPassingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'global_rank',
@@ -168,6 +174,7 @@ export default function PlayerPassingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'record',
@@ -208,6 +215,7 @@ export default function PlayerPassingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'defensive_rushing_yards',
@@ -215,6 +223,7 @@ export default function PlayerPassingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'defensive_passing_yards',
@@ -222,6 +231,7 @@ export default function PlayerPassingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'gm_rating',
