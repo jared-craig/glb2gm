@@ -55,6 +55,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'global_rank',
@@ -63,6 +64,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'record',
@@ -164,6 +166,7 @@ export default function PlayerPassingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'global_rank',
@@ -171,6 +174,7 @@ export default function PlayerPassingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+          sortingOrder: ['asc', 'desc'],
         },
         {
           field: 'record',
