@@ -29,10 +29,21 @@ export default function TeamDetails({ params }: { params: { slug: string } }) {
 
   const sortLeagueData = (stat: string, dir: string): TeamData[] => {
     if (!leagueData) return [];
-    if (dir === 'asc') {
-      return [...leagueData].sort((a, b) => +a[stat as keyof TeamData] - +b[stat as keyof TeamData]);
-    } else {
-      return [...leagueData].sort((a, b) => +b[stat as keyof TeamData] - +a[stat as keyof TeamData]);
+    switch (stat) {
+      case 'offensive_rushing_yards_per_carry':
+        return [...leagueData].sort((a, b) => +(b.offensive_rushing_yards / +b.offensive_rushes) - +(a.offensive_rushing_yards / +a.offensive_rushes));
+      case 'offensive_passing_yards_per_attempt':
+        return [...leagueData].sort((a, b) => +(b.offensive_passing_yards / +b.offensive_attempts) - +(a.offensive_passing_yards / +a.offensive_attempts));
+      case 'defensive_rushing_yards_per_carry':
+        return [...leagueData].sort((a, b) => +(a.defensive_rushing_yards / +a.defensive_rushes) - +(b.defensive_rushing_yards / +b.defensive_rushes));
+      case 'defensive_passing_yards_per_attempt':
+        return [...leagueData].sort((a, b) => +(a.defensive_passing_yards / +a.defensive_attempts) - +(b.defensive_passing_yards / +b.defensive_attempts));
+      default:
+        if (dir === 'asc') {
+          return [...leagueData].sort((a, b) => +a[stat as keyof TeamData] - +b[stat as keyof TeamData]);
+        } else {
+          return [...leagueData].sort((a, b) => +b[stat as keyof TeamData] - +a[stat as keyof TeamData]);
+        }
     }
   };
 
@@ -49,7 +60,7 @@ export default function TeamDetails({ params }: { params: { slug: string } }) {
   return (
     <Container maxWidth='xl'>
       {(!teamData || !leagueData) && <LinearProgress sx={{ height: 32, borderRadius: 2 }} />}
-      {teamData && (
+      {teamData && leagueData && (
         <Grid container rowSpacing={4}>
           <Grid size={{ xs: 12 }}>
             <Stack spacing={-0.5}>
@@ -83,12 +94,18 @@ export default function TeamDetails({ params }: { params: { slug: string } }) {
                 <Typography>Rushing Yards: {teamData.offensive_rushing_yards}</Typography>
                 <Typography>( {getLeagueRank('offensive_rushing_yards', 'desc')} )</Typography>
               </Stack>
-              <Typography>Rushing YPC: {(+teamData.offensive_rushing_yards / +teamData.offensive_rushes).toFixed(2)}</Typography>
+              <Stack direction='row' spacing={1}>
+                <Typography>Rushing YPC: {(+teamData.offensive_rushing_yards / +teamData.offensive_rushes).toFixed(2)}</Typography>
+                <Typography>( {getLeagueRank('offensive_rushing_yards_per_carry', 'desc')} )</Typography>
+              </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography>Passing Yards: {teamData.offensive_passing_yards}</Typography>{' '}
                 <Typography>( {getLeagueRank('offensive_passing_yards', 'desc')} )</Typography>
               </Stack>
-              <Typography>Passing YPA: {(+teamData.offensive_passing_yards / +teamData.offensive_attempts).toFixed(2)}</Typography>
+              <Stack direction='row' spacing={1}>
+                <Typography>Passing YPA: {(+teamData.offensive_passing_yards / +teamData.offensive_attempts).toFixed(2)}</Typography>
+                <Typography>( {getLeagueRank('offensive_passing_yards_per_attempt', 'desc')} )</Typography>
+              </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography>Interceptions: {teamData.offensive_interceptions}</Typography>{' '}
                 <Typography>( {getLeagueRank('offensive_interceptions', 'asc')} )</Typography>
@@ -110,12 +127,18 @@ export default function TeamDetails({ params }: { params: { slug: string } }) {
                 <Typography>Rushing Yards: {teamData.defensive_rushing_yards}</Typography>
                 <Typography>( {getLeagueRank('defensive_rushing_yards', 'asc')} )</Typography>
               </Stack>
-              <Typography>Rushing YPC: {(+teamData.defensive_rushing_yards / +teamData.defensive_rushes).toFixed(2)}</Typography>
+              <Stack direction='row' spacing={1}>
+                <Typography>Rushing YPC: {(+teamData.defensive_rushing_yards / +teamData.defensive_rushes).toFixed(2)}</Typography>
+                <Typography>( {getLeagueRank('defensive_rushing_yards_per_carry', 'desc')} )</Typography>
+              </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography>Passing Yards: {teamData.defensive_passing_yards}</Typography>{' '}
                 <Typography>( {getLeagueRank('defensive_passing_yards', 'asc')} )</Typography>
               </Stack>
-              <Typography>Passing YPA: {(+teamData.defensive_passing_yards / +teamData.defensive_attempts).toFixed(2)}</Typography>
+              <Stack direction='row' spacing={1}>
+                <Typography>Passing YPA: {(+teamData.defensive_passing_yards / +teamData.defensive_attempts).toFixed(2)}</Typography>
+                <Typography>( {getLeagueRank('defensive_passing_yards_per_attempt', 'asc')} )</Typography>
+              </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography>Interceptions: {teamData.defensive_interceptions}</Typography>{' '}
                 <Typography>( {getLeagueRank('defensive_interceptions', 'desc')} )</Typography>
