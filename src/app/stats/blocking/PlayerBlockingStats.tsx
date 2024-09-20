@@ -206,6 +206,7 @@ export default function PlayerRushingStats() {
         autoHeight
         sortingOrder={['desc', 'asc']}
         pagination
+        pageSizeOptions={[12, 24, 50, 100]}
         density='compact'
         getRowHeight={({ id, densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
         disableRowSelectionOnClick
@@ -222,7 +223,7 @@ export default function PlayerRushingStats() {
               items: [{ field: 'plays', operator: '>=', value: '25' }],
             },
           },
-          pagination: { paginationModel: { pageSize: !desktop ? 12 : 15 } },
+          pagination: { paginationModel: { pageSize: 12 } },
           pinnedColumns: {
             left: ['player_name'],
           },

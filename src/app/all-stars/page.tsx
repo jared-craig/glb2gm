@@ -425,7 +425,7 @@ export default function TopTeam() {
   }, [thresholds]);
 
   return (
-    <Grid container rowGap={{ xs: 1 }}>
+    <Grid container rowGap={{ xs: 0.5, sm: 1 }}>
       <Grid sx={{ display: 'flex', justifyContent: 'center' }} size={12}>
         <FormControl>
           <RadioGroup row name='first-or-second-radio-buttons-group' value={teamChoice} onChange={(x) => setTeamChoice(x.target.value)}>
@@ -700,7 +700,7 @@ export default function TopTeam() {
             </Stack>
           </Grid>
         </>
-      )}{' '}
+      )}
       {teamChoice === 'second' && gamesPlayed && (
         <>
           <Grid sx={{ pb: 0 }} size={12}>
