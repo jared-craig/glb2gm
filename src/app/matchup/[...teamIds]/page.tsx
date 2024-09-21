@@ -46,8 +46,6 @@ export default function Matchup({ params }: { params: { teamIds: number[] } }) {
   const [teamTwo, setTeamTwo] = useState<TeamData>();
   const [fetching, setFetching] = useState<boolean>(true);
 
-  if (params.teamIds.length !== 2) return notFound();
-
   const fetchData = async () => {
     const res = await fetch('/api/teams');
     const data: TeamData[] = await res.json();
@@ -63,6 +61,8 @@ export default function Matchup({ params }: { params: { teamIds: number[] } }) {
   useEffect(() => {
     fetchData();
   }, []);
+
+  if (params.teamIds.length !== 2) return notFound();
 
   if (fetching) return <LinearProgress sx={{ height: 32, borderRadius: 2 }} />;
 
