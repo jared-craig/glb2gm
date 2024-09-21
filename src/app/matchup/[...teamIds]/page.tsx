@@ -42,11 +42,11 @@ function TeamStats({ team1, team2, sort, label, textSize }: TeamStatsParams) {
 }
 
 export default function Matchup({ params }: { params: { teamIds: number[] } }) {
-  if (params.teamIds.length !== 2) return notFound();
-
   const [teamOne, setTeamOne] = useState<TeamData>();
   const [teamTwo, setTeamTwo] = useState<TeamData>();
   const [fetching, setFetching] = useState<boolean>(true);
+
+  if (params.teamIds.length !== 2) return notFound();
 
   const fetchData = async () => {
     const res = await fetch('/api/teams');
