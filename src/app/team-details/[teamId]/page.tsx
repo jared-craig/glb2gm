@@ -6,14 +6,14 @@ import { Container, LinearProgress, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Link from 'next/link';
 
-export default function TeamDetails({ params }: { params: { slug: string } }) {
+export default function TeamDetails({ params }: { params: { teamId: string } }) {
   const [leagueData, setLeagueData] = useState<TeamData[]>();
   const [teamData, setTeamData] = useState<TeamData>();
 
   const fetchData = async () => {
-    const res = await fetch(`/api/teams`);
+    const res = await fetch('/api/teams');
     const data = await res.json();
-    const currentTeam = data.find((x: TeamData) => x.id === +params.slug);
+    const currentTeam = data.find((x: TeamData) => x.id === +params.teamId);
     setLeagueData(data.filter((x: TeamData) => x.league === currentTeam.league));
     setTeamData(currentTeam);
   };
@@ -66,7 +66,7 @@ export default function TeamDetails({ params }: { params: { slug: string } }) {
             <Stack spacing={-0.5}>
               <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
                 <Typography variant='h5'>{teamData.team_name}</Typography>
-                <Link href={`https://glb2.warriorgeneral.com/game/team/${params.slug}`} target='_blank' style={{ color: 'inherit' }}>
+                <Link href={`https://glb2.warriorgeneral.com/game/team/${params.teamId}`} target='_blank' style={{ color: 'inherit' }}>
                   <Typography>GLB2 Link</Typography>
                 </Link>
               </Stack>
