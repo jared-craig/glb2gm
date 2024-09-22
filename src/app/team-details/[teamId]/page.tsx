@@ -10,6 +10,7 @@ import { extractTeamData, sumArray } from '@/app/matchup/[...teamIds]/topTeamHel
 
 export default function TeamDetails({ params }: { params: { teamId: string } }) {
   const [leagueData, setLeagueData] = useState<TeamData[]>();
+  const [allTeams, setAllTeams] = useState<TeamData[]>();
   const [teamData, setTeamData] = useState<TeamData>();
   const [allTeamOneGames, setAllTeamOneGames] = useState<GameData[]>();
   const [topTenTeamOneGames, setTopTenTeamOneGames] = useState<any>();
@@ -22,13 +23,14 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
     const currentTeam = data.find((x: TeamData) => x.id === +params.teamId);
     setLeagueData(data.filter((x: TeamData) => x.league === currentTeam.league));
     setTeamData(currentTeam);
+    setAllTeams(data);
     setAllTeamOneGames(teamOneGameData);
   };
 
   const getTopTenGames = () => {
-    if (!leagueData || !teamData || !allTeamOneGames) return;
+    if (!allTeams || !teamData || !allTeamOneGames) return;
 
-    const teamOneTopTeams = [...leagueData].filter(
+    const teamOneTopTeams = [...allTeams].filter(
       (x) => x.tier === teamData.tier && x.tier_rank <= (teamData.tier === 'Professional' ? 5.0 : 10.0) && x.id !== teamData.id
     );
 
