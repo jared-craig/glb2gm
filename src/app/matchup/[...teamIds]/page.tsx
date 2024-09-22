@@ -6,6 +6,34 @@ import { Container, FormControl, LinearProgress, ListItemText, MenuItem, Select,
 import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+export const extractTeamData = (originalObject: any, keyword: string) => {
+  const newObject: any = {};
+  for (const property in originalObject) {
+    if (property !== 'team_one_id' && property !== 'team_two_id' && property.includes(keyword)) {
+      newObject[property.substring(keyword.length)] = originalObject[property];
+    }
+  }
+  return newObject;
+};
+
+export const sumArray = (arr: any[]) => {
+  if (!Array.isArray(arr) || arr.length === 0) {
+    return null; // Handle empty or invalid input
+  }
+  const firstObject = arr[0]; // Get the structure of the first object
+  const properties = Object.keys(firstObject);
+  const sumObject: any = {};
+  // Initialize sumObject with zeros
+  properties.forEach((prop) => {
+    sumObject[prop] = 0;
+  });
+  // Iterate through the array and sum up the properties
+  arr.forEach((obj) => {
+    properties.forEach((prop) => (sumObject[prop] += +obj[prop]));
+  });
+  return sumObject;
+};
+
 interface TeamStatsParams {
   team1: string | number;
   team2: string | number;
@@ -78,34 +106,6 @@ export default function Matchup({ params }: { params: { teamIds: number[] } }) {
     setAllTeamOneGames(teamOneGameData);
     setAllTeamTwoGames(teamTwoGameData);
     setFetching(false);
-  };
-
-  const extractTeamData = (originalObject: any, keyword: string) => {
-    const newObject: any = {};
-    for (const property in originalObject) {
-      if (property !== 'team_one_id' && property !== 'team_two_id' && property.includes(keyword)) {
-        newObject[property.substring(keyword.length)] = originalObject[property];
-      }
-    }
-    return newObject;
-  };
-
-  const sumArray = (arr: any[]) => {
-    if (!Array.isArray(arr) || arr.length === 0) {
-      return null; // Handle empty or invalid input
-    }
-    const firstObject = arr[0]; // Get the structure of the first object
-    const properties = Object.keys(firstObject);
-    const sumObject: any = {};
-    // Initialize sumObject with zeros
-    properties.forEach((prop) => {
-      sumObject[prop] = 0;
-    });
-    // Iterate through the array and sum up the properties
-    arr.forEach((obj) => {
-      properties.forEach((prop) => (sumObject[prop] += +obj[prop]));
-    });
-    return sumObject;
   };
 
   const getTopTenGames = () => {
@@ -251,8 +251,8 @@ export default function Matchup({ params }: { params: { teamIds: number[] } }) {
               textSize={{ xs: 'body2', sm: 'body1' }}
             />
             <TeamStats
-              team1={topTenTeamOneGames.total_yards / (topTenTeamOneGames.rushes + topTenTeamOneGames.completions)}
-              team2={topTenTeamTwoGames.total_yards / (topTenTeamTwoGames.rushes + topTenTeamTwoGames.completions)}
+              team1={topTenTeamOneGames.total_yards / (topTenTeamOneGames.rushes + topTenTeamOneGames.attempts)}
+              team2={topTenTeamTwoGames.total_yards / (topTenTeamTwoGames.rushes + topTenTeamTwoGames.attempts)}
               sort='desc'
               label='Yards Per Play'
               textSize={{ xs: 'body2', sm: 'body1' }}
