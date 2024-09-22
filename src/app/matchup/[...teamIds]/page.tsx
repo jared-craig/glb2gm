@@ -5,6 +5,7 @@ import { TeamData } from '@/app/rankings/teamData';
 import { Container, FormControl, LinearProgress, ListItemText, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { extractTeamData, sumArray } from './topTeamHelpers';
 
 interface TeamStatsParams {
   team1: string | number;
