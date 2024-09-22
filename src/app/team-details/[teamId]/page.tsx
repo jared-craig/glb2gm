@@ -93,7 +93,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
 
   useEffect(() => {
     getTopTenGames();
-  }, [leagueData, teamData, allTeamOneGames]);
+  }, [allTeams, teamData, allTeamOneGames]);
 
   return (
     <Container maxWidth='xl'>
