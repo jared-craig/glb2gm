@@ -193,7 +193,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
             <Stack spacing={0}>
               <Typography variant='h6'>VS Top Teams</Typography>
               <Stack direction='row' spacing={1}>
-                <Typography>Yards Per Game: {topTenTeamOneGames.total_yards}</Typography>
+                <Typography>Yards Per Game: {(topTenTeamOneGames.total_yards / topTenTeamOneGames.games).toFixed(1)}</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography>
