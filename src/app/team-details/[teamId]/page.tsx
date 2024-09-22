@@ -193,18 +193,18 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
             <Stack spacing={0}>
               <Typography variant='h6'>VS Top Teams</Typography>
               <Stack direction='row' spacing={1}>
-                <Typography>Yards Per Game: {(topTenTeamOneGames.total_yards / topTenTeamOneGames.games).toFixed(1)}</Typography>
+                <Typography>Yards Per Game: {(topTenTeamOneGames.total_yards / topTenTeamOneGames.games).toFixed(2)}</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography>
-                  Yards Per Play: {(topTenTeamOneGames.total_yards / (topTenTeamOneGames.rushes + topTenTeamOneGames.attempts)).toFixed(1)}
+                  Yards Per Play: {(topTenTeamOneGames.total_yards / (topTenTeamOneGames.rushes + topTenTeamOneGames.attempts)).toFixed(2)}
                 </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography>Rush YPC: {(topTenTeamOneGames.rushing_yards / topTenTeamOneGames.rushes).toFixed(1)}</Typography>
+                <Typography>Rush YPC: {(topTenTeamOneGames.rushing_yards / topTenTeamOneGames.rushes).toFixed(2)}</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography>Pass YPA: {(topTenTeamOneGames.passing_yards / topTenTeamOneGames.attempts).toFixed(1)}</Typography>
+                <Typography>Pass YPA: {(topTenTeamOneGames.passing_yards / topTenTeamOneGames.attempts).toFixed(2)}</Typography>
               </Stack>
             </Stack>
           </Grid>
