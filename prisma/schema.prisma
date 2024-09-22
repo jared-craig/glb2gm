@@ -272,39 +272,41 @@ model KickingTest {
 }
 
 model Ladder {
-  id                      Int      @id(map: "PK_Ladder")
-  team_name               String   @db.NVarChar(Max)
-  league                  String   @db.NVarChar(Max)
-  owner                   String   @db.NVarChar(Max)
-  wins                    Int
-  losses                  Int
-  ties                    Int
-  global_rank             Int
-  tier_rank               Int
-  offensive_total_yards   Decimal  @db.Decimal(18, 1)
-  offensive_rushing_yards Decimal  @db.Decimal(18, 1)
-  offensive_rushes        Int
-  offensive_passing_yards Decimal  @db.Decimal(18, 1)
-  offensive_completions   Int
-  offensive_attempts      Int
-  offensive_sacks         Int
-  offensive_interceptions Int
-  offensive_punts         Int
-  offensive_fumbles       Int
-  offensive_fumbles_lost  Int
-  defensive_total_yards   Decimal  @db.Decimal(18, 1)
-  defensive_rushing_yards Decimal  @db.Decimal(18, 1)
-  defensive_rushes        Int
-  defensive_passing_yards Decimal  @db.Decimal(18, 1)
-  defensive_completions   Int
-  defensive_attempts      Int
-  defensive_sacks         Int
-  defensive_interceptions Int
-  defensive_punts         Int
-  defensive_fumbles       Int
-  defensive_fumbles_lost  Int
-  tier                    String   @db.NVarChar(Max)
-  updated_at              DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Ladder_updated_at") @db.DateTime
+  id                              Int      @id(map: "PK_Ladder")
+  team_name                       String   @db.NVarChar(Max)
+  league                          String   @db.NVarChar(Max)
+  owner                           String   @db.NVarChar(Max)
+  wins                            Int
+  losses                          Int
+  ties                            Int
+  global_rank                     Int
+  tier_rank                       Int
+  offensive_total_yards           Decimal  @db.Decimal(18, 1)
+  offensive_rushing_yards         Decimal  @db.Decimal(18, 1)
+  offensive_rushes                Int
+  offensive_passing_yards         Decimal  @db.Decimal(18, 1)
+  offensive_completions           Int
+  offensive_attempts              Int
+  offensive_sacks                 Int
+  offensive_interceptions         Int
+  offensive_punts                 Int
+  offensive_fumbles               Int
+  offensive_fumbles_lost          Int
+  defensive_total_yards           Decimal  @db.Decimal(18, 1)
+  defensive_rushing_yards         Decimal  @db.Decimal(18, 1)
+  defensive_rushes                Int
+  defensive_passing_yards         Decimal  @db.Decimal(18, 1)
+  defensive_completions           Int
+  defensive_attempts              Int
+  defensive_sacks                 Int
+  defensive_interceptions         Int
+  defensive_punts                 Int
+  defensive_fumbles               Int
+  defensive_fumbles_lost          Int
+  tier                            String   @db.NVarChar(Max)
+  updated_at                      DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Ladder_updated_at") @db.DateTime
+  Games_Games_team_one_idToLadder Games[]  @relation("Games_team_one_idToLadder")
+  Games_Games_team_two_idToLadder Games[]  @relation("Games_team_two_idToLadder")
 }
 
 model LadderTest {
@@ -341,4 +343,36 @@ model LadderTest {
   defensive_fumbles_lost  Int
   tier                    String   @db.NVarChar(Max)
   updated_at              DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_LadderTest_updated_at") @db.DateTime
+}
+
+model Games {
+  id                               Int      @id(map: "PK_Games")
+  team_one_id                      Int
+  team_two_id                      Int
+  game_type                        String   @db.NVarChar(Max)
+  team_one_total_yards             Decimal  @db.Decimal(18, 1)
+  team_two_total_yards             Decimal  @db.Decimal(18, 1)
+  team_one_rushing_yards           Decimal  @db.Decimal(18, 1)
+  team_two_rushing_yards           Decimal  @db.Decimal(18, 1)
+  team_one_rushes                  Int
+  team_two_rushes                  Int
+  team_one_passing_yards           Decimal  @db.Decimal(18, 1)
+  team_two_passing_yards           Decimal  @db.Decimal(18, 1)
+  team_one_completions             Int
+  team_two_completions             Int
+  team_one_attempts                Int
+  team_two_attempts                Int
+  team_one_sacks                   Int
+  team_two_sacks                   Int
+  team_one_interceptions           Int
+  team_two_interceptions           Int
+  team_one_punts                   Int
+  team_two_punts                   Int
+  team_one_fumbles                 Int
+  team_two_fumbles                 Int
+  team_one_fumbles_lost            Int
+  team_two_fumbles_lost            Int
+  updated_at                       DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Games_updated_at") @db.DateTime
+  Ladder_Games_team_one_idToLadder Ladder   @relation("Games_team_one_idToLadder", fields: [team_one_id], references: [id], onUpdate: NoAction, map: "FK_Games_Ladder")
+  Ladder_Games_team_two_idToLadder Ladder   @relation("Games_team_two_idToLadder", fields: [team_two_id], references: [id], onUpdate: NoAction, map: "FK_Games_Ladder1")
 }

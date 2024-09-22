@@ -5,17 +5,49 @@ import { TeamData } from '../../rankings/teamData';
 import { Container, LinearProgress, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Link from 'next/link';
+import { GameData } from '@/app/games/gameData';
+import { extractTeamData, sumArray } from '@/app/matchup/[...teamIds]/page';
 
 export default function TeamDetails({ params }: { params: { teamId: string } }) {
   const [leagueData, setLeagueData] = useState<TeamData[]>();
   const [teamData, setTeamData] = useState<TeamData>();
+  const [allTeamOneGames, setAllTeamOneGames] = useState<GameData[]>();
+  const [topTenTeamOneGames, setTopTenTeamOneGames] = useState<any>();
 
   const fetchData = async () => {
     const res = await fetch('/api/teams');
     const data = await res.json();
+    const teamOneGameRes = await fetch(`/api/games?teamId=${params.teamId}`);
+    const teamOneGameData: GameData[] = await teamOneGameRes.json();
     const currentTeam = data.find((x: TeamData) => x.id === +params.teamId);
     setLeagueData(data.filter((x: TeamData) => x.league === currentTeam.league));
     setTeamData(currentTeam);
+    setAllTeamOneGames(teamOneGameData);
+  };
+
+  const getTopTenGames = () => {
+    if (!leagueData || !teamData || !allTeamOneGames) return;
+
+    const teamOneTopTeams = [...leagueData].filter(
+      (x) => x.tier === teamData.tier && x.tier_rank <= (teamData.tier === 'Professional' ? 5.0 : 10.0) && x.id !== teamData.id
+    );
+
+    const teamOneTeamOneTopGames = [...allTeamOneGames].filter((x) => x.team_one_id === teamData.id && teamOneTopTeams.some((y) => y.id === x.team_two_id));
+    const teamOneTeamOneTopGamesSum = sumArray(teamOneTeamOneTopGames.map((x) => extractTeamData(x, 'team_one_')));
+    if (teamOneTeamOneTopGamesSum) teamOneTeamOneTopGamesSum['games'] = teamOneTeamOneTopGames.length;
+
+    const teamOneTeamTwoTopGames = [...allTeamOneGames].filter((x) => x.team_two_id === teamData.id && teamOneTopTeams.some((y) => y.id === x.team_one_id));
+    const teamOneTeamTwoTopGamesSum = sumArray(teamOneTeamTwoTopGames.map((x) => extractTeamData(x, 'team_two_')));
+    if (teamOneTeamTwoTopGamesSum) teamOneTeamTwoTopGamesSum['games'] = teamOneTeamTwoTopGames.length;
+
+    const teamOneTopTenGames =
+      teamOneTeamOneTopGamesSum && teamOneTeamTwoTopGamesSum
+        ? sumArray([teamOneTeamOneTopGamesSum, teamOneTeamTwoTopGamesSum])
+        : teamOneTeamOneTopGamesSum
+        ? teamOneTeamOneTopGamesSum
+        : teamOneTeamTwoTopGamesSum;
+
+    setTopTenTeamOneGames(teamOneTopTenGames);
   };
 
   const formatWithOrdinal = (number: number): string => {
@@ -57,10 +89,14 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
     fetchData();
   }, []);
 
+  useEffect(() => {
+    getTopTenGames();
+  }, [leagueData, teamData, allTeamOneGames]);
+
   return (
     <Container maxWidth='xl'>
-      {(!teamData || !leagueData) && <LinearProgress sx={{ height: 32, borderRadius: 2 }} />}
-      {teamData && leagueData && (
+      {(!teamData || !leagueData || !topTenTeamOneGames) && <LinearProgress sx={{ height: 32, borderRadius: 2 }} />}
+      {teamData && leagueData && topTenTeamOneGames && (
         <Grid container rowSpacing={{ xs: 1, sm: 2 }}>
           <Grid size={{ xs: 12 }}>
             <Stack spacing={-0.5}>
@@ -150,6 +186,25 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
               <Stack direction='row' spacing={1}>
                 <Typography>Forced Fumbles: {teamData.defensive_fumbles_lost}</Typography>
                 <Typography>( {getLeagueRank('defensive_fumbles_lost', 'desc')} )</Typography>
+              </Stack>
+            </Stack>
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Stack spacing={0}>
+              <Typography variant='h6'>VS Top Teams</Typography>
+              <Stack direction='row' spacing={1}>
+                <Typography>Yards Per Game: {topTenTeamOneGames.total_yards}</Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography>
+                  Yards Per Play: {(topTenTeamOneGames.total_yards / (topTenTeamOneGames.rushes + topTenTeamOneGames.attempts)).toFixed(1)}
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography>Rush YPC: {(topTenTeamOneGames.rushing_yards / topTenTeamOneGames.rushes).toFixed(1)}</Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography>Pass YPA: {(topTenTeamOneGames.passing_yards / topTenTeamOneGames.attempts).toFixed(1)}</Typography>
               </Stack>
             </Stack>
           </Grid>
