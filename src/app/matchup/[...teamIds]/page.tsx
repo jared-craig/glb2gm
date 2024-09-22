@@ -2,7 +2,7 @@
 
 import { GameData } from '@/app/games/gameData';
 import { TeamData } from '@/app/rankings/teamData';
-import { Container, LinearProgress, Stack, Typography } from '@mui/material';
+import { Container, FormControl, LinearProgress, ListItemText, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { notFound } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -51,6 +51,15 @@ export default function Matchup({ params }: { params: { teamIds: number[] } }) {
   const [topTenTeamOneGames, setTopTenTeamOneGames] = useState<any>();
   const [topTenTeamTwoGames, setTopTenTeamTwoGames] = useState<any>();
   const [fetching, setFetching] = useState<boolean>(true);
+  // const [teamOneSelect, setTeamOneSelect] = useState<string>();
+
+  // const MenuProps = {
+  //   PaperProps: {
+  //     style: {
+  //       maxHeight: 78 * 4.5 + 8,
+  //     },
+  //   },
+  // };
 
   const fetchData = async () => {
     const teamRes = await fetch('/api/teams');
@@ -161,6 +170,18 @@ export default function Matchup({ params }: { params: { teamIds: number[] } }) {
       {teamOne && teamTwo && topTenTeamOneGames && topTenTeamTwoGames && (
         <Stack spacing={4}>
           <Stack sx={{ textAlign: 'center' }} spacing={1}>
+            {/* Auto Complete for team selections? */}
+            {/* <FormControl variant='standard' sx={{ display: 'flex', width: 300, ml: 2 }} size='small' fullWidth>
+              <Select id='team-one-select' value={teamOne.team_name} label='Tier' onChange={(x) => setTeamOneSelect(x.target.value)} MenuProps={MenuProps}>
+                {allTeams
+                  ?.map((x) => x.team_name)
+                  .map((team: string) => (
+                    <MenuItem key={team} value={team}>
+                      <ListItemText primary={team} />
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl> */}
             <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='asc' label='vs' textSize={{ xs: 'body2', sm: 'body1', md: 'h6' }} />
             <Typography variant='h6'>Overall</Typography>
             <TeamStats
