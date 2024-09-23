@@ -125,6 +125,21 @@ export const getTemplates = (position: string): Template[] => {
       trait2: 'soft_hands',
       trait3: 'wr_shifty',
     },
+    {
+      position: 'WR',
+      templateName: 'Speedster',
+      height: 68,
+      weight: 165,
+      strength: 1,
+      speed: 10,
+      agility: 10,
+      stamina: 5,
+      awareness: 5,
+      confidence: 4,
+      trait1: 'superstar_avg',
+      trait2: 'wr_speedster',
+      trait3: 'jittery',
+    },
     // DE
     {
       position: 'DE',
