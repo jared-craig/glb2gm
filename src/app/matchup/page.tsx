@@ -134,6 +134,21 @@ export default function Matchup() {
     setTopTenTeamTwoGames(teamTwoTopTenGames);
   };
 
+  const getTierAbbreviation = (tier: string) => {
+    switch (tier) {
+      case 'Rookie':
+        return 'Rook';
+      case 'Sophomore':
+        return 'Soph';
+      case 'Professional':
+        return 'Pro';
+      case 'Veteran':
+        return 'Vet';
+      default:
+        return tier;
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -154,7 +169,7 @@ export default function Matchup() {
         <Stack direction={{ xs: 'column', md: 'row' }} sx={{ alignItems: 'center', justifyContent: 'space-between', my: 2 }}>
           <Autocomplete
             options={allTeams}
-            getOptionLabel={(x) => x.team_name}
+            getOptionLabel={(x) => `${x.team_name} (${getTierAbbreviation(x.tier)})`}
             renderInput={(params) => <TextField {...params} label='Team One' />}
             value={teamOneSelection}
             onChange={(event, newValue) => {
@@ -171,7 +186,7 @@ export default function Matchup() {
           <Typography>VS</Typography>
           <Autocomplete
             options={allTeams}
-            getOptionLabel={(x) => x.team_name}
+            getOptionLabel={(x) => `${x.team_name} (${getTierAbbreviation(x.tier)})`}
             renderInput={(params) => <TextField {...params} label='Team Two' />}
             value={teamTwoSelection}
             onChange={(event, newValue) => {
@@ -255,14 +270,14 @@ export default function Matchup() {
               team1={+teamOne.defensive_total_yards}
               team2={+teamTwo.defensive_total_yards}
               sort='asc'
-              label='Total Yards Alw.'
+              label='Total Yards'
               textSize={{ xs: 'body2', sm: 'body1' }}
             />
             <TeamStats
               team1={+teamOne.defensive_rushing_yards}
               team2={+teamTwo.defensive_rushing_yards}
               sort='asc'
-              label='Rush Yards Alw.'
+              label='Rush Yards'
               textSize={{ xs: 'body2', sm: 'body1' }}
             />
             <TeamStats
@@ -276,7 +291,7 @@ export default function Matchup() {
               team1={+teamOne.defensive_passing_yards}
               team2={+teamTwo.defensive_passing_yards}
               sort='asc'
-              label='Pass Yards Alw.'
+              label='Pass Yards'
               textSize={{ xs: 'body2', sm: 'body1' }}
             />
             <TeamStats
@@ -320,17 +335,17 @@ export default function Matchup() {
               textSize={{ xs: 'body2', sm: 'body1' }}
             />
             <TeamStats
-              team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.games}
-              sort='desc'
-              label='Pass YPG'
-              textSize={{ xs: 'body2', sm: 'body1' }}
-            />
-            <TeamStats
               team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.offensive_rushes}
               team2={topTenTeamTwoGames.offensive_rushing_yards / topTenTeamTwoGames.offensive_rushes}
               sort='desc'
               label='Rush YPC'
+              textSize={{ xs: 'body2', sm: 'body1' }}
+            />
+            <TeamStats
+              team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.games}
+              team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.games}
+              sort='desc'
+              label='Pass YPG'
               textSize={{ xs: 'body2', sm: 'body1' }}
             />
             <TeamStats
@@ -379,17 +394,17 @@ export default function Matchup() {
               textSize={{ xs: 'body2', sm: 'body1' }}
             />
             <TeamStats
-              team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.games}
-              sort='asc'
-              label='Pass YPG'
-              textSize={{ xs: 'body2', sm: 'body1' }}
-            />
-            <TeamStats
               team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.defensive_rushes}
               team2={topTenTeamTwoGames.defensive_rushing_yards / topTenTeamTwoGames.defensive_rushes}
               sort='asc'
               label='Rush YPC'
+              textSize={{ xs: 'body2', sm: 'body1' }}
+            />
+            <TeamStats
+              team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.games}
+              team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.games}
+              sort='asc'
+              label='Pass YPG'
               textSize={{ xs: 'body2', sm: 'body1' }}
             />
             <TeamStats
