@@ -222,10 +222,10 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 Rushing YPG: {(topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.games).toFixed(2)}
               </Typography>
               <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
-                Passing YPG: {(topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.games).toFixed(2)}
+                Rushing YPC: {(topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.offensive_rushes).toFixed(2)}
               </Typography>
               <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
-                Rushing YPC: {(topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.offensive_rushes).toFixed(2)}
+                Passing YPG: {(topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.games).toFixed(2)}
               </Typography>
               <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
                 Passing YPA: {(topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.offensive_attempts).toFixed(2)}
@@ -251,10 +251,10 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 Rushing YPG: {(topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.games).toFixed(2)}
               </Typography>
               <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
-                Passing YPG: {(topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.games).toFixed(2)}
+                Rushing YPC: {(topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.defensive_rushes).toFixed(2)}
               </Typography>
               <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
-                Rushing YPC: {(topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.defensive_rushes).toFixed(2)}
+                Passing YPG: {(topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.games).toFixed(2)}
               </Typography>
               <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
                 Passing YPA: {(topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.defensive_attempts).toFixed(2)}
