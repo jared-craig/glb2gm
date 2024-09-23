@@ -89,4 +89,5 @@ export const TRAIT_LOOKUP: Lookup = {
   early_bloomer: 'Early Bloomer',
   jittery: 'Jittery',
   dl_technique_man: 'Technique Man',
+  wr_speedster: 'Speedster',
 };

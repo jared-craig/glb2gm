@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Button, ButtonGroup, Divider, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup, Container, Divider, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Fragment, useEffect, useState } from 'react';
 import { SKILL_LOOKUP, TRAIT_LOOKUP } from './lookups';
@@ -258,7 +258,7 @@ export default function PlayerBuilder() {
   }, [factors]);
 
   return (
-    <Box sx={{ overflow: 'hidden' }}>
+    <Container maxWidth='xl'>
       <Grid container rowGap={1} sx={{ mb: 2 }}>
         <Grid size={{ xs: 12 }} sx={{ textAlign: 'center' }}>
           <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>Player Builder is a work in progress...</Typography>
@@ -392,6 +392,6 @@ export default function PlayerBuilder() {
           )}
         </>
       )}
-    </Box>
+    </Container>
   );
 }
