@@ -26,7 +26,10 @@ export default function Home() {
               <ListItemText primary='Player Statistics' secondary="By tier and category. Filter and sort to your heart's content."></ListItemText>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemText primary='Team Rankings' secondary="See how your team is stacking up against the competition."></ListItemText>
+              <ListItemText primary='Team Rankings' secondary='See how your team is stacking up against the competition.'></ListItemText>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemText primary='Matchup' secondary='Compare your team to another.'></ListItemText>
             </ListItem>
           </List>
         </Stack>

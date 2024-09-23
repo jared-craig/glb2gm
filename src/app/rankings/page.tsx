@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
-import { TeamData } from './teamData';
+import { TeamData } from '../teams/teamData';
 import { getTeamGmRating } from '../stats/statCalculations';
 
 export default function PlayerPassingStats() {
