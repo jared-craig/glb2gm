@@ -1,6 +1,6 @@
 'use client';
 
-import { DataGridPro, GridColDef, GridComparatorFn, GridRenderCellParams, GridRowModel } from '@mui/x-data-grid-pro';
+import { DataGridPro, GridColDef, GridComparatorFn, GridRenderCellParams } from '@mui/x-data-grid-pro';
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
@@ -8,7 +8,6 @@ import Link from 'next/link';
 import { TeamData } from '../teams/teamData';
 import { getTeamGmRating } from '../stats/statCalculations';
 import { GameData } from '../games/gameData';
-import { extractTeamData, sumArray } from '../matchup/topTeamHelpers';
 
 export default function PlayerPassingStats() {
   const theme = useTheme();
@@ -43,7 +42,7 @@ export default function PlayerPassingStats() {
           (x.tier === 'Veteran' && x.global_rank <= teamData.global_rank && x.id !== teamData.id)
       );
     } else {
-      topTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank <= 8.0 && x.id !== teamData.id);
+      topTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank <= 10.0 && x.id !== teamData.id);
     }
 
     const teamOneWins = [...allTeamGames].filter(
