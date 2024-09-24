@@ -160,7 +160,7 @@ export default function PlayerPassingStats() {
         },
         {
           field: 'yard_dif',
-          headerName: 'YARDS DIF',
+          headerName: 'YARD DIF',
           width: 140,
           type: 'number',
           pinnable: false,
@@ -286,7 +286,7 @@ export default function PlayerPassingStats() {
         },
         {
           field: 'yard_dif',
-          headerName: 'YARDS DIF',
+          headerName: 'YARD DIF',
           flex: 1,
           type: 'number',
           pinnable: false,
