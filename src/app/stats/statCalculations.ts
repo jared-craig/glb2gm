@@ -1,3 +1,5 @@
+import { GameData } from '../games/gameData';
+
 export const getBlockingGmRating = (x: any): number => {
   const gm = Math.round(
     10.0 * ((+x.pancakes / +x.plays) * 1000.0) -
@@ -71,8 +73,23 @@ export const getRushingGmRating = (x: any): number => {
   return gm;
 };
 
-export const getTeamGmRating = (x: any): number => {
-  const gm = Math.round(10.0 * (100.0 - +x.global_rank) + (100.0 - +x.tier_rank));
+export const getTeamGmRating = (x: any, bonus: number): number => {
+  let bonusValue = 0;
+  switch (x.tier) {
+    case 'Rookie':
+      bonusValue = bonus * 5.0;
+      break;
+    case 'Sophomore':
+      bonusValue = bonus * 10.0;
+      break;
+    case 'Professional':
+      bonusValue = bonus * 15.0;
+      break;
+    case 'Veteran':
+      bonusValue = bonus * 20.0;
+      break;
+  }
+  const gm = Math.round(10.0 * (100.0 - +x.global_rank) + bonusValue);
   return gm;
 };
 

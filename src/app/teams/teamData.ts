@@ -8,6 +8,7 @@ export interface TeamData {
   ties: number;
   global_rank: number;
   tier_rank: number;
+  offensive_points: number;
   offensive_total_yards: number;
   offensive_rushing_yards: number;
   offensive_rushes: number;
@@ -19,6 +20,7 @@ export interface TeamData {
   offensive_punts: number;
   offensive_fumbles: number;
   offensive_fumbles_lost: number;
+  defensive_points: number;
   defensive_total_yards: number;
   defensive_rushing_yards: number;
   defensive_rushes: number;
