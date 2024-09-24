@@ -89,7 +89,7 @@ export const getTeamGmRating = (x: any, bonus: number): number => {
       bonusValue = bonus * 20.0;
       break;
   }
-  const gm = Math.round(10.0 * (100.0 - +x.global_rank) + bonusValue);
+  const gm = Math.round(20.0 * (100.0 - +x.global_rank) + bonusValue);
   return gm;
 };
 
