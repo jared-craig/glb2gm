@@ -25,6 +25,6 @@ export interface GameData {
   team_two_punts: number;
   team_one_fumbles: number;
   team_two_fumbles: number;
-  team_one_fumblesLost: number;
-  team_two_fumblesLost: number;
+  team_one_fumbles_lost: number;
+  team_two_fumbles_lost: number;
 }
