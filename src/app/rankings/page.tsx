@@ -159,6 +159,30 @@ export default function PlayerPassingStats() {
           sortingOrder: ['asc', 'desc'],
         },
         {
+          field: 'yard_dif',
+          headerName: 'YARDS DIF',
+          width: 140,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+          sortingOrder: ['desc', 'asc'],
+          valueGetter: (value, row) => {
+            return row.offensive_total_yards - row.defensive_total_yards;
+          },
+        },
+        {
+          field: 'point_dif',
+          headerName: 'POINT DIF',
+          width: 140,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+          sortingOrder: ['desc', 'asc'],
+          valueGetter: (value, row) => {
+            return row.offensive_points - row.defensive_points;
+          },
+        },
+        {
           field: 'gm_rating',
           headerName: 'GM RTG',
           width: 120,
@@ -190,7 +214,7 @@ export default function PlayerPassingStats() {
         {
           field: 'tier_rank',
           headerName: 'TIER',
-          flex: 1,
+          flex: 0.5,
           type: 'number',
           pinnable: false,
           sortingOrder: ['asc', 'desc'],
@@ -198,7 +222,7 @@ export default function PlayerPassingStats() {
         {
           field: 'global_rank',
           headerName: 'GLOBAL',
-          flex: 1,
+          flex: 0.5,
           type: 'number',
           pinnable: false,
           sortingOrder: ['asc', 'desc'],
@@ -206,7 +230,7 @@ export default function PlayerPassingStats() {
         {
           field: 'record',
           headerName: 'W-L-T',
-          flex: 1,
+          flex: 0.5,
           pinnable: false,
           valueGetter: (value, row) => {
             return `${row.wins}-${row.losses}-${row.ties}`;
@@ -259,6 +283,28 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           sortingOrder: ['asc', 'desc'],
+        },
+        {
+          field: 'yard_dif',
+          headerName: 'YARDS DIF',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          sortingOrder: ['desc', 'asc'],
+          valueGetter: (value, row) => {
+            return row.offensive_total_yards - row.defensive_total_yards;
+          },
+        },
+        {
+          field: 'point_dif',
+          headerName: 'POINT DIF',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          sortingOrder: ['desc', 'asc'],
+          valueGetter: (value, row) => {
+            return row.offensive_points - row.defensive_points;
+          },
         },
         {
           field: 'gm_rating',
