@@ -7,6 +7,8 @@ import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { TeamData } from '../teams/teamData';
 import { getTeamGmRating } from '../stats/statCalculations';
+import { GameData } from '../games/gameData';
+import { extractTeamData, sumArray } from '../matchup/topTeamHelpers';
 
 export default function PlayerPassingStats() {
   const theme = useTheme();
@@ -14,18 +16,45 @@ export default function PlayerPassingStats() {
 
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<TeamData[]>([]);
+  const [allGamesData, setAllGamesData] = useState<GameData[]>([]);
   const [rows, setRows] = useState<TeamData[]>([]);
   const [tier, setTier] = useState<string>('All Tiers');
 
   const fetchData = async () => {
     const res = await fetch('/api/teams');
-    const data = await res.json();
+    const data: TeamData[] = await res.json();
+    const gamesRes = await fetch(`/api/games`);
+    const gamesData: GameData[] = await gamesRes.json();
     setData(data);
+    setAllGamesData(gamesData);
     setRows(tier !== 'All Tiers' ? data.filter((x: TeamData) => x.tier === tier) : data);
     setFetched(true);
   };
 
   const recordComparator: GridComparatorFn<string> = (v1, v2) => +v1.substring(0, v1.indexOf('-')) - +v2.substring(0, v2.indexOf('-'));
+
+  const getBonusData = (teamData: TeamData): number => {
+    const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.id || x.team_two_id === teamData.id);
+    let topTeams: TeamData[] = [];
+    if (teamData.tier === 'Professional') {
+      topTeams = [...data].filter(
+        (x) =>
+          (x.tier === teamData.tier && x.tier_rank <= 6.0 && x.id !== teamData.id) ||
+          (x.tier === 'Veteran' && x.global_rank <= teamData.global_rank && x.id !== teamData.id)
+      );
+    } else {
+      topTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank <= 8.0 && x.id !== teamData.id);
+    }
+
+    const teamOneWins = [...allTeamGames].filter(
+      (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points > x.team_two_points
+    ).length;
+    const teamTwoWins = [...allTeamGames].filter(
+      (x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id) && x.team_one_points < x.team_two_points
+    ).length;
+
+    return teamOneWins + teamTwoWins;
+  };
 
   useEffect(() => {
     fetchData();
@@ -137,7 +166,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return getTeamGmRating(row);
+            return getTeamGmRating(row, getBonusData(row));
           },
           disableColumnMenu: true,
         },
@@ -239,7 +268,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row) => {
-            return getTeamGmRating(row);
+            return getTeamGmRating(row, getBonusData(row));
           },
         },
       ];
@@ -253,6 +282,7 @@ export default function PlayerPassingStats() {
         autoHeight
         sortingOrder={['desc', 'asc']}
         pagination
+        pageSizeOptions={[12, 24, 50, 100]}
         density='compact'
         getRowHeight={({ id, densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
         disableRowSelectionOnClick
@@ -264,7 +294,7 @@ export default function PlayerPassingStats() {
         slotProps={{ toolbar: { tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran', 'All Tiers'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
-          pagination: { paginationModel: { pageSize: !desktop ? 12 : 15 } },
+          pagination: { paginationModel: { pageSize: 12 } },
           pinnedColumns: {
             left: ['team_name'],
           },

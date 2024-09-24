@@ -3,6 +3,8 @@ export interface GameData {
   team_one_id: number;
   team_two_id: number;
   game_type: string;
+  team_one_points: number;
+  team_two_points: number;
   team_one_total_yards: number;
   team_two_total_yards: number;
   team_one_rushing_yards: number;
