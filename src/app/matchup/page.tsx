@@ -2,8 +2,8 @@
 
 import { GameData } from '@/app/games/gameData';
 import { TeamData } from '@/app/teams/teamData';
-import { Autocomplete, Box, Container, LinearProgress, Stack, TextField, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Autocomplete, Box, Container, Divider, LinearProgress, Stack, TextField, Typography } from '@mui/material';
+import { Fragment, useEffect, useState } from 'react';
 import { extractTeamData, sumArray } from './topTeamHelpers';
 
 interface TeamStatsParams {
@@ -12,9 +12,10 @@ interface TeamStatsParams {
   sort: string;
   label: string;
   textSize: any;
+  decimals: number;
 }
 
-function TeamStats({ team1, team2, sort, label, textSize }: TeamStatsParams) {
+function TeamStats({ team1, team2, sort, label, textSize, decimals }: TeamStatsParams) {
   return (
     <Stack direction='row' sx={{ justifyContent: 'space-evenly' }}>
       {typeof team1 === 'string' && typeof team2 === 'string' && (
@@ -26,23 +27,27 @@ function TeamStats({ team1, team2, sort, label, textSize }: TeamStatsParams) {
       )}
       {typeof team1 === 'number' && typeof team2 === 'number' && team1 > team2 && (
         <>
-          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? '' : 'green' }}>{team1?.toFixed(1) ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? '' : sort === 'desc' ? 'green' : '' }}>
+            {team1?.toFixed(decimals) ?? 'N/A'}
+          </Typography>
           <Typography sx={{ width: '300px', typography: textSize }}>{label}</Typography>
-          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? 'green' : '' }}>{team2?.toFixed(1) ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? 'green' : '' }}>{team2?.toFixed(decimals) ?? 'N/A'}</Typography>
         </>
       )}
       {typeof team1 === 'number' && typeof team2 === 'number' && team1 < team2 && (
         <>
-          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? 'green' : '' }}>{team1?.toFixed(1) ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? 'green' : '' }}>{team1?.toFixed(decimals) ?? 'N/A'}</Typography>
           <Typography sx={{ width: '300px', typography: textSize }}>{label}</Typography>
-          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? '' : 'green' }}>{team2?.toFixed(1) ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? '' : sort === 'desc' ? 'green' : '' }}>
+            {team2?.toFixed(decimals) ?? 'N/A'}
+          </Typography>
         </>
       )}
       {typeof team1 === 'number' && typeof team2 === 'number' && team1 == team2 && (
         <>
-          <Typography sx={{ width: '300px', typography: textSize }}>{team1?.toFixed(1) ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize }}>{team1?.toFixed(decimals) ?? 'N/A'}</Typography>
           <Typography sx={{ width: '300px', typography: textSize }}>{label}</Typography>
-          <Typography sx={{ width: '300px', typography: textSize }}>{team2?.toFixed(1) ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize }}>{team2?.toFixed(decimals) ?? 'N/A'}</Typography>
         </>
       )}
     </Stack>
@@ -55,6 +60,7 @@ export default function Matchup() {
   const [teamTwo, setTeamTwo] = useState<TeamData>();
   const [allTeamOneGames, setAllTeamOneGames] = useState<GameData[]>();
   const [allTeamTwoGames, setAllTeamTwoGames] = useState<GameData[]>();
+  const [headToHeadGames, setHeadToHeadGames] = useState<GameData[]>();
   const [topTenTeamOneGames, setTopTenTeamOneGames] = useState<any>();
   const [topTenTeamTwoGames, setTopTenTeamTwoGames] = useState<any>();
   const [fetching, setFetching] = useState<boolean>(true);
@@ -82,10 +88,15 @@ export default function Matchup() {
     const team1 = allTeams.find((x: TeamData) => x.id === teamOneSelection.id);
     const team2 = allTeams.find((x: TeamData) => x.id === teamTwoSelection.id);
 
+    const headToHeadGames = teamOneGameData.filter(
+      (x) => (x.team_one_id === team1?.id && x.team_two_id === team2?.id) || (x.team_one_id === team2?.id && x.team_two_id === team1?.id)
+    );
+
     setTeamOne(team1);
     setTeamTwo(team2);
     setAllTeamOneGames(teamOneGameData);
     setAllTeamTwoGames(teamTwoGameData);
+    setHeadToHeadGames(headToHeadGames);
     setFetching(false);
   };
 
@@ -204,7 +215,100 @@ export default function Matchup() {
       )}
       {teamOne && teamTwo && topTenTeamOneGames && topTenTeamTwoGames && (
         <Stack spacing={4} sx={{ mb: 2 }}>
-          <Stack sx={{ textAlign: 'center' }} spacing={1}>
+          {headToHeadGames && headToHeadGames.length > 0 && (
+            <Stack sx={{ textAlign: 'center' }} spacing={1}>
+              <Typography typography={{ xs: 'h6', sm: 'h5' }}>H2H</Typography>
+              {headToHeadGames.map((x) => (
+                <Fragment key={x.id}>
+                  <Stack spacing={0} sx={{ py: 1 }}>
+                    <Box>
+                      <TeamStats
+                        team1={x.team_one_id === teamOne.id ? +x.team_one_points : +x.team_two_points}
+                        team2={x.team_one_id === teamOne.id ? +x.team_two_points : +x.team_one_points}
+                        sort='desc'
+                        label='Score'
+                        textSize={{ xs: 'body1', sm: 'h6' }}
+                        decimals={0}
+                      />
+                    </Box>
+                    <TeamStats
+                      team1={
+                        x.team_one_id === teamOne.id
+                          ? (+x.team_one_rushes / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
+                          : (+x.team_two_rushes / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
+                      }
+                      team2={
+                        x.team_one_id === teamOne.id
+                          ? (+x.team_two_rushes / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
+                          : (+x.team_one_rushes / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
+                      }
+                      sort=''
+                      label='Run %'
+                      textSize={{ xs: 'body2', sm: 'body1' }}
+                      decimals={1}
+                    />
+                    <TeamStats
+                      team1={
+                        x.team_one_id === teamOne.id
+                          ? ((+x.team_one_attempts + +x.team_one_sacks) / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
+                          : ((+x.team_two_attempts + +x.team_one_sacks) / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
+                      }
+                      team2={
+                        x.team_one_id === teamOne.id
+                          ? ((+x.team_two_attempts + +x.team_one_sacks) / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
+                          : ((+x.team_one_attempts + +x.team_one_sacks) / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
+                      }
+                      sort=''
+                      label='Pass %'
+                      textSize={{ xs: 'body2', sm: 'body1' }}
+                      decimals={1}
+                    />
+                    <TeamStats
+                      team1={x.team_one_id === teamOne.id ? +x.team_one_rushing_yards : +x.team_two_rushing_yards}
+                      team2={x.team_one_id === teamOne.id ? +x.team_two_rushing_yards : +x.team_one_rushing_yards}
+                      sort='desc'
+                      label='Rush Yards'
+                      textSize={{ xs: 'body2', sm: 'body1' }}
+                      decimals={1}
+                    />
+                    <TeamStats
+                      team1={x.team_one_id === teamOne.id ? +x.team_one_passing_yards : +x.team_two_passing_yards}
+                      team2={x.team_one_id === teamOne.id ? +x.team_two_passing_yards : +x.team_one_passing_yards}
+                      sort='desc'
+                      label='Pass Yards'
+                      textSize={{ xs: 'body2', sm: 'body1' }}
+                      decimals={1}
+                    />
+                    <TeamStats
+                      team1={x.team_one_id === teamOne.id ? +x.team_two_sacks : +x.team_one_sacks}
+                      team2={x.team_one_id === teamOne.id ? +x.team_one_sacks : +x.team_two_sacks}
+                      sort='desc'
+                      label='Sacks'
+                      textSize={{ xs: 'body2', sm: 'body1' }}
+                      decimals={0}
+                    />
+                    <TeamStats
+                      team1={
+                        x.team_one_id === teamOne.id
+                          ? +x.team_one_interceptions + +x.team_one_fumbles_lost
+                          : +x.team_two_interceptions + +x.team_two_fumbles_lost
+                      }
+                      team2={
+                        x.team_one_id === teamOne.id
+                          ? +x.team_two_interceptions + +x.team_two_fumbles_lost
+                          : +x.team_one_interceptions + +x.team_one_fumbles_lost
+                      }
+                      sort='asc'
+                      label='Turnovers'
+                      textSize={{ xs: 'body2', sm: 'body1' }}
+                      decimals={0}
+                    />
+                  </Stack>
+                </Fragment>
+              ))}
+            </Stack>
+          )}
+          <Stack sx={{ textAlign: 'center' }} spacing={0}>
             <Typography typography={{ xs: 'h6', sm: 'h5' }}>Overall</Typography>
             <Typography typography={{ xs: 'body1', sm: 'h6' }}>Offense</Typography>
             <TeamStats
@@ -213,6 +317,7 @@ export default function Matchup() {
               sort='desc'
               label='Total Yards'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={+teamOne.offensive_rushing_yards}
@@ -220,6 +325,7 @@ export default function Matchup() {
               sort='desc'
               label='Rush Yards'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={+teamOne.offensive_rushing_yards / +teamOne.offensive_rushes}
@@ -227,6 +333,7 @@ export default function Matchup() {
               sort='desc'
               label='Rush YPC'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={+teamOne.offensive_passing_yards}
@@ -234,6 +341,7 @@ export default function Matchup() {
               sort='desc'
               label='Pass Yards'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={+teamOne.offensive_passing_yards / +teamOne.offensive_attempts}
@@ -241,6 +349,7 @@ export default function Matchup() {
               sort='desc'
               label='Pass YPA'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={+teamOne.offensive_sacks}
@@ -248,6 +357,7 @@ export default function Matchup() {
               sort='asc'
               label='Sacks Taken'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={0}
             />
             <TeamStats
               team1={+teamOne.offensive_interceptions}
@@ -255,6 +365,7 @@ export default function Matchup() {
               sort='asc'
               label='Interceptions'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={0}
             />
             <TeamStats
               team1={+teamOne.offensive_fumbles_lost}
@@ -262,6 +373,7 @@ export default function Matchup() {
               sort='asc'
               label='Fumbles Lost'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={0}
             />
             <Typography typography={{ xs: 'body1', sm: 'h6' }} sx={{ pt: 1 }}>
               Defense
@@ -272,6 +384,7 @@ export default function Matchup() {
               sort='asc'
               label='Total Yards'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={+teamOne.defensive_rushing_yards}
@@ -279,6 +392,7 @@ export default function Matchup() {
               sort='asc'
               label='Rush Yards'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={+teamOne.defensive_rushing_yards / +teamOne.defensive_rushes}
@@ -286,6 +400,7 @@ export default function Matchup() {
               sort='asc'
               label='Rush YPC'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={+teamOne.defensive_passing_yards}
@@ -293,6 +408,7 @@ export default function Matchup() {
               sort='asc'
               label='Pass Yards'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={+teamOne.defensive_passing_yards / +teamOne.defensive_attempts}
@@ -300,14 +416,23 @@ export default function Matchup() {
               sort='asc'
               label='Pass YPA'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
-            <TeamStats team1={+teamOne.defensive_sacks} team2={+teamTwo.defensive_sacks} sort='desc' label='Sacks' textSize={{ xs: 'body2', sm: 'body1' }} />
+            <TeamStats
+              team1={+teamOne.defensive_sacks}
+              team2={+teamTwo.defensive_sacks}
+              sort='desc'
+              label='Sacks'
+              textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={0}
+            />
             <TeamStats
               team1={+teamOne.defensive_interceptions}
               team2={+teamTwo.defensive_interceptions}
               sort='desc'
               label='Interceptions'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={0}
             />
             <TeamStats
               team1={+teamOne.defensive_fumbles_lost}
@@ -315,9 +440,10 @@ export default function Matchup() {
               sort='desc'
               label='Forced Fumbles'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={0}
             />
           </Stack>
-          <Stack sx={{ textAlign: 'center' }} spacing={1}>
+          <Stack sx={{ textAlign: 'center' }} spacing={0}>
             <Typography typography={{ xs: 'h6', sm: 'h5' }}>VS Top Teams</Typography>
             <Typography typography={{ xs: 'body1', sm: 'h6' }}>Offense</Typography>
             <TeamStats
@@ -326,6 +452,7 @@ export default function Matchup() {
               sort='desc'
               label='Total YPG'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.games}
@@ -333,6 +460,7 @@ export default function Matchup() {
               sort='desc'
               label='Rush YPG'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.offensive_rushes}
@@ -340,6 +468,7 @@ export default function Matchup() {
               sort='desc'
               label='Rush YPC'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.games}
@@ -347,6 +476,7 @@ export default function Matchup() {
               sort='desc'
               label='Pass YPG'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.offensive_attempts}
@@ -354,6 +484,7 @@ export default function Matchup() {
               sort='desc'
               label='Pass YPA'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.offensive_sacks / topTenTeamOneGames.games}
@@ -361,6 +492,7 @@ export default function Matchup() {
               sort='asc'
               label='Sacks Taken/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={0}
             />
             <TeamStats
               team1={topTenTeamOneGames.offensive_interceptions / topTenTeamOneGames.games}
@@ -368,6 +500,7 @@ export default function Matchup() {
               sort='asc'
               label='Ints/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.offensive_fumbles_lost / topTenTeamOneGames.games}
@@ -375,6 +508,7 @@ export default function Matchup() {
               sort='asc'
               label='Fumbles/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <Typography typography={{ xs: 'body1', sm: 'h6' }} sx={{ pt: 1 }}>
               Defense
@@ -385,6 +519,7 @@ export default function Matchup() {
               sort='asc'
               label='Total YPG'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.games}
@@ -392,6 +527,7 @@ export default function Matchup() {
               sort='asc'
               label='Rush YPG'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.defensive_rushes}
@@ -399,6 +535,7 @@ export default function Matchup() {
               sort='asc'
               label='Rush YPC'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.games}
@@ -406,6 +543,7 @@ export default function Matchup() {
               sort='asc'
               label='Pass YPG'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.defensive_attempts}
@@ -413,6 +551,7 @@ export default function Matchup() {
               sort='asc'
               label='Pass YPA'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.defensive_sacks / topTenTeamOneGames.games}
@@ -420,6 +559,7 @@ export default function Matchup() {
               sort='desc'
               label='Sacks/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.defensive_interceptions / topTenTeamOneGames.games}
@@ -427,6 +567,7 @@ export default function Matchup() {
               sort='desc'
               label='Ints/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
             <TeamStats
               team1={topTenTeamOneGames.defensive_fumbles_lost / topTenTeamOneGames.games}
@@ -434,6 +575,7 @@ export default function Matchup() {
               sort='desc'
               label='FF/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
             />
           </Stack>
         </Stack>
