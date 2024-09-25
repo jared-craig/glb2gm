@@ -39,7 +39,7 @@ export default function PlayerPassingStats() {
       topTeams = [...data].filter(
         (x) =>
           (x.tier === teamData.tier && x.tier_rank <= 6.0 && x.id !== teamData.id) ||
-          (x.tier === 'Veteran' && x.global_rank <= teamData.global_rank && x.id !== teamData.id)
+          (x.tier === 'Veteran' && (x.global_rank <= teamData.global_rank || x.global_rank <= 12.0) && x.id !== teamData.id)
       );
     } else {
       topTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank <= 10.0 && x.id !== teamData.id);
@@ -47,12 +47,42 @@ export default function PlayerPassingStats() {
 
     const teamOneWins = [...allTeamGames].filter(
       (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points > x.team_two_points
-    ).length;
+    );
     const teamTwoWins = [...allTeamGames].filter(
       (x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id) && x.team_one_points < x.team_two_points
-    ).length;
+    );
 
-    return teamOneWins + teamTwoWins;
+    const teamOneLosses = [...allTeamGames].filter(
+      (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points < x.team_two_points
+    );
+    const teamTwoLosses = [...allTeamGames].filter(
+      (x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id) && x.team_one_points > x.team_two_points
+    );
+
+    const wins = teamOneWins.length + teamTwoWins.length;
+    const losses = teamOneLosses.length + teamTwoLosses.length;
+
+    const pointDif =
+      teamOneWins.reduce((acc, cur) => acc + (cur.team_one_points - cur.team_two_points), 0) +
+      teamTwoWins.reduce((acc, cur) => acc + (cur.team_two_points - cur.team_one_points), 0);
+
+    let bonus = 0;
+    switch (teamData.tier) {
+      case 'Rookie':
+        bonus = wins * 5.0 + losses * 2.5 + pointDif;
+        break;
+      case 'Sophomore':
+        bonus = wins * 10.0 + losses * 5.0 + pointDif;
+        break;
+      case 'Professional':
+        bonus = wins * 15.0 + losses * 7.5 + pointDif;
+        break;
+      case 'Veteran':
+        bonus = wins * 20.0 + losses * 10.0 + pointDif;
+        break;
+    }
+
+    return bonus;
   };
 
   useEffect(() => {

@@ -74,22 +74,7 @@ export const getRushingGmRating = (x: any): number => {
 };
 
 export const getTeamGmRating = (x: any, bonus: number): number => {
-  let bonusValue = 0;
-  switch (x.tier) {
-    case 'Rookie':
-      bonusValue = bonus * 5.0;
-      break;
-    case 'Sophomore':
-      bonusValue = bonus * 10.0;
-      break;
-    case 'Professional':
-      bonusValue = bonus * 15.0;
-      break;
-    case 'Veteran':
-      bonusValue = bonus * 20.0;
-      break;
-  }
-  const gm = Math.round(20.0 * (100.0 - +x.global_rank) + bonusValue);
+  const gm = Math.round(20.0 * (100.0 - +x.global_rank) + bonus);
   return gm;
 };
 
