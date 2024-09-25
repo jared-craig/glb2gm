@@ -192,6 +192,7 @@ export default function Matchup() {
             }}
             disablePortal
             fullWidth
+            size='small'
             sx={{ maxWidth: 400 }}
           />
           <Typography>VS</Typography>
@@ -209,6 +210,7 @@ export default function Matchup() {
             }}
             disablePortal
             fullWidth
+            size='small'
             sx={{ maxWidth: 400 }}
           />
         </Stack>
@@ -217,7 +219,9 @@ export default function Matchup() {
         <Stack spacing={4} sx={{ mb: 2 }}>
           {headToHeadGames && headToHeadGames.length > 0 && (
             <Stack sx={{ textAlign: 'center' }} spacing={1}>
-              <Typography typography={{ xs: 'h6', sm: 'h5' }}>H2H</Typography>
+              <Divider variant='middle'>
+                <Typography typography={{ xs: 'h6', sm: 'h5' }}>H2H</Typography>
+              </Divider>
               {headToHeadGames.map((x) => (
                 <Fragment key={x.id}>
                   <Stack spacing={0} sx={{ py: 1 }}>
@@ -309,7 +313,9 @@ export default function Matchup() {
             </Stack>
           )}
           <Stack sx={{ textAlign: 'center' }} spacing={0}>
-            <Typography typography={{ xs: 'h6', sm: 'h5' }}>Overall</Typography>
+            <Divider variant='middle'>
+              <Typography typography={{ xs: 'h6', sm: 'h5' }}>Overall</Typography>
+            </Divider>
             <Typography typography={{ xs: 'body1', sm: 'h6' }}>Offense</Typography>
             <TeamStats
               team1={(+teamOne.offensive_rushes / (+teamOne.offensive_rushes + +teamOne.offensive_attempts + +teamOne.offensive_sacks)) * 100.0}
@@ -468,7 +474,9 @@ export default function Matchup() {
             />
           </Stack>
           <Stack sx={{ textAlign: 'center' }} spacing={0}>
-            <Typography typography={{ xs: 'h6', sm: 'h5' }}>VS Top Teams</Typography>
+            <Divider variant='middle'>
+              <Typography typography={{ xs: 'h6', sm: 'h5' }}>VS Top Teams</Typography>
+            </Divider>
             <Typography typography={{ xs: 'body1', sm: 'h6' }}>Offense</Typography>
             <TeamStats
               team1={topTenTeamOneGames.offensive_total_yards / topTenTeamOneGames.games}
