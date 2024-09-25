@@ -312,6 +312,30 @@ export default function Matchup() {
             <Typography typography={{ xs: 'h6', sm: 'h5' }}>Overall</Typography>
             <Typography typography={{ xs: 'body1', sm: 'h6' }}>Offense</Typography>
             <TeamStats
+              team1={(+teamOne.offensive_rushes / (+teamOne.offensive_rushes + +teamOne.offensive_attempts + +teamOne.offensive_sacks)) * 100.0}
+              team2={(+teamTwo.offensive_rushes / (+teamTwo.offensive_rushes + +teamTwo.offensive_attempts + +teamTwo.offensive_sacks)) * 100.0}
+              sort=''
+              label='Run %'
+              textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
+            />
+            <TeamStats
+              team1={
+                ((+teamOne.offensive_attempts + +teamOne.offensive_sacks) /
+                  (+teamOne.offensive_rushes + +teamOne.offensive_attempts + +teamOne.offensive_sacks)) *
+                100.0
+              }
+              team2={
+                ((+teamTwo.offensive_attempts + +teamTwo.offensive_sacks) /
+                  (+teamTwo.offensive_rushes + +teamTwo.offensive_attempts + +teamTwo.offensive_sacks)) *
+                100.0
+              }
+              sort=''
+              label='Pass %'
+              textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
+            />
+            <TeamStats
               team1={+teamOne.offensive_total_yards}
               team2={+teamTwo.offensive_total_yards}
               sort='desc'
