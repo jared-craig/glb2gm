@@ -83,21 +83,16 @@ export default function PlayerPassingStats() {
       teamOneWins.reduce((acc, cur) => acc + (cur.team_one_points - cur.team_two_points), 0) +
       teamTwoWins.reduce((acc, cur) => acc + (cur.team_two_points - cur.team_one_points), 0);
 
-    let bonus = 0;
-    switch (teamData.tier) {
-      case 'Rookie':
-        bonus = 5.0 * topTeamWins + 2.5 * topTeamLosses - 50.0 * badTeamLosses + pointDif;
-        break;
-      case 'Sophomore':
-        bonus = 10.0 * topTeamWins + 5.0 * topTeamLosses - 50.0 * badTeamLosses + pointDif;
-        break;
-      case 'Professional':
-        bonus = 15.0 * topTeamWins + 7.5 * topTeamLosses - 50.0 * badTeamLosses + pointDif;
-        break;
-      case 'Veteran':
-        bonus = 20.0 * topTeamWins + 10.0 * topTeamLosses - 50.0 * badTeamLosses + pointDif;
-        break;
-    }
+    let bonus = 50.0 * topTeamWins + 10.0 * topTeamLosses - 50.0 * badTeamLosses;
+
+    console.log({
+      team: teamData.team_name,
+      total: Math.round(25.0 * (100.0 - +teamData.global_rank) + bonus),
+      global: 25.0 * (100.0 - +teamData.global_rank),
+      topWins: 50.0 * topTeamWins,
+      topLosses: 10.0 * topTeamLosses,
+      badLosses: 50.0 * badTeamLosses * -1.0,
+    });
 
     return bonus;
   };

@@ -74,7 +74,7 @@ export const getRushingGmRating = (x: any): number => {
 };
 
 export const getTeamGmRating = (x: any, bonus: number): number => {
-  const gm = Math.round(20.0 * (100.0 - +x.global_rank) + bonus);
+  const gm = Math.round(25.0 * (100.0 - +x.global_rank) + bonus);
   return gm;
 };
 
