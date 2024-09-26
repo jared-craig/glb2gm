@@ -45,6 +45,15 @@ export default function PlayerPassingStats() {
       topTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank <= 10.0 && x.id !== teamData.id);
     }
 
+    let notTopTeams: TeamData[] = [];
+    if (teamData.tier === 'Professional') {
+      notTopTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank > 6.0 && x.id !== teamData.id);
+    } else if (teamData.tier === 'Veteran') {
+      notTopTeams = [...data].filter((x) => (x.tier === teamData.tier && x.tier_rank > 10.0 && x.id !== teamData.id) || x.tier === 'Professional');
+    } else {
+      notTopTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank > 10.0 && x.id !== teamData.id);
+    }
+
     const teamOneWins = [...allTeamGames].filter(
       (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points > x.team_two_points
     );
@@ -52,15 +61,23 @@ export default function PlayerPassingStats() {
       (x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id) && x.team_one_points < x.team_two_points
     );
 
-    const teamOneLosses = [...allTeamGames].filter(
+    const teamOneTopTeamLosses = [...allTeamGames].filter(
       (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points < x.team_two_points
     );
-    const teamTwoLosses = [...allTeamGames].filter(
+    const teamTwoTopTeamLosses = [...allTeamGames].filter(
       (x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id) && x.team_one_points > x.team_two_points
     );
 
-    const wins = teamOneWins.length + teamTwoWins.length;
-    const losses = teamOneLosses.length + teamTwoLosses.length;
+    const teamOneBadTeamLosses = [...allTeamGames].filter(
+      (x) => x.team_one_id === teamData.id && notTopTeams.some((y) => y.id === x.team_two_id) && x.team_one_points < x.team_two_points
+    );
+    const teamTwoBadTeamLosses = [...allTeamGames].filter(
+      (x) => x.team_two_id === teamData.id && notTopTeams.some((y) => y.id === x.team_one_id) && x.team_one_points > x.team_two_points
+    );
+
+    const topTeamWins = teamOneWins.length + teamTwoWins.length;
+    const topTeamLosses = teamOneTopTeamLosses.length + teamTwoTopTeamLosses.length;
+    const badTeamLosses = teamOneBadTeamLosses.length + teamTwoBadTeamLosses.length;
 
     const pointDif =
       teamOneWins.reduce((acc, cur) => acc + (cur.team_one_points - cur.team_two_points), 0) +
@@ -69,16 +86,16 @@ export default function PlayerPassingStats() {
     let bonus = 0;
     switch (teamData.tier) {
       case 'Rookie':
-        bonus = wins * 5.0 + losses * 2.5 + pointDif;
+        bonus = 5.0 * topTeamWins + 2.5 * topTeamLosses - 50.0 * badTeamLosses + pointDif;
         break;
       case 'Sophomore':
-        bonus = wins * 10.0 + losses * 5.0 + pointDif;
+        bonus = 10.0 * topTeamWins + 5.0 * topTeamLosses - 50.0 * badTeamLosses + pointDif;
         break;
       case 'Professional':
-        bonus = wins * 15.0 + losses * 7.5 + pointDif;
+        bonus = 15.0 * topTeamWins + 7.5 * topTeamLosses - 50.0 * badTeamLosses + pointDif;
         break;
       case 'Veteran':
-        bonus = wins * 20.0 + losses * 10.0 + pointDif;
+        bonus = 20.0 * topTeamWins + 10.0 * topTeamLosses - 50.0 * badTeamLosses + pointDif;
         break;
     }
 
