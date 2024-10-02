@@ -6,7 +6,7 @@ import { Container, LinearProgress, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Link from 'next/link';
 import { GameData } from '@/app/games/gameData';
-import { extractTeamData, sumArray } from '@/app/matchup/topTeamHelpers';
+import { sumArray, extractTeamData } from '@/app/teams/topTeamHelpers';
 
 export default function TeamDetails({ params }: { params: { teamId: string } }) {
   const [leagueData, setLeagueData] = useState<TeamData[]>();
@@ -46,8 +46,8 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
       teamOneTopGamesSum && teamTwoTopGamesSum
         ? sumArray([teamOneTopGamesSum, teamTwoTopGamesSum])
         : teamOneTopGamesSum
-        ? teamOneTopGamesSum
-        : teamTwoTopGamesSum;
+          ? teamOneTopGamesSum
+          : teamTwoTopGamesSum;
 
     setTopTenGames(topTenGames);
   };
