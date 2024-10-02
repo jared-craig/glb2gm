@@ -85,15 +85,6 @@ export default function PlayerPassingStats() {
 
     let bonus = 50.0 * topTeamWins + 10.0 * topTeamLosses - 50.0 * badTeamLosses;
 
-    console.log({
-      team: teamData.team_name,
-      total: Math.round(25.0 * (100.0 - +teamData.global_rank) + bonus),
-      global: 25.0 * (100.0 - +teamData.global_rank),
-      topWins: 50.0 * topTeamWins,
-      topLosses: 10.0 * topTeamLosses,
-      badLosses: 50.0 * badTeamLosses * -1.0,
-    });
-
     return bonus;
   };
 

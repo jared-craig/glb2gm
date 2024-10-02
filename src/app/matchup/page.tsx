@@ -122,8 +122,8 @@ export default function Matchup() {
       teamOneTeamOneTopGamesSum && teamOneTeamTwoTopGamesSum
         ? sumArray([teamOneTeamOneTopGamesSum, teamOneTeamTwoTopGamesSum])
         : teamOneTeamOneTopGamesSum
-        ? teamOneTeamOneTopGamesSum
-        : teamOneTeamTwoTopGamesSum;
+          ? teamOneTeamOneTopGamesSum
+          : teamOneTeamTwoTopGamesSum;
 
     const teamTwoTeamOneTopGames = [...allTeamTwoGames].filter((x) => x.team_one_id === teamTwo.id && teamTwoTopTeams.some((y) => y.id === x.team_two_id));
     const teamTwoTeamOneTopGamesSum = sumArray(teamTwoTeamOneTopGames.map((x) => extractTeamData(x, 'team_one_')));
@@ -137,10 +137,9 @@ export default function Matchup() {
       teamTwoTeamOneTopGamesSum && teamTwoTeamTwoTopGamesSum
         ? sumArray([teamTwoTeamOneTopGamesSum, teamTwoTeamTwoTopGamesSum])
         : teamTwoTeamOneTopGamesSum
-        ? teamTwoTeamOneTopGamesSum
-        : teamTwoTeamTwoTopGamesSum;
+          ? teamTwoTeamOneTopGamesSum
+          : teamTwoTeamTwoTopGamesSum;
 
-    console.log(teamOneTopTenGames);
     setTopTenTeamOneGames(teamOneTopTenGames);
     setTopTenTeamTwoGames(teamTwoTopTenGames);
   };
