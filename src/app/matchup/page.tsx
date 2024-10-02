@@ -4,7 +4,7 @@ import { GameData } from '@/app/games/gameData';
 import { TeamData } from '@/app/teams/teamData';
 import { Autocomplete, Box, Container, Divider, LinearProgress, Stack, TextField, Typography } from '@mui/material';
 import { Fragment, useEffect, useState } from 'react';
-import { extractTeamData, sumArray } from './topTeamHelpers';
+import { extractTeamData, sumArray } from '../teams/topTeamHelpers';
 
 interface TeamStatsParams {
   team1: string | number;

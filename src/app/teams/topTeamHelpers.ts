@@ -7,7 +7,7 @@ export const extractTeamData = (originalObject: any, keyword: string) => {
         newObject[property.replace('team_two_', 'defensive_')] = originalObject[property];
       }
       if (keyword === 'team_two_') {
-        newObject[property.replace('team_one_', 'defensive')] = originalObject[property];
+        newObject[property.replace('team_one_', 'defensive_')] = originalObject[property];
         newObject[property.replace('team_two_', 'offensive_')] = originalObject[property];
       }
     }
