@@ -1,9 +1,15 @@
 export const extractTeamData = (originalObject: any, keyword: string) => {
   const newObject: any = {};
   for (const property in originalObject) {
-    if (property !== 'team_one_id' && property !== 'team_two_id' && property.includes(keyword)) {
-      if (keyword === 'team_one_') newObject[property.replace('team_one_', 'offensive_')] = originalObject[property];
-      if (keyword === 'team_two_') newObject[property.replace('team_two_', 'defensive_')] = originalObject[property];
+    if (property !== 'team_one_id' && property !== 'team_two_id' && (property.includes('team_one_') || property.includes('team_two_'))) {
+      if (keyword === 'team_one_') {
+        newObject[property.replace('team_one_', 'offensive_')] = originalObject[property];
+        newObject[property.replace('team_two_', 'defensive_')] = originalObject[property];
+      }
+      if (keyword === 'team_two_') {
+        newObject[property.replace('team_one_', 'defensive')] = originalObject[property];
+        newObject[property.replace('team_two_', 'offensive_')] = originalObject[property];
+      }
     }
   }
   return newObject;
