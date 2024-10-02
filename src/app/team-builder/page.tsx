@@ -2,6 +2,7 @@
 
 import {
   Autocomplete,
+  Box,
   Button,
   Container,
   Dialog,
@@ -41,6 +42,7 @@ import {
   GridCellParams,
   GridColDef,
   GridEventListener,
+  GridPreProcessEditCellProps,
   GridRenderCellParams,
   GridRowEditStopReasons,
   GridRowId,
@@ -66,36 +68,7 @@ function generateGuid() {
 
 export default function TeamBuilder() {
   const [traits, setTraits] = useState<Trait[]>();
-  const [players, setPlayers] = useState<TeamBuilderPlayer[] | GridRowsProp>([
-    {
-      id: '123',
-      player_name: 'test1',
-      position: 'HB',
-      contract: 'Medium',
-      trait1: {
-        trait_key: 'early_bloomer',
-        trait_name: 'Early Bloomer',
-        conflicts: 'hidden_potential',
-        position_exclusions: '',
-        salary_modifier: 0,
-      },
-      trait2: {
-        trait_key: 'jittery',
-        trait_name: 'Jittery',
-        conflicts: '',
-        position_exclusions: '',
-        salary_modifier: 0,
-      },
-      trait3: {
-        trait_key: 'strong_base',
-        trait_name: 'Strong Base',
-        conflicts: '',
-        position_exclusions: '',
-        salary_modifier: 0,
-      },
-      isNew: false,
-    },
-  ]);
+  const [players, setPlayers] = useState<TeamBuilderPlayer[] | GridRowsProp>([]);
   const [capRemaining, setCapRemaining] = useState<number>(150000000);
   const [fetching, setFetching] = useState<boolean>(true);
   const [dataGridLoading, setDataGridLoading] = useState(false);
@@ -128,21 +101,36 @@ export default function TeamBuilder() {
 
     const handleClick = () => {
       const id = generateGuid();
-      setPlayers((oldRows: any) => [
-        ...oldRows,
-        { id, player_name: '', position: '', trait1: undefined, trait2: undefined, trait3: undefined, contract: '', salary: 0, isNew: true },
-      ]);
+      setPlayers((oldRows: any) => [...oldRows, { id, name: '', position: '', trait1: '', trait2: '', trait3: '', contract: '', isNew: true }]);
       setRowModesModel((oldModel) => ({
         ...oldModel,
-        [id]: { mode: GridRowModes.Edit, fieldToFocus: 'player_name' },
+        [id]: { mode: GridRowModes.Edit },
       }));
     };
 
     return (
       <GridToolbarContainer>
-        <Button color='primary' startIcon={<AddIcon />} onClick={handleClick}>
-          Add Player
-        </Button>
+        <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', p: 0.5 }}>
+          <Stack direction='row' spacing={2}>
+            <Button variant='contained' disabled={!user}>
+              Load Team
+            </Button>
+            <Button variant='contained' disabled={!user || players.length <= 0}>
+              Save Team
+            </Button>
+            {!user && (
+              <Typography variant='body2' sx={{ color: 'yellow' }}>
+                In order to load or save, please login.
+              </Typography>
+            )}
+          </Stack>
+          <Stack direction='row' spacing={2} sx={{ alignItems: 'center' }}>
+            <Typography sx={{ color: capRemaining < 0 ? 'red' : '' }}>Cap Space: {capRemaining.toLocaleString()}</Typography>
+            <Button variant='contained' startIcon={<AddIcon />} onClick={handleClick}>
+              Add Player
+            </Button>
+          </Stack>
+        </Stack>
       </GridToolbarContainer>
     );
   }
@@ -158,11 +146,25 @@ export default function TeamBuilder() {
   };
 
   const handleSaveClick = (id: GridRowId) => () => {
+    setDataGridLoading(true);
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+    setTimeout(() => {
+      calculateCap();
+      setDataGridLoading(false);
+    }, 250);
   };
 
   const handleDeleteClick = (id: GridRowId) => () => {
-    setPlayers(players.filter((row) => row.id !== id));
+    setDataGridLoading(true);
+    let newArr = [...players];
+    newArr.splice(
+      players.findIndex((x) => x.id === id),
+      1
+    );
+    setPlayers(newArr);
+    setTimeout(() => {
+      setDataGridLoading(false);
+    }, 250);
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
@@ -175,12 +177,6 @@ export default function TeamBuilder() {
     if (editedRow!.isNew) {
       setPlayers(players.filter((row) => row.id !== id));
     }
-  };
-
-  const processRowUpdate = (newRow: GridRowModel) => {
-    const updatedRow = { ...newRow, isNew: false };
-    setPlayers(players.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    return updatedRow;
   };
 
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
@@ -200,6 +196,17 @@ export default function TeamBuilder() {
       headerName: 'Position',
       flex: 0.5,
       pinnable: false,
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: [
+        { value: 'QB', label: 'QB' },
+        { value: 'HB', label: 'HB' },
+        { value: 'WR', label: 'WR' },
+      ],
+      preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
+        const hasError = params.props.value === '';
+        return { ...params.props, error: hasError };
+      },
     },
     {
       field: 'trait1',
@@ -210,7 +217,21 @@ export default function TeamBuilder() {
       type: 'singleSelect',
       getOptionValue: (value: any) => value.trait_key,
       getOptionLabel: (value: any) => value.trait_name,
-      valueOptions: traits ?? [],
+      valueOptions: (params) =>
+        params.row.position !== ''
+          ? (traits?.filter(
+              (x) =>
+                x.trait_key !== params.row.trait2 &&
+                x.trait_key !== params.row.trait3 &&
+                !x.position_exclusions.includes(params.row.position) &&
+                !x.conflicts.includes(params.row.trait2 === '' ? null : params.row.trait2) &&
+                !x.conflicts.includes(params.row.trait3 === '' ? null : params.row.trait3)
+            ) ?? [])
+          : [],
+      preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
+        const hasError = params.props.value === '';
+        return { ...params.props, error: hasError };
+      },
     },
     {
       field: 'trait2',
@@ -221,7 +242,21 @@ export default function TeamBuilder() {
       type: 'singleSelect',
       getOptionValue: (value: any) => value.trait_key,
       getOptionLabel: (value: any) => value.trait_name,
-      valueOptions: traits ?? [],
+      valueOptions: (params) =>
+        params.row.position !== ''
+          ? (traits?.filter(
+              (x) =>
+                x.trait_key !== params.row.trait1 &&
+                x.trait_key !== params.row.trait3 &&
+                !x.position_exclusions.includes(params.row.position) &&
+                !x.conflicts.includes(params.row.trait1 === '' ? null : params.row.trait1) &&
+                !x.conflicts.includes(params.row.trait3 === '' ? null : params.row.trait3)
+            ) ?? [])
+          : [],
+      preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
+        const hasError = params.props.value === '';
+        return { ...params.props, error: hasError };
+      },
     },
     {
       field: 'trait3',
@@ -232,7 +267,21 @@ export default function TeamBuilder() {
       type: 'singleSelect',
       getOptionValue: (value: any) => value.trait_key,
       getOptionLabel: (value: any) => value.trait_name,
-      valueOptions: traits ?? [],
+      valueOptions: (params) =>
+        params.row.position !== ''
+          ? (traits?.filter(
+              (x) =>
+                x.trait_key !== params.row.trait1 &&
+                x.trait_key !== params.row.trait2 &&
+                !x.position_exclusions.includes(params.row.position) &&
+                !x.conflicts.includes(params.row.trait1 === '' ? null : params.row.trait1) &&
+                !x.conflicts.includes(params.row.trait2 === '' ? null : params.row.trait2)
+            ) ?? [])
+          : [],
+      preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
+        const hasError = params.props.value === '';
+        return { ...params.props, error: hasError };
+      },
     },
     {
       field: 'contract',
@@ -240,6 +289,16 @@ export default function TeamBuilder() {
       flex: 0.75,
       pinnable: false,
       editable: true,
+      type: 'singleSelect',
+      valueOptions: [
+        { value: 'Low', label: 'Low' },
+        { value: 'Medium', label: 'Medium' },
+        { value: 'High', label: 'High' },
+      ],
+      preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
+        const hasError = params.props.value === '';
+        return { ...params.props, error: hasError };
+      },
     },
     {
       field: 'salary',
@@ -253,7 +312,7 @@ export default function TeamBuilder() {
       field: 'actions',
       type: 'actions',
       flex: 1,
-      getActions: ({ id }) => {
+      getActions: ({ id, row }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
         if (isInEditMode) {
@@ -282,90 +341,6 @@ export default function TeamBuilder() {
   ];
   //
 
-  // Popover
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [popoverData, setPopoverData] = useState<any>();
-  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
-    const field = event.currentTarget.dataset.field!;
-    const id = event.currentTarget.parentElement!.dataset.id!;
-    const player = players.find((r) => r.id === id)!;
-    if (field !== 'trait1' && field !== 'trait2' && field !== 'trait3') return;
-    setPopoverData(field === 'trait1' ? player.trait1 : field === 'trait2' ? player.trait2 : player.trait3);
-    setAnchorEl(event.currentTarget);
-  };
-  const handlePopoverClose = () => {
-    setAnchorEl(null);
-  };
-  const popoverOpen = Boolean(anchorEl);
-  //
-
-  //Dialog
-  const [open, setOpen] = useState(false);
-  const [availableTraits, setAvailableTraits] = useState<Trait[]>([]);
-  const [newPlayerData, setNewPlayerData] = useState<TeamBuilderPlayer>();
-  const [selectedName, setSelectedName] = useState<string>('');
-  const [selectedPosition, setSelectedPosition] = useState<string>('');
-  const [selectedContract, setSelectedContract] = useState<string>('');
-  const [selectedTraits, setSelectedTraits] = useState<Trait[]>([]);
-  const [traitsInputValue, setTraitsInputValue] = useState('');
-  const [editIndex, setEditIndex] = useState<number>(-1);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = (r?: 'backdropClick' | 'escapeKeyDown') => {
-    if (r && r === 'backdropClick') return null;
-    setSelectedName('');
-    setSelectedPosition('');
-    setSelectedContract('');
-    setSelectedTraits([]);
-    setOpen(false);
-  };
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedName(event.target.value);
-  };
-  const handlePositionChange = (event: SelectChangeEvent) => {
-    setSelectedPosition(event.target.value as string);
-  };
-  const handleContractChange = (event: SelectChangeEvent) => {
-    setSelectedContract(event.target.value as string);
-  };
-
-  const getSalary = (player: any): number => {
-    if (!traits || !player.position || !player.contract || !player.trait1 || !player.trait2 || !player.trait3) return 0;
-    let salary = SALARIES[player.position] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
-    let modifier = 0;
-    let contractModifier = 0;
-    switch (player.contract) {
-      case 'Low':
-        contractModifier = 0.875;
-        break;
-      case 'Medium':
-        contractModifier = 1;
-        break;
-      case 'High':
-        contractModifier = 1.2;
-        break;
-    }
-    modifier = +player.trait1.salary_modifier + +player.trait2.salary_modifier + +player.trait3.salary_modifier;
-
-    salary *= 1 + modifier;
-
-    if (salary > 5000000) {
-      salary = 25000 * Math.ceil(salary / 25000);
-    } else if (salary > 1000000) {
-      salary = 10000 * Math.ceil(salary / 10000);
-    } else {
-      salary = 5000 * Math.ceil(salary / 5000);
-    }
-
-    return (salary *= contractModifier);
-  };
-
-  const isFormValid = () => {
-    if (selectedPosition === '' || selectedContract === '' || selectedTraits.length !== 3) return false;
-    return true;
-  };
-  //
-
   const fetchData = async () => {
     setFetching(true);
     const traitsRes = await fetch('/api/traits');
@@ -388,17 +363,39 @@ export default function TeamBuilder() {
     setFetching(false);
   };
 
-  const handlePlayerEdit = (player: any) => {
-    setDataGridLoading(true);
-    // setSelectedName(player.player_name ?? '');
-    // setSelectedPosition(player.position);
-    // setSelectedContract(player.contract);
-    // setSelectedTraits(player.traits);
-    // setEditIndex(player.id);
-    // handleOpen();
-    setTimeout(() => {
-      setDataGridLoading(false);
-    }, 250);
+  const getSalary = (player: any): number => {
+    if (!traits || !player.position || !player.contract || !player.trait1 || !player.trait2 || !player.trait3) return 0;
+    let salary = SALARIES[player.position] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
+    let modifier = 0;
+    let contractModifier = 0;
+    switch (player.contract) {
+      case 'Low':
+        contractModifier = 0.875;
+        break;
+      case 'Medium':
+        contractModifier = 1;
+        break;
+      case 'High':
+        contractModifier = 1.2;
+        break;
+    }
+
+    const t1 = traits.find((x) => x.trait_key === player.trait1)?.salary_modifier;
+    const t2 = traits.find((x) => x.trait_key === player.trait2)?.salary_modifier;
+    const t3 = traits.find((x) => x.trait_key === player.trait3)?.salary_modifier;
+    modifier = +t1! + +t2! + +t3!;
+
+    salary *= 1 + modifier;
+
+    if (salary > 5000000) {
+      salary = 25000 * Math.ceil(salary / 25000);
+    } else if (salary > 1000000) {
+      salary = 10000 * Math.ceil(salary / 10000);
+    } else {
+      salary = 5000 * Math.ceil(salary / 5000);
+    }
+
+    return (salary *= contractModifier);
   };
 
   const handlePlayerClone = (player: any) => {
@@ -410,17 +407,8 @@ export default function TeamBuilder() {
     }, 250);
   };
 
-  const handlePlayerDelete = (id: string) => {
-    setDataGridLoading(true);
-    let newArr = [...players];
-    newArr.splice(
-      players.findIndex((x) => x.id === id),
-      1
-    );
-    setPlayers(newArr);
-    setTimeout(() => {
-      setDataGridLoading(false);
-    }, 250);
+  const calculateCap = () => {
+    setCapRemaining(150000000 - players.reduce((sum, player) => sum + (getSalary(player) || 0), 0));
   };
 
   useEffect(() => {
@@ -428,26 +416,7 @@ export default function TeamBuilder() {
   }, []);
 
   useEffect(() => {
-    if (!traits) return;
-    selectedPosition !== '' ? setAvailableTraits([...traits].filter((x) => !x.position_exclusions.includes(selectedPosition))) : setAvailableTraits([]);
-  }, [selectedPosition]);
-
-  useEffect(() => {
-    const eligibleTraits = selectedPosition !== '' ? (traits?.filter((x) => !x.position_exclusions.includes(selectedPosition)) ?? []) : [];
-    setAvailableTraits(eligibleTraits?.filter((x) => !selectedTraits!.some((y) => x.conflicts.includes(y.trait_key))));
-  }, [selectedTraits]);
-
-  useEffect(() => {
-    if (!newPlayerData) return;
-    if (editIndex === -1) {
-      setPlayers([...players, newPlayerData]);
-    } else {
-      setPlayers([...players.slice(0, editIndex), newPlayerData, ...players.slice(editIndex + 1)]);
-    }
-  }, [newPlayerData]);
-
-  useEffect(() => {
-    setCapRemaining(150000000 - players.reduce((sum, player) => sum + (getSalary(player) || 0), 0));
+    calculateCap();
   }, [players]);
 
   if (fetching) return <LinearProgress sx={{ borderRadius: 2 }} />;
@@ -457,26 +426,6 @@ export default function TeamBuilder() {
       {traits && (
         <>
           <Stack spacing={1}>
-            <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
-              <Button variant='contained' disabled={!user}>
-                Load Team
-              </Button>
-              <Button variant='contained' disabled={!user || players.length <= 0}>
-                Save Team
-              </Button>
-              {!user && (
-                <Typography variant='body2' sx={{ color: 'yellow' }}>
-                  In order to load or save, please login.
-                </Typography>
-              )}
-            </Stack>
-            <Stack direction='row' sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography>Cap Space: {capRemaining.toLocaleString()}</Typography>
-              <Button variant='contained' onClick={() => handleOpen()}>
-                New Player
-              </Button>
-            </Stack>
-            <Divider sx={{ my: 1 }} />
             <DataGridPro
               rows={players}
               columns={playerColumns}
@@ -489,126 +438,14 @@ export default function TeamBuilder() {
               rowModesModel={rowModesModel}
               onRowModesModelChange={handleRowModesModelChange}
               onRowEditStop={handleRowEditStop}
-              processRowUpdate={processRowUpdate}
               slots={{
                 toolbar: EditToolbar as GridSlots['toolbar'],
               }}
               slotProps={{
-                cell: {
-                  onMouseEnter: handlePopoverOpen,
-                  onMouseLeave: handlePopoverClose,
-                },
                 toolbar: { setPlayers, setRowModesModel },
               }}
             />
           </Stack>
-          <Dialog
-            open={open}
-            onClose={(e, r) => handleClose(r)}
-            fullWidth
-            PaperProps={{
-              component: 'form',
-              onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                event.preventDefault();
-                const player: TeamBuilderPlayer = {
-                  id: generateGuid(),
-                  player_name: selectedName,
-                  position: selectedPosition,
-                  contract: selectedContract,
-                  trait1: selectedTraits[0],
-                  trait2: selectedTraits[1],
-                  trait3: selectedTraits[2],
-                  isNew: false,
-                };
-                setNewPlayerData(player);
-                handleClose();
-              },
-            }}
-          >
-            <DialogTitle>New Player</DialogTitle>
-            <DialogContent dividers sx={{ height: '100vh' }}>
-              <Stack spacing={2}>
-                <TextField
-                  margin='dense'
-                  id='player_name'
-                  name='player_name'
-                  label='Name'
-                  type='string'
-                  fullWidth
-                  variant='standard'
-                  value={selectedName}
-                  onChange={handleNameChange}
-                />
-                <FormControl required fullWidth>
-                  <InputLabel id='position-label'>Position</InputLabel>
-                  <Select labelId='position-label' id='position' name='position' label='Position' value={selectedPosition} onChange={handlePositionChange}>
-                    <MenuItem value={'QB'}>QB</MenuItem>
-                    <MenuItem value={'HB'}>HB</MenuItem>
-                    <MenuItem value={'WR'}>WR</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl required fullWidth>
-                  <InputLabel id='contract-label'>Contract</InputLabel>
-                  <Select labelId='contract-label' id='contract' name='contract' label='Contract' value={selectedContract} onChange={handleContractChange}>
-                    <MenuItem value={'Low'}>Low</MenuItem>
-                    <MenuItem value={'Medium'}>Medium</MenuItem>
-                    <MenuItem value={'High'}>High</MenuItem>
-                  </Select>
-                </FormControl>
-                <Autocomplete
-                  multiple
-                  limitTags={3}
-                  disableCloseOnSelect
-                  disablePortal
-                  options={availableTraits}
-                  getOptionKey={(x) => x.trait_key}
-                  getOptionLabel={(x) => x.trait_name}
-                  renderOption={(props, option) => (
-                    <Typography {...props} key={option.trait_key} variant='body2'>
-                      {option.trait_name} {option.salary_modifier * 100.0}%
-                    </Typography>
-                  )}
-                  renderInput={(params) => <TextField {...params} label='Traits' />}
-                  value={selectedTraits}
-                  onChange={(event: any, newValue: Trait[]) => {
-                    setSelectedTraits(newValue);
-                  }}
-                  inputValue={traitsInputValue}
-                  onInputChange={(event, newInputValue) => {
-                    setTraitsInputValue(newInputValue);
-                  }}
-                />
-              </Stack>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => handleClose()}>Cancel</Button>
-              <Button type='submit' disabled={!isFormValid()}>
-                Save
-              </Button>
-            </DialogActions>
-          </Dialog>
-          <Popover
-            id='mouse-over-popover'
-            sx={{ pointerEvents: 'none' }}
-            open={popoverOpen}
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            onClose={handlePopoverClose}
-            disableRestoreFocus
-          >
-            {popoverData && (
-              <Stack spacing={1} sx={{ px: 2, py: 1 }}>
-                <Typography variant='caption'>Salary Modifier: {popoverData.salary_modifier * 100.0}%</Typography>
-              </Stack>
-            )}
-          </Popover>
         </>
       )}
     </Container>
