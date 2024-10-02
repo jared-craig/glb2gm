@@ -1,30 +1,7 @@
 'use client';
 
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  FormControl,
-  InputLabel,
-  LinearProgress,
-  Menu,
-  MenuItem,
-  Popover,
-  Select,
-  SelectChangeEvent,
-  Stack,
-  TextField,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { Button, Container, LinearProgress, Stack, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { Trait } from './trait';
 import { TeamBuilderPlayer } from './teamBuilderPlayer';
 import { SALARIES } from './salaries';
@@ -37,23 +14,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {
   DataGridPro,
   GridActionsCellItem,
-  GridCellModes,
-  GridCellModesModel,
-  GridCellParams,
   GridColDef,
   GridEventListener,
   GridPreProcessEditCellProps,
-  GridRenderCellParams,
   GridRowEditStopReasons,
   GridRowId,
-  GridRowModel,
   GridRowModes,
   GridRowModesModel,
-  GridRowParams,
   GridRowsProp,
   GridSlots,
   GridToolbarContainer,
-  useGridApiContext,
 } from '@mui/x-data-grid-pro';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import React from 'react';
