@@ -376,3 +376,13 @@ model Games {
   team_two_fumbles_lost  Int
   updated_at             DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Games_updated_at") @db.DateTime
 }
+
+model Traits {
+  id                  Int      @id(map: "PK_Traits") @default(autoincrement())
+  trait_key           String   @db.NVarChar(Max)
+  trait_name          String   @db.NVarChar(Max)
+  conflicts           String?  @db.NVarChar(Max)
+  position_exclusions String?  @db.NVarChar(Max)
+  salary_modifier     Decimal  @db.Decimal(18, 2)
+  updated_at          DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Traits_updated_at") @db.DateTime
+}

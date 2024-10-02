@@ -8,7 +8,6 @@ export default function Home() {
   return (
     <Container maxWidth='xl'>
       <Stack spacing={3}>
-        <Typography variant='h5'>Welcome to GLB2GM!</Typography>
         <Typography variant='body1'>
           App is currently in <i>development</i>
         </Typography>
