@@ -101,7 +101,7 @@ export default function TeamBuilder() {
 
     const handleClick = () => {
       const id = generateGuid();
-      setPlayers((oldRows: any) => [...oldRows, { id, name: '', position: '', trait1: '', trait2: '', trait3: '', contract: '', isNew: true }]);
+      setPlayers((oldRows: any) => [...oldRows, { id, name: '', position: '', trait1: '', trait2: '', trait3: '', contract: '', salary: 0, isNew: true }]);
       setRowModesModel((oldModel) => ({
         ...oldModel,
         [id]: { mode: GridRowModes.Edit },
@@ -126,7 +126,7 @@ export default function TeamBuilder() {
           </Stack>
           <Stack direction='row' spacing={2} sx={{ alignItems: 'center' }}>
             <Typography sx={{ color: capRemaining < 0 ? 'red' : '' }}>Cap Space: {capRemaining.toLocaleString()}</Typography>
-            <Button variant='contained' startIcon={<AddIcon />} onClick={handleClick}>
+            <Button color='secondary' startIcon={<AddIcon />} onClick={handleClick}>
               Add Player
             </Button>
           </Stack>
@@ -146,12 +146,7 @@ export default function TeamBuilder() {
   };
 
   const handleSaveClick = (id: GridRowId) => () => {
-    setDataGridLoading(true);
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-    setTimeout(() => {
-      calculateCap();
-      setDataGridLoading(false);
-    }, 250);
   };
 
   const handleDeleteClick = (id: GridRowId) => () => {
@@ -408,6 +403,7 @@ export default function TeamBuilder() {
   };
 
   const calculateCap = () => {
+    console.log('cap', players);
     setCapRemaining(150000000 - players.reduce((sum, player) => sum + (getSalary(player) || 0), 0));
   };
 

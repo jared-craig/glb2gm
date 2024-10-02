@@ -46,9 +46,10 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
       teamOneTopGamesSum && teamTwoTopGamesSum
         ? sumArray([teamOneTopGamesSum, teamTwoTopGamesSum])
         : teamOneTopGamesSum
-        ? teamOneTopGamesSum
-        : teamTwoTopGamesSum;
+          ? teamOneTopGamesSum
+          : teamTwoTopGamesSum;
 
+    console.log(topTenGames);
     setTopTenGames(topTenGames);
   };
 
