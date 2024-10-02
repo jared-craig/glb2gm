@@ -35,10 +35,35 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
     );
 
     const teamOneTopGames = [...allTeamOneGames].filter((x) => x.team_one_id === teamData.id && teamOneTopTeams.some((y) => y.id === x.team_two_id));
+    const teamOneRecord = teamOneTopGames.reduce(
+      (acc, curr) => {
+        if (curr.team_one_points > curr.team_two_points) {
+          acc.wins++;
+        } else if (curr.team_one_points < curr.team_two_points) {
+          acc.losses++;
+        } else {
+          acc.ties++;
+        }
+        return acc;
+      },
+      { wins: 0, losses: 0, ties: 0 }
+    );
     const teamOneTopGamesSum = sumArray(teamOneTopGames.map((x) => extractTeamData(x, 'team_one_')));
     if (teamOneTopGamesSum) teamOneTopGamesSum['games'] = teamOneTopGames.length;
-
     const teamTwoTopGames = [...allTeamOneGames].filter((x) => x.team_two_id === teamData.id && teamOneTopTeams.some((y) => y.id === x.team_one_id));
+    const teamTwoRecord = teamTwoTopGames.reduce(
+      (acc, curr) => {
+        if (curr.team_one_points < curr.team_two_points) {
+          acc.wins++;
+        } else if (curr.team_one_points > curr.team_two_points) {
+          acc.losses++;
+        } else {
+          acc.ties++;
+        }
+        return acc;
+      },
+      { wins: 0, losses: 0, ties: 0 }
+    );
     const teamTwoTopGamesSum = sumArray(teamTwoTopGames.map((x) => extractTeamData(x, 'team_two_')));
     if (teamTwoTopGamesSum) teamTwoTopGamesSum['games'] = teamTwoTopGames.length;
 
@@ -48,6 +73,10 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
         : teamOneTopGamesSum
           ? teamOneTopGamesSum
           : teamTwoTopGamesSum;
+
+    topTenGames['wins'] = teamOneRecord.wins + teamTwoRecord.wins;
+    topTenGames['losses'] = teamOneRecord.losses + teamTwoRecord.losses;
+    topTenGames['ties'] = teamOneRecord.ties + teamTwoRecord.ties;
 
     setTopTenGames(topTenGames);
   };
@@ -112,183 +141,181 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
               </Link>
             </Stack>
           </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-            <Typography sx={{ typography: { xs: 'body1', sm: 'h6' } }}>
-              Record: {teamData.wins}-{teamData.losses}-{teamData.ties}
-            </Typography>
-          </Grid>
           <Grid size={{ xs: 12 }}>
             <Stack direction='row' spacing={2}>
-              <Typography sx={{ typography: { xs: 'body1', sm: 'h6' } }}>Global: {teamData.global_rank}</Typography>
-              <Typography sx={{ typography: { xs: 'body1', sm: 'h6' } }}>Tier: {teamData.tier_rank}</Typography>
+              <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>Global: {teamData.global_rank}</Typography>
+              <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>Tier: {teamData.tier_rank}</Typography>
             </Stack>
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <Typography sx={{ typography: { xs: 'h6', sm: 'h5' } }}>Overall</Typography>
+            <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>
+              Overall ({teamData.wins}-{teamData.losses}-{teamData.ties})
+            </Typography>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack spacing={{ xs: 0, md: 0.5 }}>
-              <Typography sx={{ typography: { xs: 'body1', sm: 'h6' } }}>
+              <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>
                 Offense (
                 {(
                   ((+teamData.offensive_attempts + +teamData.offensive_sacks) /
                     (+teamData.offensive_rushes + +teamData.offensive_attempts + +teamData.offensive_sacks)) *
                   100.0
                 ).toFixed(1)}
-                % Pass{' '}
+                % Pass{' | '}
                 {((+teamData.offensive_rushes / (+teamData.offensive_rushes + +teamData.offensive_attempts + +teamData.offensive_sacks)) * 100.0).toFixed(1)}%
                 Run)
               </Typography>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Total Yards: {teamData.offensive_total_yards}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('offensive_total_yards', 'desc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Total Yards: {teamData.offensive_total_yards}</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('offensive_total_yards', 'desc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Rushing Yards: {teamData.offensive_rushing_yards}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('offensive_rushing_yards', 'desc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Rushing Yards: {teamData.offensive_rushing_yards}</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('offensive_rushing_yards', 'desc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                   Rushing YPC: {(+teamData.offensive_rushing_yards / +teamData.offensive_rushes).toFixed(2)}
                 </Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('offensive_rushing_yards_per_carry', 'desc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('offensive_rushing_yards_per_carry', 'desc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Passing Yards: {teamData.offensive_passing_yards}</Typography>{' '}
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('offensive_passing_yards', 'desc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Passing Yards: {teamData.offensive_passing_yards}</Typography>{' '}
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('offensive_passing_yards', 'desc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                   Passing YPA: {(+teamData.offensive_passing_yards / +teamData.offensive_attempts).toFixed(2)}
                 </Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('offensive_passing_yards_per_attempt', 'desc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('offensive_passing_yards_per_attempt', 'desc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Sacks Taken: {teamData.offensive_sacks}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('offensive_sacks', 'asc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Sacks Taken: {teamData.offensive_sacks}</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('offensive_sacks', 'asc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Interceptions: {teamData.offensive_interceptions}</Typography>{' '}
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('offensive_interceptions', 'asc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Interceptions: {teamData.offensive_interceptions}</Typography>{' '}
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('offensive_interceptions', 'asc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Fumbles Lost: {teamData.offensive_fumbles_lost}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('offensive_fumbles_lost', 'asc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Fumbles Lost: {teamData.offensive_fumbles_lost}</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('offensive_fumbles_lost', 'asc')} )</Typography>
               </Stack>
             </Stack>
           </Grid>
-
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack spacing={{ xs: 0, md: 0.5 }}>
-              <Typography sx={{ typography: { xs: 'body1', sm: 'h6' } }}>Defense</Typography>
+              <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>Defense</Typography>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Total Yards: {teamData.defensive_total_yards}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('defensive_total_yards', 'asc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Total Yards: {teamData.defensive_total_yards}</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('defensive_total_yards', 'asc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Rushing Yards: {teamData.defensive_rushing_yards}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('defensive_rushing_yards', 'asc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Rushing Yards: {teamData.defensive_rushing_yards}</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('defensive_rushing_yards', 'asc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                   Rushing YPC: {(+teamData.defensive_rushing_yards / +teamData.defensive_rushes).toFixed(2)}
                 </Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('defensive_rushing_yards_per_carry', 'asc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('defensive_rushing_yards_per_carry', 'asc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Passing Yards: {teamData.defensive_passing_yards}</Typography>{' '}
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('defensive_passing_yards', 'asc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Passing Yards: {teamData.defensive_passing_yards}</Typography>{' '}
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('defensive_passing_yards', 'asc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                   Passing YPA: {(+teamData.defensive_passing_yards / +teamData.defensive_attempts).toFixed(2)}
                 </Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('defensive_passing_yards_per_attempt', 'asc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('defensive_passing_yards_per_attempt', 'asc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Sacks: {teamData.defensive_sacks}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('defensive_sacks', 'desc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Sacks: {teamData.defensive_sacks}</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('defensive_sacks', 'desc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Interceptions: {teamData.defensive_interceptions}</Typography>{' '}
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('defensive_interceptions', 'desc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Interceptions: {teamData.defensive_interceptions}</Typography>{' '}
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('defensive_interceptions', 'desc')} )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>Forced Fumbles: {teamData.defensive_fumbles_lost}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>( {getLeagueRank('defensive_fumbles_lost', 'desc')} )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Forced Fumbles: {teamData.defensive_fumbles_lost}</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('defensive_fumbles_lost', 'desc')} )</Typography>
               </Stack>
             </Stack>
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <Typography sx={{ typography: { xs: 'h6', sm: 'h5' } }}>VS Top Teams ({topTenGames.games} Games)</Typography>
+            <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>
+              VS Top Teams ({topTenGames.wins}-{topTenGames.losses}-{topTenGames.ties})
+            </Typography>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack spacing={{ xs: 0, md: 0.5 }}>
-              <Typography sx={{ typography: { xs: 'body1', sm: 'h6' } }}>
+              <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>
                 Offense (
                 {(
                   ((+topTenGames.offensive_attempts + +topTenGames.offensive_sacks) /
                     (+topTenGames.offensive_rushes + +topTenGames.offensive_attempts + +topTenGames.offensive_sacks)) *
                   100.0
                 ).toFixed(1)}
-                % Pass{' '}
+                % Pass{' | '}
                 {(
                   (+topTenGames.offensive_rushes / (+topTenGames.offensive_rushes + +topTenGames.offensive_attempts + +topTenGames.offensive_sacks)) *
                   100.0
                 ).toFixed(1)}
                 % Run)
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Total YPG: {(topTenGames.offensive_total_yards / topTenGames.games).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Rushing YPG: {(topTenGames.offensive_rushing_yards / topTenGames.games).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Rushing YPC: {(topTenGames.offensive_rushing_yards / topTenGames.offensive_rushes).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Passing YPG: {(topTenGames.offensive_passing_yards / topTenGames.games).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Passing YPA: {(topTenGames.offensive_passing_yards / topTenGames.offensive_attempts).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Sacks Taken/Game: {(topTenGames.offensive_sacks / topTenGames.games).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Interceptions/Game: {(topTenGames.offensive_interceptions / topTenGames.games).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Fumbles/Game: {(topTenGames.offensive_fumbles_lost / topTenGames.games).toFixed(2)}
               </Typography>
             </Stack>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack spacing={{ xs: 0, md: 0.5 }}>
-              <Typography sx={{ typography: { xs: 'body1', sm: 'h6' } }}>Defense</Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>Defense</Typography>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Total YPG: {(topTenGames.defensive_total_yards / topTenGames.games).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Rushing YPG: {(topTenGames.defensive_rushing_yards / topTenGames.games).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Rushing YPC: {(topTenGames.defensive_rushing_yards / topTenGames.defensive_rushes).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Passing YPG: {(topTenGames.defensive_passing_yards / topTenGames.games).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Passing YPA: {(topTenGames.defensive_passing_yards / topTenGames.defensive_attempts).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Sacks/Game: {(topTenGames.defensive_sacks / topTenGames.games).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Interceptions/Game: {(topTenGames.defensive_interceptions / topTenGames.games).toFixed(2)}
               </Typography>
-              <Typography sx={{ typography: { xs: 'body2', sm: 'body1' } }}>
+              <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Forced Fumbles/Game: {(topTenGames.defensive_fumbles_lost / topTenGames.games).toFixed(2)}
               </Typography>
             </Stack>
