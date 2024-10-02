@@ -30,6 +30,9 @@ export default function Home() {
             <ListItem disablePadding>
               <ListItemText primary='Matchup' secondary='Compare your team to another.'></ListItemText>
             </ListItem>
+            <ListItem disablePadding>
+              <ListItemText primary='Team Builder' secondary='Construct the team of your dreams.'></ListItemText>
+            </ListItem>
           </List>
         </Stack>
         <Typography variant='body1'>
