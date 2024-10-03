@@ -405,3 +405,21 @@ model Punting {
   tier          String   @db.NVarChar(Max)
   updated_at    DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Punting_updated_at") @db.DateTime
 }
+
+model Returning {
+  id            Int      @id(map: "PK_Returning")
+  player_name   String   @db.NVarChar(Max)
+  team_name     String   @db.NVarChar(Max)
+  position      String   @db.NVarChar(50)
+  games_played  Int
+  krs           Int
+  kr_yards      Decimal  @db.Decimal(18, 1)
+  kr_average    Decimal  @db.Decimal(18, 1)
+  kr_touchdowns Int
+  prs           Int
+  pr_yards      Decimal  @db.Decimal(18, 1)
+  pr_average    Decimal  @db.Decimal(18, 1)
+  pr_touchdowns Int
+  tier          String   @db.NVarChar(Max)
+  updated_at    DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Returning_updated_at") @db.DateTime
+}

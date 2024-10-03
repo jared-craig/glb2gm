@@ -12,6 +12,7 @@ import {
   getPassingGmRating,
   getPuntingGmRating,
   getReceivingGmRating,
+  getReturningGmRating,
   getRushingGmRating,
 } from '../stats/statCalculations';
 import { Divider, FormControl, FormControlLabel, Radio, RadioGroup, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
@@ -20,6 +21,7 @@ import { PlayerDefensiveData } from '../stats/defensive/playerDefensiveData';
 import { PlayerBlockingData } from '../stats/blocking/playerBlockingData';
 import { PlayerKickingData } from '../stats/kicking/playerKickingData';
 import { PlayerPuntingData } from '../stats/punting/playerPuntingData';
+import { PlayerReturningData } from '../stats/returning/playerReturningData';
 
 interface AllData {
   passData: PlayerPassingData[];
@@ -29,6 +31,7 @@ interface AllData {
   blockData: PlayerBlockingData[];
   kickData: PlayerKickingData[];
   puntData: PlayerPuntingData[];
+  returnData: PlayerReturningData[];
 }
 
 interface Thresholds {
@@ -38,6 +41,7 @@ interface Thresholds {
   BLOCKER_PLAYS: number;
   FG_ATTEMPTS: number;
   PUNTS: number;
+  RETURNS: number;
 }
 
 export default function TopTeam() {
@@ -76,6 +80,10 @@ export default function TopTeam() {
   const [punterSophData, setPunterSophData] = useState<(PlayerPuntingData | undefined)[]>([]);
   const [punterProData, setPunterProData] = useState<(PlayerPuntingData | undefined)[]>([]);
   const [punterVetData, setPunterVetData] = useState<(PlayerPuntingData | undefined)[]>([]);
+  const [returnerRookieData, setReturnerRookieData] = useState<(PlayerReturningData | undefined)[]>([]);
+  const [returnerSophData, setReturnerSophData] = useState<(PlayerReturningData | undefined)[]>([]);
+  const [returnerProData, setReturnerProData] = useState<(PlayerReturningData | undefined)[]>([]);
+  const [returnerVetData, setReturnerVetData] = useState<(PlayerReturningData | undefined)[]>([]);
   const [passersFetching, setPassersFetching] = useState<boolean>(true);
   const [rushersFetching, setRushersFetching] = useState<boolean>(true);
   const [receiversFetching, setReceiversFetching] = useState<boolean>(true);
@@ -83,6 +91,7 @@ export default function TopTeam() {
   const [blockersFetching, setBlockersFetching] = useState<boolean>(true);
   const [kickersFetching, setKickersFetching] = useState<boolean>(true);
   const [puntersFetching, setPuntersFetching] = useState<boolean>(true);
+  const [returnersFetching, setReturnersFetching] = useState<boolean>(true);
 
   const matchById = (array1: any[], array2: any[], statToPull: string, propToAdd: string) => {
     let baseArray = JSON.parse(JSON.stringify(array1));
@@ -140,6 +149,10 @@ export default function TopTeam() {
         ratingDiff = getPuntingGmRating(b) - getPuntingGmRating(a);
         if (ratingDiff === 0) return +b.average + +b.hangtime - (+a.average + +a.hangtime);
         return ratingDiff;
+      case 'returning':
+        ratingDiff = getReturningGmRating(b) - getReturningGmRating(a);
+        if (ratingDiff === 0) return +b.kr_average + +b.pr_average - (+a.kr_average + +a.pr_average);
+        return ratingDiff;
       default:
         return 0;
     }
@@ -160,10 +173,12 @@ export default function TopTeam() {
     const kickData: PlayerKickingData[] = await kickRes.json();
     const puntRes = await fetch('/api/punting');
     const puntData: PlayerPuntingData[] = await puntRes.json();
+    const returnRes = await fetch('/api/returning');
+    const returnData: PlayerReturningData[] = await returnRes.json();
 
     setGamesPlayed(Math.max(...passData.map((x) => x.games_played)));
 
-    setAllData({ passData, rushData, recData, defData, blockData, kickData, puntData });
+    setAllData({ passData, rushData, recData, defData, blockData, kickData, puntData, returnData });
   };
 
   const fetchPasserData = async () => {
@@ -443,6 +458,37 @@ export default function TopTeam() {
     setTimeout(() => setPuntersFetching(false), 1000);
   };
 
+  const fetchReturnerData = async () => {
+    if (!allData || !thresholds) return;
+
+    const tops: PlayerReturningData[] = allData.returnData
+      .sort((a: PlayerReturningData, b: PlayerReturningData) => sortByRating('returning', a, b))
+      .map((x) => ({ ...x, position: 'RET' }));
+
+    let rookies: (PlayerReturningData | undefined)[] = [];
+    let sophs: (PlayerReturningData | undefined)[] = [];
+    let pros: (PlayerReturningData | undefined)[] = [];
+    let vets: (PlayerReturningData | undefined)[] = [];
+
+    const rookie = tops.filter((x) => x.tier === 'Rookie' && x.krs + x.prs >= thresholds.RETURNS).slice(0, 2);
+    rookies = rookie.length > 0 ? [...rookies, ...rookie] : [...rookies, ...[undefined, undefined]];
+    setReturnerRookieData(rookies);
+
+    const soph = tops.filter((x) => x.tier === 'Sophomore' && x.krs + x.prs >= thresholds.RETURNS).slice(0, 2);
+    sophs = soph.length > 0 ? [...sophs, ...soph] : [...sophs, ...[undefined, undefined]];
+    setReturnerSophData(sophs);
+
+    const pro = tops.filter((x) => x.tier === 'Professional' && x.krs + x.prs >= thresholds.RETURNS).slice(0, 2);
+    pros = pro.length > 0 ? [...pros, ...pro] : [...pros, ...[undefined, undefined]];
+    setReturnerProData(pros);
+
+    const vet = tops.filter((x) => x.tier === 'Veteran' && x.krs + x.prs >= thresholds.RETURNS).slice(0, 2);
+    vets = vet.length > 0 ? [...vets, ...vet] : [...vets, ...[undefined, undefined]];
+    setReturnerVetData(vets);
+
+    setTimeout(() => setReturnersFetching(false), 1000);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -457,6 +503,7 @@ export default function TopTeam() {
       BLOCKER_PLAYS: 25.0 * gamesPlayed,
       FG_ATTEMPTS: 1.0 * gamesPlayed,
       PUNTS: 1.0 * gamesPlayed,
+      RETURNS: 1.0 * gamesPlayed,
     });
   }, [gamesPlayed]);
 
@@ -468,10 +515,11 @@ export default function TopTeam() {
     fetchBlockingData();
     fetchKickingData();
     fetchPuntingData();
+    fetchReturnerData();
   }, [thresholds]);
 
   return (
-    <Grid container rowGap={{ xs: 0.5, sm: 1 }}>
+    <Grid container rowGap={{ xs: 0.5, sm: 1 }} sx={{ mb: 2 }}>
       <Grid sx={{ display: 'flex', justifyContent: 'center' }} size={12}>
         <FormControl>
           <RadioGroup row name='first-or-second-radio-buttons-group' value={teamChoice} onChange={(x) => setTeamChoice(x.target.value)}>
@@ -702,6 +750,7 @@ export default function TopTeam() {
               </Divider>
               <AllStarTeamPlayer player={kickerRookieData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
               <AllStarTeamPlayer player={punterRookieData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={returnerRookieData[0]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -717,6 +766,7 @@ export default function TopTeam() {
               </Divider>
               <AllStarTeamPlayer player={kickerSophData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
               <AllStarTeamPlayer player={punterSophData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={returnerSophData[0]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -732,6 +782,7 @@ export default function TopTeam() {
               </Divider>
               <AllStarTeamPlayer player={kickerProData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
               <AllStarTeamPlayer player={punterProData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={returnerProData[0]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -747,6 +798,7 @@ export default function TopTeam() {
               </Divider>
               <AllStarTeamPlayer player={kickerVetData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
               <AllStarTeamPlayer player={punterVetData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={returnerVetData[0]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
         </>
@@ -973,6 +1025,7 @@ export default function TopTeam() {
               </Divider>
               <AllStarTeamPlayer player={kickerRookieData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
               <AllStarTeamPlayer player={punterRookieData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={returnerRookieData[1]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -988,6 +1041,7 @@ export default function TopTeam() {
               </Divider>
               <AllStarTeamPlayer player={kickerSophData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
               <AllStarTeamPlayer player={punterSophData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={returnerSophData[1]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -1003,6 +1057,7 @@ export default function TopTeam() {
               </Divider>
               <AllStarTeamPlayer player={kickerProData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
               <AllStarTeamPlayer player={punterProData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={returnerProData[1]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -1018,6 +1073,7 @@ export default function TopTeam() {
               </Divider>
               <AllStarTeamPlayer player={kickerVetData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
               <AllStarTeamPlayer player={punterVetData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={returnerVetData[1]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
         </>
