@@ -14,7 +14,7 @@ export const getDefensiveGmRating = (x: any): number => {
       1.0 * +x.tackles_for_loss -
       1.5 * +x.missed_tackles +
       (x.position === 'CB' || x.position === 'FS' || x.position === 'SS' ? 1.0 : 4.0) * +x.sacks +
-      0.25 * +x.hurries +
+      (x.position === 'CB' || x.position === 'FS' || x.position === 'SS' ? 0.1 : 0.25) * +x.hurries +
       5.0 * +x.interceptions +
       3.0 * +x.forced_fumbles +
       1.0 * +x.fumble_recoveries +
