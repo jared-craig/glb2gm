@@ -111,10 +111,36 @@ export default function Matchup() {
     );
 
     const teamOneTeamOneTopGames = [...allTeamOneGames].filter((x) => x.team_one_id === teamOne.id && teamOneTopTeams.some((y) => y.id === x.team_two_id));
+    const teamOneTeamOneRecord = teamOneTeamOneTopGames.reduce(
+      (acc, curr) => {
+        if (curr.team_one_points > curr.team_two_points) {
+          acc.wins++;
+        } else if (curr.team_one_points < curr.team_two_points) {
+          acc.losses++;
+        } else {
+          acc.ties++;
+        }
+        return acc;
+      },
+      { wins: 0, losses: 0, ties: 0 }
+    );
     const teamOneTeamOneTopGamesSum = sumArray(teamOneTeamOneTopGames.map((x) => extractTeamData(x, 'team_one_')));
     if (teamOneTeamOneTopGamesSum) teamOneTeamOneTopGamesSum['games'] = teamOneTeamOneTopGames.length;
 
     const teamOneTeamTwoTopGames = [...allTeamOneGames].filter((x) => x.team_two_id === teamOne.id && teamOneTopTeams.some((y) => y.id === x.team_one_id));
+    const teamOneTeamTwoRecord = teamOneTeamTwoTopGames.reduce(
+      (acc, curr) => {
+        if (curr.team_one_points < curr.team_two_points) {
+          acc.wins++;
+        } else if (curr.team_one_points > curr.team_two_points) {
+          acc.losses++;
+        } else {
+          acc.ties++;
+        }
+        return acc;
+      },
+      { wins: 0, losses: 0, ties: 0 }
+    );
     const teamOneTeamTwoTopGamesSum = sumArray(teamOneTeamTwoTopGames.map((x) => extractTeamData(x, 'team_two_')));
     if (teamOneTeamTwoTopGamesSum) teamOneTeamTwoTopGamesSum['games'] = teamOneTeamTwoTopGames.length;
 
@@ -125,11 +151,41 @@ export default function Matchup() {
           ? teamOneTeamOneTopGamesSum
           : teamOneTeamTwoTopGamesSum;
 
+    teamOneTopTenGames['wins'] = teamOneTeamOneRecord.wins + teamOneTeamTwoRecord.wins;
+    teamOneTopTenGames['losses'] = teamOneTeamOneRecord.losses + teamOneTeamTwoRecord.losses;
+    teamOneTopTenGames['ties'] = teamOneTeamOneRecord.ties + teamOneTeamTwoRecord.ties;
+
     const teamTwoTeamOneTopGames = [...allTeamTwoGames].filter((x) => x.team_one_id === teamTwo.id && teamTwoTopTeams.some((y) => y.id === x.team_two_id));
+    const teamTwoOneRecord = teamTwoTeamOneTopGames.reduce(
+      (acc, curr) => {
+        if (curr.team_one_points > curr.team_two_points) {
+          acc.wins++;
+        } else if (curr.team_one_points < curr.team_two_points) {
+          acc.losses++;
+        } else {
+          acc.ties++;
+        }
+        return acc;
+      },
+      { wins: 0, losses: 0, ties: 0 }
+    );
     const teamTwoTeamOneTopGamesSum = sumArray(teamTwoTeamOneTopGames.map((x) => extractTeamData(x, 'team_one_')));
     if (teamTwoTeamOneTopGamesSum) teamTwoTeamOneTopGamesSum['games'] = teamTwoTeamOneTopGames.length;
 
     const teamTwoTeamTwoTopGames = [...allTeamTwoGames].filter((x) => x.team_two_id === teamTwo.id && teamTwoTopTeams.some((y) => y.id === x.team_one_id));
+    const teamTwoTeamTwoRecord = teamTwoTeamTwoTopGames.reduce(
+      (acc, curr) => {
+        if (curr.team_one_points < curr.team_two_points) {
+          acc.wins++;
+        } else if (curr.team_one_points > curr.team_two_points) {
+          acc.losses++;
+        } else {
+          acc.ties++;
+        }
+        return acc;
+      },
+      { wins: 0, losses: 0, ties: 0 }
+    );
     const teamTwoTeamTwoTopGamesSum = sumArray(teamTwoTeamTwoTopGames.map((x) => extractTeamData(x, 'team_two_')));
     if (teamTwoTeamTwoTopGamesSum) teamTwoTeamTwoTopGamesSum['games'] = teamTwoTeamTwoTopGames.length;
 
@@ -139,6 +195,10 @@ export default function Matchup() {
         : teamTwoTeamOneTopGamesSum
           ? teamTwoTeamOneTopGamesSum
           : teamTwoTeamTwoTopGamesSum;
+
+    teamTwoTopTenGames['wins'] = teamTwoOneRecord.wins + teamTwoTeamTwoRecord.wins;
+    teamTwoTopTenGames['losses'] = teamTwoOneRecord.losses + teamTwoTeamTwoRecord.losses;
+    teamTwoTopTenGames['ties'] = teamTwoOneRecord.ties + teamTwoTeamTwoRecord.ties;
 
     setTopTenTeamOneGames(teamOneTopTenGames);
     setTopTenTeamTwoGames(teamTwoTopTenGames);
@@ -476,6 +536,14 @@ export default function Matchup() {
             <Divider variant='middle'>
               <Typography typography={{ xs: 'h6', sm: 'h5' }}>VS Top Teams</Typography>
             </Divider>
+            <TeamStats
+              team1={`${topTenTeamOneGames.wins}-${topTenTeamOneGames.losses}-${topTenTeamOneGames.ties}`}
+              team2={`${topTenTeamTwoGames.wins}-${topTenTeamTwoGames.losses}-${topTenTeamTwoGames.ties}`}
+              sort=''
+              label='Record'
+              textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={0}
+            />
             <Typography typography={{ xs: 'body1', sm: 'h6' }}>Offense</Typography>
             <TeamStats
               team1={topTenTeamOneGames.offensive_total_yards / topTenTeamOneGames.games}
