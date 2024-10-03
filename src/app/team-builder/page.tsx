@@ -63,12 +63,6 @@ export default function TeamBuilder() {
     return '';
   };
 
-  const getContractClassName = (contract: string) => {
-    if (contract === 'Low') return 'low-contract';
-    if (contract === 'High') return 'high-contract';
-    return '';
-  };
-
   // Datagrid
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
@@ -99,19 +93,22 @@ export default function TeamBuilder() {
     return (
       <GridToolbarContainer>
         <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', alignItems: 'center', p: 0.5 }}>
-          <Stack direction='row' spacing={2}>
-            <Button variant='contained' size='small' disabled={!user || true}>
-              Load Team (Soon)
-            </Button>
-            <Button variant='contained' size='small' disabled={!user || players.length <= 0 || true}>
-              Save Team (Soon)
-            </Button>
+          <Stack>
+            <Stack direction='row' spacing={2}>
+              <Button variant='contained' size='small' disabled={!user || true}>
+                Load Team (Soon)
+              </Button>
+              <Button variant='contained' size='small' disabled={!user || players.length <= 0 || true}>
+                Save Team (Soon)
+              </Button>
+            </Stack>
             {!user && (
-              <Typography variant='body2' sx={{ color: 'yellow' }}>
+              <Typography variant='body2' sx={{ color: 'yellow', px: 1 }}>
                 In order to load or save, please login.
               </Typography>
             )}
           </Stack>
+
           <Stack sx={{ flexGrow: 1, px: 4 }}>
             <Grid2 container spacing={1} columns={8}>
               <Grid2 size={1}>
