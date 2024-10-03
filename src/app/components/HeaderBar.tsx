@@ -14,11 +14,14 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import logo from '../assets/logo-no-background.png';
 import Link from 'next/link';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import { Button, Skeleton } from '@mui/material';
 
-const pages = ['All Stars', 'Player Builder', 'Player Stats', 'Team Rankings', 'Matchup'];
+const pages = ['All Stars', 'Player Builder', 'Player Stats', 'Team Rankings', 'Matchup', 'Team Builder'];
 
 function HeaderBar() {
   const router = useRouter();
+  const { user, error, isLoading } = useUser();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
 
@@ -48,6 +51,9 @@ function HeaderBar() {
       case 'Matchup':
         router.push('/matchup');
         break;
+      case 'Team Builder':
+        router.push('/team-builder');
+        break;
     }
   };
 
@@ -55,45 +61,52 @@ function HeaderBar() {
     <AppBar position='static'>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
-          <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'flex-start' }}>
+          <IconButton size='large' aria-label='glb2gm menu' aria-controls='menu-appbar' aria-haspopup='true' onClick={handleOpenNavMenu} color='inherit'>
+            <MenuIcon />
+          </IconButton>
+          <Menu
+            id='menu-appbar'
+            anchorEl={anchorElNav}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            open={Boolean(anchorElNav)}
+            onClose={handleCloseNavMenu}
+            sx={{
+              display: 'block',
+            }}
+          >
+            {pages.map((page) => (
+              <MenuItem key={page} onClick={() => navigateToPage(page)}>
+                <Typography textAlign='center'>{page}</Typography>
+              </MenuItem>
+            ))}
+          </Menu>
+          <Box sx={{ display: 'flex', mr: 2 }}>
             <Image src={logo} width={40} height={40} alt='logo' priority={true} />
           </Box>
-          <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
+          <Box sx={{ flexGrow: 1 }}>
             <Typography variant='h4' sx={{ lineHeight: 1.5 }}>
               <Link href='/' style={{ color: 'inherit', textDecoration: 'inherit' }}>
                 GLB2GM
               </Link>
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'flex-end' }}>
-            <IconButton size='large' aria-label='glb2gm menu' aria-controls='menu-appbar' aria-haspopup='true' onClick={handleOpenNavMenu} color='inherit'>
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id='menu-appbar'
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: 'block',
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={() => navigateToPage(page)}>
-                  <Typography textAlign='center'>{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          {user ? (
+            <Button href='/api/auth/logout'>Logout</Button>
+          ) : isLoading ? (
+            <Typography>
+              <Skeleton width={60} />
+            </Typography>
+          ) : (
+            <Button href='/api/auth/login'>Login</Button>
+          )}
         </Toolbar>
       </Container>
     </AppBar>

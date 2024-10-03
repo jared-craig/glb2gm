@@ -8,7 +8,6 @@ export default function Home() {
   return (
     <Container maxWidth='xl'>
       <Stack spacing={3}>
-        <Typography variant='h5'>Welcome to GLB2GM!</Typography>
         <Typography variant='body1'>
           App is currently in <i>development</i>
         </Typography>
@@ -30,6 +29,9 @@ export default function Home() {
             </ListItem>
             <ListItem disablePadding>
               <ListItemText primary='Matchup' secondary='Compare your team to another.'></ListItemText>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemText primary='Team Builder' secondary='Construct the team of your dreams.'></ListItemText>
             </ListItem>
           </List>
         </Stack>
