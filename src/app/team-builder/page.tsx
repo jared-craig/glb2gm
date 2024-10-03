@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { Box, Button, Container, Grid2, LinearProgress, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
@@ -28,15 +29,13 @@ import {
   GridRowsProp,
   GridSlots,
   GridToolbarContainer,
-  GridValidRowModel,
 } from '@mui/x-data-grid-pro';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import React from 'react';
-import ArrowDropUp from '@mui/icons-material/ArrowDropUp';
 
 function generateGuid() {
   return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/[x]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
+    const r = (Math.random() * 16) | 0,
       v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
@@ -415,12 +414,13 @@ export default function TeamBuilder() {
           field: 'actions',
           type: 'actions',
           width: 120,
-          getActions: ({ id, row }) => {
+          getActions: ({ id }) => {
             const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
             if (isInEditMode) {
               return [
                 <GridActionsCellItem
+                  key={`save-${id}`}
                   icon={<SaveIcon />}
                   label='Save'
                   sx={{
@@ -428,14 +428,21 @@ export default function TeamBuilder() {
                   }}
                   onClick={handleSaveClick(id)}
                 />,
-                <GridActionsCellItem icon={<CancelIcon />} label='Cancel' className='textPrimary' onClick={handleCancelClick(id)} color='inherit' />,
+                <GridActionsCellItem
+                  key={`cancel-${id}`}
+                  icon={<CancelIcon />}
+                  label='Cancel'
+                  className='textPrimary'
+                  onClick={handleCancelClick(id)}
+                  color='inherit'
+                />,
               ];
             }
 
             return [
-              <GridActionsCellItem icon={<EditIcon />} label='Edit' className='textPrimary' onClick={handleEditClick(id)} color='inherit' />,
-              <GridActionsCellItem icon={<ContentCopyIcon />} label='Clone' onClick={handleCloneClick(id)} color='inherit' />,
-              <GridActionsCellItem icon={<DeleteIcon />} label='Delete' onClick={handleDeleteClick(id)} color='inherit' />,
+              <GridActionsCellItem key={`edit-${id}`} icon={<EditIcon />} label='Edit' className='textPrimary' onClick={handleEditClick(id)} color='inherit' />,
+              <GridActionsCellItem key={`clone-${id}`} icon={<ContentCopyIcon />} label='Clone' onClick={handleCloneClick(id)} color='inherit' />,
+              <GridActionsCellItem key={`delete-${id}`} icon={<DeleteIcon />} label='Delete' onClick={handleDeleteClick(id)} color='inherit' />,
             ];
           },
         },
@@ -576,12 +583,13 @@ export default function TeamBuilder() {
           field: 'actions',
           type: 'actions',
           flex: 1,
-          getActions: ({ id, row }) => {
+          getActions: ({ id }) => {
             const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
             if (isInEditMode) {
               return [
                 <GridActionsCellItem
+                  key={`save-${id}`}
                   icon={<SaveIcon />}
                   label='Save'
                   sx={{
@@ -589,14 +597,21 @@ export default function TeamBuilder() {
                   }}
                   onClick={handleSaveClick(id)}
                 />,
-                <GridActionsCellItem icon={<CancelIcon />} label='Cancel' className='textPrimary' onClick={handleCancelClick(id)} color='inherit' />,
+                <GridActionsCellItem
+                  key={`cancel-${id}`}
+                  icon={<CancelIcon />}
+                  label='Cancel'
+                  className='textPrimary'
+                  onClick={handleCancelClick(id)}
+                  color='inherit'
+                />,
               ];
             }
 
             return [
-              <GridActionsCellItem icon={<EditIcon />} label='Edit' className='textPrimary' onClick={handleEditClick(id)} color='inherit' />,
-              <GridActionsCellItem icon={<ContentCopyIcon />} label='Clone' onClick={handleCloneClick(id)} color='inherit' />,
-              <GridActionsCellItem icon={<DeleteIcon />} label='Delete' onClick={handleDeleteClick(id)} color='inherit' />,
+              <GridActionsCellItem key={`edit-${id}`} icon={<EditIcon />} label='Edit' className='textPrimary' onClick={handleEditClick(id)} color='inherit' />,
+              <GridActionsCellItem key={`clone-${id}`} icon={<ContentCopyIcon />} label='Clone' onClick={handleCloneClick(id)} color='inherit' />,
+              <GridActionsCellItem key={`delete-${id}`} icon={<DeleteIcon />} label='Delete' onClick={handleDeleteClick(id)} color='inherit' />,
             ];
           },
         },
@@ -692,7 +707,7 @@ export default function TeamBuilder() {
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
-          getRowHeight={({ id, densityFactor }) => (!desktop ? 'auto' : 40 * densityFactor)}
+          getRowHeight={({ densityFactor }) => (!desktop ? 'auto' : 40 * densityFactor)}
           getRowClassName={(params) =>
             params.row.position === '' || params.row.trait1 === '' || params.row.trait2 === '' || params.row.trait3 === '' || params.row.contract === ''
               ? 'invalid-row'
