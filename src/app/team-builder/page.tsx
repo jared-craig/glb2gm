@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { Box, Button, Container, Grid2, LinearProgress, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
