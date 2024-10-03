@@ -8,6 +8,7 @@ import PlayerReceivingStats from './receiving/PlayerReceivingStats';
 import PlayerDefensiveStats from './defensive/PlayerDefensiveStats';
 import PlayerBlockingStats from './blocking/PlayerBlockingStats';
 import PlayerKickingStats from './kicking/PlayerKickingStats';
+import PlayerPuntingStats from './punting/PlayerPuntingStats';
 
 export default function Stats() {
   const [value, setValue] = useState(0);
@@ -25,6 +26,7 @@ export default function Stats() {
         <Tab label='Defensive' />
         <Tab label='Blocking' />
         <Tab label='Kicking' />
+        <Tab label='Punting' />
       </Tabs>
       {value === 0 && <PlayerPassingStats />}
       {value === 1 && <PlayerRushingStats />}
@@ -32,6 +34,7 @@ export default function Stats() {
       {value === 3 && <PlayerDefensiveStats />}
       {value === 4 && <PlayerBlockingStats />}
       {value === 5 && <PlayerKickingStats />}
+      {value === 6 && <PlayerPuntingStats />}
     </Box>
   );
 }

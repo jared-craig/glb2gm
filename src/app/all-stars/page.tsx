@@ -10,6 +10,7 @@ import {
   getDefensiveGmRating,
   getKickingGmRating,
   getPassingGmRating,
+  getPuntingGmRating,
   getReceivingGmRating,
   getRushingGmRating,
 } from '../stats/statCalculations';
@@ -18,6 +19,7 @@ import AllStarTeamPlayer from './AllStarTeamPlayer';
 import { PlayerDefensiveData } from '../stats/defensive/playerDefensiveData';
 import { PlayerBlockingData } from '../stats/blocking/playerBlockingData';
 import { PlayerKickingData } from '../stats/kicking/playerKickingData';
+import { PlayerPuntingData } from '../stats/punting/playerPuntingData';
 
 interface AllData {
   passData: PlayerPassingData[];
@@ -26,6 +28,7 @@ interface AllData {
   defData: PlayerDefensiveData[];
   blockData: PlayerBlockingData[];
   kickData: PlayerKickingData[];
+  puntData: PlayerPuntingData[];
 }
 
 interface Thresholds {
@@ -34,6 +37,7 @@ interface Thresholds {
   RECEPTIONS: number;
   BLOCKER_PLAYS: number;
   FG_ATTEMPTS: number;
+  PUNTS: number;
 }
 
 export default function TopTeam() {
@@ -68,12 +72,17 @@ export default function TopTeam() {
   const [kickerSophData, setKickerSophData] = useState<(PlayerKickingData | undefined)[]>([]);
   const [kickerProData, setKickerProData] = useState<(PlayerKickingData | undefined)[]>([]);
   const [kickerVetData, setKickerVetData] = useState<(PlayerKickingData | undefined)[]>([]);
+  const [punterRookieData, setPunterRookieData] = useState<(PlayerPuntingData | undefined)[]>([]);
+  const [punterSophData, setPunterSophData] = useState<(PlayerPuntingData | undefined)[]>([]);
+  const [punterProData, setPunterProData] = useState<(PlayerPuntingData | undefined)[]>([]);
+  const [punterVetData, setPunterVetData] = useState<(PlayerPuntingData | undefined)[]>([]);
   const [passersFetching, setPassersFetching] = useState<boolean>(true);
   const [rushersFetching, setRushersFetching] = useState<boolean>(true);
   const [receiversFetching, setReceiversFetching] = useState<boolean>(true);
   const [defendersFetching, setDefendersFetching] = useState<boolean>(true);
   const [blockersFetching, setBlockersFetching] = useState<boolean>(true);
   const [kickersFetching, setKickersFetching] = useState<boolean>(true);
+  const [puntersFetching, setPuntersFetching] = useState<boolean>(true);
 
   const matchById = (array1: any[], array2: any[], statToPull: string, propToAdd: string) => {
     let baseArray = JSON.parse(JSON.stringify(array1));
@@ -127,6 +136,10 @@ export default function TopTeam() {
         ratingDiff = getKickingGmRating(b) - getKickingGmRating(a);
         if (ratingDiff === 0) return +b.fg_made - +a.fg_made;
         return ratingDiff;
+      case 'punting':
+        ratingDiff = getPuntingGmRating(b) - getPuntingGmRating(a);
+        if (ratingDiff === 0) return +b.average + +b.hangtime - (+a.average + +a.hangtime);
+        return ratingDiff;
       default:
         return 0;
     }
@@ -145,10 +158,12 @@ export default function TopTeam() {
     const blockData: PlayerBlockingData[] = await blockRes.json();
     const kickRes = await fetch('/api/kicking');
     const kickData: PlayerKickingData[] = await kickRes.json();
+    const puntRes = await fetch('/api/punting');
+    const puntData: PlayerPuntingData[] = await puntRes.json();
 
     setGamesPlayed(Math.max(...passData.map((x) => x.games_played)));
 
-    setAllData({ passData, rushData, recData, defData, blockData, kickData });
+    setAllData({ passData, rushData, recData, defData, blockData, kickData, puntData });
   };
 
   const fetchPasserData = async () => {
@@ -399,6 +414,35 @@ export default function TopTeam() {
     setTimeout(() => setKickersFetching(false), 1000);
   };
 
+  const fetchPuntingData = async () => {
+    if (!allData || !thresholds) return;
+
+    const tops: PlayerPuntingData[] = allData.puntData.sort((a: PlayerPuntingData, b: PlayerPuntingData) => sortByRating('punting', a, b));
+
+    let rookies: (PlayerPuntingData | undefined)[] = [];
+    let sophs: (PlayerPuntingData | undefined)[] = [];
+    let pros: (PlayerPuntingData | undefined)[] = [];
+    let vets: (PlayerPuntingData | undefined)[] = [];
+
+    const rookiePs = tops.filter((x) => x.tier === 'Rookie' && x.punts >= thresholds.PUNTS).slice(0, 2);
+    rookies = rookiePs.length > 0 ? [...rookies, ...rookiePs] : [...rookies, ...[undefined, undefined]];
+    setPunterRookieData(rookies);
+
+    const sophPs = tops.filter((x) => x.tier === 'Sophomore' && x.punts >= thresholds.PUNTS).slice(0, 2);
+    sophs = sophPs.length > 0 ? [...sophs, ...sophPs] : [...sophs, ...[undefined, undefined]];
+    setPunterSophData(sophs);
+
+    const proPs = tops.filter((x) => x.tier === 'Professional' && x.punts >= thresholds.PUNTS).slice(0, 2);
+    pros = proPs.length > 0 ? [...pros, ...proPs] : [...pros, ...[undefined, undefined]];
+    setPunterProData(pros);
+
+    const vetPs = tops.filter((x) => x.tier === 'Veteran' && x.punts >= thresholds.PUNTS).slice(0, 2);
+    vets = vetPs.length > 0 ? [...vets, ...vetPs] : [...vets, ...[undefined, undefined]];
+    setPunterVetData(vets);
+
+    setTimeout(() => setPuntersFetching(false), 1000);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -412,6 +456,7 @@ export default function TopTeam() {
       RECEPTIONS: 1.0 * gamesPlayed,
       BLOCKER_PLAYS: 25.0 * gamesPlayed,
       FG_ATTEMPTS: 1.0 * gamesPlayed,
+      PUNTS: 1.0 * gamesPlayed,
     });
   }, [gamesPlayed]);
 
@@ -422,6 +467,7 @@ export default function TopTeam() {
     fetchDefensiveData();
     fetchBlockingData();
     fetchKickingData();
+    fetchPuntingData();
   }, [thresholds]);
 
   return (
@@ -655,6 +701,7 @@ export default function TopTeam() {
                 <Typography variant='h6'>Rookie</Typography>
               </Divider>
               <AllStarTeamPlayer player={kickerRookieData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={punterRookieData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -669,6 +716,7 @@ export default function TopTeam() {
                 <Typography variant='h6'>Sophomore</Typography>
               </Divider>
               <AllStarTeamPlayer player={kickerSophData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={punterSophData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -683,6 +731,7 @@ export default function TopTeam() {
                 <Typography variant='h6'>Professional</Typography>
               </Divider>
               <AllStarTeamPlayer player={kickerProData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={punterProData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -697,6 +746,7 @@ export default function TopTeam() {
                 <Typography variant='h6'>Veteran</Typography>
               </Divider>
               <AllStarTeamPlayer player={kickerVetData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={punterVetData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
         </>
@@ -922,6 +972,7 @@ export default function TopTeam() {
                 <Typography variant='h6'>Rookie</Typography>
               </Divider>
               <AllStarTeamPlayer player={kickerRookieData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={punterRookieData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -936,6 +987,7 @@ export default function TopTeam() {
                 <Typography variant='h6'>Sophomore</Typography>
               </Divider>
               <AllStarTeamPlayer player={kickerSophData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={punterSophData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -950,6 +1002,7 @@ export default function TopTeam() {
                 <Typography variant='h6'>Professional</Typography>
               </Divider>
               <AllStarTeamPlayer player={kickerProData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={punterProData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
           <Grid
@@ -964,6 +1017,7 @@ export default function TopTeam() {
                 <Typography variant='h6'>Veteran</Typography>
               </Divider>
               <AllStarTeamPlayer player={kickerVetData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
+              <AllStarTeamPlayer player={punterVetData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
             </Stack>
           </Grid>
         </>

@@ -386,3 +386,22 @@ model Traits {
   salary_modifier     Decimal  @db.Decimal(18, 2)
   updated_at          DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Traits_updated_at") @db.DateTime
 }
+
+model Punting {
+  id            Int      @id(map: "PK_Punting")
+  player_name   String   @db.NVarChar(Max)
+  team_name     String   @db.NVarChar(Max)
+  position      String   @db.NVarChar(50)
+  games_played  Int
+  punts         Int
+  yards         Decimal  @db.Decimal(18, 1)
+  average       Decimal  @db.Decimal(18, 1)
+  touchbacks    Int
+  coffins       Int
+  hangtime      Decimal  @db.Decimal(18, 1)
+  inside_five   Int
+  inside_ten    Int
+  inside_twenty Int
+  tier          String   @db.NVarChar(Max)
+  updated_at    DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Punting_updated_at") @db.DateTime
+}
