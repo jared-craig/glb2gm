@@ -1,5 +1,3 @@
-import { GameData } from '../games/gameData';
-
 export const getBlockingGmRating = (x: any): number => {
   const gm = Math.round(
     10.0 * ((+x.pancakes / +x.plays) * 1000.0) -
@@ -15,7 +13,7 @@ export const getDefensiveGmRating = (x: any): number => {
     1.0 * +x.tackles +
       1.0 * +x.tackles_for_loss -
       1.5 * +x.missed_tackles +
-      4.0 * +x.sacks +
+      (x.position === 'CB' || x.position === 'FS' || x.position === 'SS' ? 1.0 : 4.0) * +x.sacks +
       0.25 * +x.hurries +
       5.0 * +x.interceptions +
       3.0 * +x.forced_fumbles +
