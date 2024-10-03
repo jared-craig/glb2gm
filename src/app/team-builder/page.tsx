@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Container, Grid2, LinearProgress, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Grid2, LinearProgress, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Trait } from './trait';
 import { TeamBuilderPlayer } from './teamBuilderPlayer';
@@ -11,23 +11,28 @@ import SaveIcon from '@mui/icons-material/Save';
 import EditIcon from '@mui/icons-material/Edit';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
+import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import {
   DataGridPro,
   GridActionsCellItem,
   GridColDef,
   GridEventListener,
-  GridPreProcessEditCellProps,
   GridRowEditStopReasons,
   GridRowId,
   GridRowModel,
   GridRowModes,
   GridRowModesModel,
+  GridRowOrderChangeParams,
   GridRowsProp,
   GridSlots,
   GridToolbarContainer,
+  GridValidRowModel,
 } from '@mui/x-data-grid-pro';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import React from 'react';
+import ArrowDropUp from '@mui/icons-material/ArrowDropUp';
 
 function generateGuid() {
   return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/[x]/g, function (c) {
@@ -38,6 +43,9 @@ function generateGuid() {
 }
 
 export default function TeamBuilder() {
+  const theme = useTheme();
+  const desktop = useMediaQuery(theme.breakpoints.up('lg'));
+
   const [traits, setTraits] = useState<Trait[]>();
   const [players, setPlayers] = useState<TeamBuilderPlayer[] | GridRowsProp>([]);
   const [capRemaining, setCapRemaining] = useState<number>(150000000);
@@ -46,7 +54,9 @@ export default function TeamBuilder() {
 
   const { user } = useUser();
 
-  const getTraitClassName = (salaryMod: number) => {
+  const getTraitClassName = (traitKey: string) => {
+    const salaryMod = traits?.find((x) => x.trait_key === traitKey)?.salary_modifier;
+    if (!salaryMod) return '';
     if (salaryMod > 1.0) return 'red-text';
     if (salaryMod > 0.5) return 'orange-text';
     if (salaryMod > 0) return 'yellow-text';
@@ -73,7 +83,10 @@ export default function TeamBuilder() {
     const handleClick = () => {
       setDataGridLoading(true);
       const id = generateGuid();
-      setPlayers((oldRows: any) => [...oldRows, { id, name: '', position: '', trait1: '', trait2: '', trait3: '', contract: '', salary: 0, isNew: true }]);
+      setPlayers((oldRows: any) => [
+        ...oldRows,
+        { id, player_name: '', position: '', trait1: '', trait2: '', trait3: '', contract: '', salary: 0, isNew: true },
+      ]);
       setRowModesModel((oldModel) => ({
         ...oldModel,
         [id]: { mode: GridRowModes.Edit },
@@ -87,11 +100,11 @@ export default function TeamBuilder() {
       <GridToolbarContainer>
         <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', alignItems: 'center', p: 0.5 }}>
           <Stack direction='row' spacing={2}>
-            <Button variant='contained' disabled={!user}>
-              Load Team
+            <Button variant='contained' size='small' disabled={!user || true}>
+              Load Team (Soon)
             </Button>
-            <Button variant='contained' disabled={!user || players.length <= 0}>
-              Save Team
+            <Button variant='contained' size='small' disabled={!user || players.length <= 0 || true}>
+              Save Team (Soon)
             </Button>
             {!user && (
               <Typography variant='body2' sx={{ color: 'yellow' }}>
@@ -249,173 +262,348 @@ export default function TeamBuilder() {
     setRowModesModel(newRowModesModel);
   };
 
-  const playerColumns: GridColDef[] = [
-    {
-      field: 'player_name',
-      headerName: 'Name',
-      flex: 1,
-      pinnable: false,
-      editable: true,
-    },
-    {
-      field: 'position',
-      headerName: 'Position',
-      flex: 0.5,
-      pinnable: false,
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: [
-        { value: 'QB', label: 'QB' },
-        { value: 'HB', label: 'HB' },
-        { value: 'FB', label: 'FB' },
-        { value: 'TE', label: 'TE' },
-        { value: 'WR', label: 'WR' },
-        { value: 'C', label: 'C' },
-        { value: 'G', label: 'G' },
-        { value: 'OT', label: 'OT' },
-        { value: 'DT', label: 'DT' },
-        { value: 'DE', label: 'DE' },
-        { value: 'LB', label: 'LB' },
-        { value: 'CB', label: 'CB' },
-        { value: 'FS', label: 'FS' },
-        { value: 'SS', label: 'SS' },
-        { value: 'K', label: 'K' },
-        { value: 'P', label: 'P' },
-      ],
-      preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
-        const hasError = params.props.value === '';
-        return { ...params.props, error: hasError };
-      },
-    },
-    {
-      field: 'trait1',
-      headerName: 'Trait 1',
-      flex: 1.5,
-      pinnable: false,
-      editable: true,
-      type: 'singleSelect',
-      getOptionValue: (value: any) => value.trait_key,
-      getOptionLabel: (value: any) => value.trait_name,
-      valueOptions: (params) =>
-        params.row.position !== ''
-          ? (traits?.filter(
-              (x) =>
-                x.trait_key !== params.row.trait2 &&
-                x.trait_key !== params.row.trait3 &&
-                !x.position_exclusions.includes(params.row.position) &&
-                !x.conflicts.includes(params.row.trait2 === '' ? null : params.row.trait2) &&
-                !x.conflicts.includes(params.row.trait3 === '' ? null : params.row.trait3)
-            ) ?? [])
-          : [],
-      preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
-        const hasError = params.props.value === '';
-        return { ...params.props, error: hasError };
-      },
-    },
-    {
-      field: 'trait2',
-      headerName: 'Trait 2',
-      flex: 1.5,
-      pinnable: false,
-      editable: true,
-      type: 'singleSelect',
-      getOptionValue: (value: any) => value.trait_key,
-      getOptionLabel: (value: any) => value.trait_name,
-      valueOptions: (params) =>
-        params.row.position !== ''
-          ? (traits?.filter(
-              (x) =>
-                x.trait_key !== params.row.trait1 &&
-                x.trait_key !== params.row.trait3 &&
-                !x.position_exclusions.includes(params.row.position) &&
-                !x.conflicts.includes(params.row.trait1 === '' ? null : params.row.trait1) &&
-                !x.conflicts.includes(params.row.trait3 === '' ? null : params.row.trait3)
-            ) ?? [])
-          : [],
-      preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
-        const hasError = params.props.value === '';
-        return { ...params.props, error: hasError };
-      },
-    },
-    {
-      field: 'trait3',
-      headerName: 'Trait 3',
-      flex: 1.5,
-      pinnable: false,
-      editable: true,
-      type: 'singleSelect',
-      getOptionValue: (value: any) => value.trait_key,
-      getOptionLabel: (value: any) => value.trait_name,
-      valueOptions: (params) =>
-        params.row.position !== ''
-          ? (traits?.filter(
-              (x) =>
-                x.trait_key !== params.row.trait1 &&
-                x.trait_key !== params.row.trait2 &&
-                !x.position_exclusions.includes(params.row.position) &&
-                !x.conflicts.includes(params.row.trait1 === '' ? null : params.row.trait1) &&
-                !x.conflicts.includes(params.row.trait2 === '' ? null : params.row.trait2)
-            ) ?? [])
-          : [],
-      preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
-        const hasError = params.props.value === '';
-        return { ...params.props, error: hasError };
-      },
-    },
-    {
-      field: 'contract',
-      headerName: 'Contract',
-      flex: 0.75,
-      pinnable: false,
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: [
-        { value: 'Low', label: 'Low' },
-        { value: 'Medium', label: 'Medium' },
-        { value: 'High', label: 'High' },
-      ],
-      preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
-        const hasError = params.props.value === '';
-        return { ...params.props, error: hasError };
-      },
-    },
-    {
-      field: 'salary',
-      headerName: 'Salary',
-      type: 'number',
-      flex: 1,
-      pinnable: false,
-      valueGetter: (value, row) => getSalary(row),
-    },
-    {
-      field: 'actions',
-      type: 'actions',
-      flex: 1,
-      getActions: ({ id, row }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+  const updateRowPosition = (initialIndex: number, newIndex: number, rows: TeamBuilderPlayer[]): Promise<any> => {
+    return new Promise((resolve) => {
+      const rowsClone = [...rows];
+      const row = rowsClone.splice(initialIndex, 1)[0];
+      rowsClone.splice(newIndex, 0, row);
+      resolve(rowsClone);
+    });
+  };
 
-        if (isInEditMode) {
-          return [
-            <GridActionsCellItem
-              icon={<SaveIcon />}
-              label='Save'
-              sx={{
-                color: 'primary.main',
-              }}
-              onClick={handleSaveClick(id)}
-            />,
-            <GridActionsCellItem icon={<CancelIcon />} label='Cancel' className='textPrimary' onClick={handleCancelClick(id)} color='inherit' />,
-          ];
-        }
+  const handleRowOrderChange = async (params: GridRowOrderChangeParams) => {
+    setDataGridLoading(true);
+    const newRows = await updateRowPosition(params.oldIndex, params.targetIndex, players as TeamBuilderPlayer[]);
 
-        return [
-          <GridActionsCellItem icon={<EditIcon />} label='Edit' className='textPrimary' onClick={handleEditClick(id)} color='inherit' />,
-          <GridActionsCellItem icon={<ContentCopyIcon />} label='Clone' onClick={handleCloneClick(id)} color='inherit' />,
-          <GridActionsCellItem icon={<DeleteIcon />} label='Delete' onClick={handleDeleteClick(id)} color='inherit' />,
-        ];
-      },
-    },
-  ];
+    setPlayers(newRows);
+    setTimeout(() => {
+      setDataGridLoading(false);
+    }, 250);
+  };
+
+  const playerColumns: GridColDef[] = !desktop
+    ? [
+        {
+          field: 'player_name',
+          headerName: 'Name',
+          width: 120,
+          pinnable: false,
+          editable: true,
+        },
+        {
+          field: 'position',
+          headerName: 'Position',
+          width: 100,
+          pinnable: false,
+          editable: true,
+          type: 'singleSelect',
+          valueOptions: [
+            { value: 'QB', label: 'QB' },
+            { value: 'HB', label: 'HB' },
+            { value: 'FB', label: 'FB' },
+            { value: 'TE', label: 'TE' },
+            { value: 'WR', label: 'WR' },
+            { value: 'C', label: 'C' },
+            { value: 'G', label: 'G' },
+            { value: 'OT', label: 'OT' },
+            { value: 'DT', label: 'DT' },
+            { value: 'DE', label: 'DE' },
+            { value: 'LB', label: 'LB' },
+            { value: 'CB', label: 'CB' },
+            { value: 'FS', label: 'FS' },
+            { value: 'SS', label: 'SS' },
+            { value: 'K', label: 'K' },
+            { value: 'P', label: 'P' },
+          ],
+        },
+        {
+          field: 'trait1',
+          headerName: 'Trait 1',
+          width: 140,
+          pinnable: false,
+          editable: true,
+          type: 'singleSelect',
+          getOptionValue: (value: any) => value.trait_key,
+          getOptionLabel: (value: any) => value.trait_name,
+          valueOptions: (params) =>
+            params.row.position !== ''
+              ? (traits?.filter(
+                  (x) =>
+                    x.trait_key !== params.row.trait2 &&
+                    x.trait_key !== params.row.trait3 &&
+                    !x.position_exclusions.split(',').includes(params.row.position) &&
+                    !x.conflicts.split(',').includes(params.row.trait2 === '' ? null : params.row.trait2) &&
+                    !x.conflicts.split(',').includes(params.row.trait3 === '' ? null : params.row.trait3)
+                ) ?? [])
+              : [],
+          cellClassName: (params) => getTraitClassName(params.value),
+        },
+        {
+          field: 'trait2',
+          headerName: 'Trait 2',
+          width: 140,
+          pinnable: false,
+          editable: true,
+          type: 'singleSelect',
+          getOptionValue: (value: any) => value.trait_key,
+          getOptionLabel: (value: any) => value.trait_name,
+          valueOptions: (params) =>
+            params.row.position !== ''
+              ? (traits?.filter(
+                  (x) =>
+                    x.trait_key !== params.row.trait1 &&
+                    x.trait_key !== params.row.trait3 &&
+                    !x.position_exclusions.split(',').includes(params.row.position) &&
+                    !x.conflicts.split(',').includes(params.row.trait1 === '' ? null : params.row.trait1) &&
+                    !x.conflicts.split(',').includes(params.row.trait3 === '' ? null : params.row.trait3)
+                ) ?? [])
+              : [],
+          cellClassName: (params) => getTraitClassName(params.value),
+        },
+        {
+          field: 'trait3',
+          headerName: 'Trait 3',
+          width: 140,
+          pinnable: false,
+          editable: true,
+          type: 'singleSelect',
+          getOptionValue: (value: any) => value.trait_key,
+          getOptionLabel: (value: any) => value.trait_name,
+          valueOptions: (params) =>
+            params.row.position !== ''
+              ? (traits?.filter(
+                  (x) =>
+                    x.trait_key !== params.row.trait1 &&
+                    x.trait_key !== params.row.trait2 &&
+                    !x.position_exclusions.split(',').includes(params.row.position) &&
+                    !x.conflicts.split(',').includes(params.row.trait1 === '' ? null : params.row.trait1) &&
+                    !x.conflicts.split(',').includes(params.row.trait2 === '' ? null : params.row.trait2)
+                ) ?? [])
+              : [],
+          cellClassName: (params) => getTraitClassName(params.value),
+        },
+        {
+          field: 'contract',
+          headerName: 'Contract',
+          width: 120,
+          pinnable: false,
+          editable: true,
+          type: 'singleSelect',
+          valueOptions: [
+            { value: 'Low', label: 'Low' },
+            { value: 'Medium', label: 'Medium' },
+            { value: 'High', label: 'High' },
+          ],
+          renderCell: (params) => (
+            <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+              {params.value === 'High' ? (
+                <ArrowCircleUpIcon />
+              ) : params.value === 'Medium' ? (
+                <RemoveCircleOutlineIcon sx={{ opacity: 0.67 }} />
+              ) : (
+                <ArrowCircleDownIcon sx={{ opacity: 0.33 }} />
+              )}
+            </Box>
+          ),
+        },
+        {
+          field: 'salary',
+          headerName: 'Salary',
+          type: 'number',
+          width: 120,
+          pinnable: false,
+          valueGetter: (value, row) => getSalary(row),
+        },
+        {
+          field: 'actions',
+          type: 'actions',
+          width: 120,
+          getActions: ({ id, row }) => {
+            const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+
+            if (isInEditMode) {
+              return [
+                <GridActionsCellItem
+                  icon={<SaveIcon />}
+                  label='Save'
+                  sx={{
+                    color: 'primary.main',
+                  }}
+                  onClick={handleSaveClick(id)}
+                />,
+                <GridActionsCellItem icon={<CancelIcon />} label='Cancel' className='textPrimary' onClick={handleCancelClick(id)} color='inherit' />,
+              ];
+            }
+
+            return [
+              <GridActionsCellItem icon={<EditIcon />} label='Edit' className='textPrimary' onClick={handleEditClick(id)} color='inherit' />,
+              <GridActionsCellItem icon={<ContentCopyIcon />} label='Clone' onClick={handleCloneClick(id)} color='inherit' />,
+              <GridActionsCellItem icon={<DeleteIcon />} label='Delete' onClick={handleDeleteClick(id)} color='inherit' />,
+            ];
+          },
+        },
+      ]
+    : [
+        {
+          field: 'player_name',
+          headerName: 'Name',
+          flex: 1,
+          pinnable: false,
+          editable: true,
+        },
+        {
+          field: 'position',
+          headerName: 'Position',
+          flex: 0.5,
+          pinnable: false,
+          editable: true,
+          type: 'singleSelect',
+          valueOptions: [
+            { value: 'QB', label: 'QB' },
+            { value: 'HB', label: 'HB' },
+            { value: 'FB', label: 'FB' },
+            { value: 'TE', label: 'TE' },
+            { value: 'WR', label: 'WR' },
+            { value: 'C', label: 'C' },
+            { value: 'G', label: 'G' },
+            { value: 'OT', label: 'OT' },
+            { value: 'DT', label: 'DT' },
+            { value: 'DE', label: 'DE' },
+            { value: 'LB', label: 'LB' },
+            { value: 'CB', label: 'CB' },
+            { value: 'FS', label: 'FS' },
+            { value: 'SS', label: 'SS' },
+            { value: 'K', label: 'K' },
+            { value: 'P', label: 'P' },
+          ],
+        },
+        {
+          field: 'trait1',
+          headerName: 'Trait 1',
+          flex: 1.5,
+          pinnable: false,
+          editable: true,
+          type: 'singleSelect',
+          getOptionValue: (value: any) => value.trait_key,
+          getOptionLabel: (value: any) => value.trait_name,
+          valueOptions: (params) =>
+            params.row.position !== ''
+              ? (traits?.filter(
+                  (x) =>
+                    x.trait_key !== params.row.trait2 &&
+                    x.trait_key !== params.row.trait3 &&
+                    !x.position_exclusions.split(',').includes(params.row.position) &&
+                    !x.conflicts.split(',').includes(params.row.trait2 === '' ? null : params.row.trait2) &&
+                    !x.conflicts.split(',').includes(params.row.trait3 === '' ? null : params.row.trait3)
+                ) ?? [])
+              : [],
+          cellClassName: (params) => getTraitClassName(params.value),
+        },
+        {
+          field: 'trait2',
+          headerName: 'Trait 2',
+          flex: 1.5,
+          pinnable: false,
+          editable: true,
+          type: 'singleSelect',
+          getOptionValue: (value: any) => value.trait_key,
+          getOptionLabel: (value: any) => value.trait_name,
+          valueOptions: (params) =>
+            params.row.position !== ''
+              ? (traits?.filter(
+                  (x) =>
+                    x.trait_key !== params.row.trait1 &&
+                    x.trait_key !== params.row.trait3 &&
+                    !x.position_exclusions.split(',').includes(params.row.position) &&
+                    !x.conflicts.split(',').includes(params.row.trait1 === '' ? null : params.row.trait1) &&
+                    !x.conflicts.split(',').includes(params.row.trait3 === '' ? null : params.row.trait3)
+                ) ?? [])
+              : [],
+          cellClassName: (params) => getTraitClassName(params.value),
+        },
+        {
+          field: 'trait3',
+          headerName: 'Trait 3',
+          flex: 1.5,
+          pinnable: false,
+          editable: true,
+          type: 'singleSelect',
+          getOptionValue: (value: any) => value.trait_key,
+          getOptionLabel: (value: any) => value.trait_name,
+          valueOptions: (params) =>
+            params.row.position !== ''
+              ? (traits?.filter(
+                  (x) =>
+                    x.trait_key !== params.row.trait1 &&
+                    x.trait_key !== params.row.trait2 &&
+                    !x.position_exclusions.split(',').includes(params.row.position) &&
+                    !x.conflicts.split(',').includes(params.row.trait1 === '' ? null : params.row.trait1) &&
+                    !x.conflicts.split(',').includes(params.row.trait2 === '' ? null : params.row.trait2)
+                ) ?? [])
+              : [],
+          cellClassName: (params) => getTraitClassName(params.value),
+        },
+        {
+          field: 'contract',
+          headerName: 'Contract',
+          flex: 0.75,
+          pinnable: false,
+          editable: true,
+          type: 'singleSelect',
+          valueOptions: [
+            { value: 'Low', label: 'Low' },
+            { value: 'Medium', label: 'Medium' },
+            { value: 'High', label: 'High' },
+          ],
+          renderCell: (params) => (
+            <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+              {params.value === 'High' ? (
+                <ArrowCircleUpIcon />
+              ) : params.value === 'Medium' ? (
+                <RemoveCircleOutlineIcon sx={{ opacity: 0.67 }} />
+              ) : (
+                <ArrowCircleDownIcon sx={{ opacity: 0.33 }} />
+              )}
+            </Box>
+          ),
+        },
+        {
+          field: 'salary',
+          headerName: 'Salary',
+          type: 'number',
+          flex: 1,
+          pinnable: false,
+          valueGetter: (value, row) => getSalary(row),
+        },
+        {
+          field: 'actions',
+          type: 'actions',
+          flex: 1,
+          getActions: ({ id, row }) => {
+            const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+
+            if (isInEditMode) {
+              return [
+                <GridActionsCellItem
+                  icon={<SaveIcon />}
+                  label='Save'
+                  sx={{
+                    color: 'primary.main',
+                  }}
+                  onClick={handleSaveClick(id)}
+                />,
+                <GridActionsCellItem icon={<CancelIcon />} label='Cancel' className='textPrimary' onClick={handleCancelClick(id)} color='inherit' />,
+              ];
+            }
+
+            return [
+              <GridActionsCellItem icon={<EditIcon />} label='Edit' className='textPrimary' onClick={handleEditClick(id)} color='inherit' />,
+              <GridActionsCellItem icon={<ContentCopyIcon />} label='Clone' onClick={handleCloneClick(id)} color='inherit' />,
+              <GridActionsCellItem icon={<DeleteIcon />} label='Delete' onClick={handleDeleteClick(id)} color='inherit' />,
+            ];
+          },
+        },
+      ];
   //
 
   const fetchData = async () => {
@@ -492,31 +680,34 @@ export default function TeamBuilder() {
   return (
     <Container maxWidth='xl'>
       {traits && (
-        <>
-          <Stack spacing={1}>
-            <DataGridPro
-              rows={players}
-              columns={playerColumns}
-              loading={dataGridLoading}
-              rowReordering
-              density='compact'
-              autoHeight
-              disableColumnMenu
-              disableRowSelectionOnClick
-              editMode='row'
-              rowModesModel={rowModesModel}
-              onRowModesModelChange={handleRowModesModelChange}
-              onRowEditStop={handleRowEditStop}
-              processRowUpdate={processRowUpdate}
-              slots={{
-                toolbar: EditToolbar as GridSlots['toolbar'],
-              }}
-              slotProps={{
-                toolbar: { setPlayers, setRowModesModel },
-              }}
-            />
-          </Stack>
-        </>
+        <DataGridPro
+          rows={players}
+          columns={playerColumns}
+          loading={dataGridLoading}
+          density='compact'
+          autoHeight
+          disableColumnMenu
+          disableRowSelectionOnClick
+          rowReordering
+          onRowOrderChange={handleRowOrderChange}
+          editMode='row'
+          rowModesModel={rowModesModel}
+          onRowModesModelChange={handleRowModesModelChange}
+          onRowEditStop={handleRowEditStop}
+          processRowUpdate={processRowUpdate}
+          getRowHeight={({ id, densityFactor }) => (!desktop ? 'auto' : 40 * densityFactor)}
+          getRowClassName={(params) =>
+            params.row.position === '' || params.row.trait1 === '' || params.row.trait2 === '' || params.row.trait3 === '' || params.row.contract === ''
+              ? 'invalid-row'
+              : 'valid-row'
+          }
+          slots={{
+            toolbar: EditToolbar as GridSlots['toolbar'],
+          }}
+          slotProps={{
+            toolbar: { setPlayers, setRowModesModel },
+          }}
+        />
       )}
     </Container>
   );
