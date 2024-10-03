@@ -7,6 +7,7 @@ import {
   getPassingGmRating,
   getPuntingGmRating,
   getReceivingGmRating,
+  getReturningGmRating,
   getRushingGmRating,
 } from '../stats/statCalculations';
 
@@ -121,6 +122,14 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
       stats['INS 5'] = +player.inside_five + +player.coffins;
       stats['INS 10'] = player.inside_ten;
       rating = getPuntingGmRating(player);
+      break;
+    case 'RET':
+      stats['KR AVG'] = player.kr_average;
+      stats['KR TD'] = player.kr_touchdowns;
+      stats['PR AVG'] = player.pr_average;
+      stats['PR TD'] = player.pr_touchdowns;
+      rating = getReturningGmRating(player);
+      break;
   }
 
   return (
