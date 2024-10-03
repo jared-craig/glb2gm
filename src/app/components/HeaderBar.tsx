@@ -88,7 +88,7 @@ function HeaderBar() {
               </MenuItem>
             ))}
           </Menu>
-          <Box sx={{ display: 'flex', mr: 2 }}>
+          <Box sx={{ display: 'flex', ml: 1, mr: 2 }}>
             <Image src={logo} width={40} height={40} alt='logo' priority={true} />
           </Box>
           <Box sx={{ flexGrow: 1 }}>
