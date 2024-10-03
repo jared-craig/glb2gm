@@ -54,6 +54,11 @@ export const getPassingGmRating = (x: any): number => {
   return gm;
 };
 
+export const getPuntingGmRating = (x: any): number => {
+  const gm = Math.round(10.0 * +x.average + 100.0 * +x.hangtime + 20.0 * +x.coffins + 20.0 * +x.inside_five + 10.0 * +x.inside_ten + 2.0 * +x.inside_twenty);
+  return gm;
+};
+
 export const getReceivingGmRating = (x: any): number => {
   const gm = Math.round(2.0 * +(+x.yards / +x.games_played) + 10.0 * +(+x.touchdowns / +x.games_played) - +x.drops - +x.fumbles_lost);
   return gm;

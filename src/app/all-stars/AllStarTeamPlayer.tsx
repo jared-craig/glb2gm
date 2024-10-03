@@ -5,6 +5,7 @@ import {
   getDefensiveGmRating,
   getKickingGmRating,
   getPassingGmRating,
+  getPuntingGmRating,
   getReceivingGmRating,
   getRushingGmRating,
 } from '../stats/statCalculations';
@@ -114,6 +115,12 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
       if (touchbackPercent >= THRESHOLDS.TB_RATIO) stats['TB%'] = (touchbackPercent * 100.0).toFixed(1);
       rating = getKickingGmRating(player);
       break;
+    case 'P':
+      stats.AVG = player.average;
+      stats.HANG = player.hangtime;
+      stats['INS 5'] = +player.inside_five + +player.coffins;
+      stats['INS 10'] = player.inside_ten;
+      rating = getPuntingGmRating(player);
   }
 
   return (
