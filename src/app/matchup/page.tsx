@@ -236,7 +236,7 @@ export default function Matchup() {
   return (
     <Container maxWidth='lg'>
       {allTeams && (
-        <Stack direction={{ xs: 'column', md: 'row' }} sx={{ alignItems: 'center', justifyContent: 'space-between', my: 2 }}>
+        <Stack direction='row' sx={{ alignItems: 'center', justifyContent: 'space-between', my: 2 }}>
           <Autocomplete
             options={allTeams}
             getOptionLabel={(x) => `${x.team_name} (${getTierAbbreviation(x.tier)})`}
@@ -254,7 +254,7 @@ export default function Matchup() {
             size='small'
             sx={{ maxWidth: 400 }}
           />
-          <Typography>VS</Typography>
+          <Typography sx={{ px: 1 }}>VS</Typography>
           <Autocomplete
             options={allTeams}
             getOptionLabel={(x) => `${x.team_name} (${getTierAbbreviation(x.tier)})`}
@@ -401,6 +401,14 @@ export default function Matchup() {
               decimals={1}
             />
             <TeamStats
+              team1={+teamOne.offensive_points}
+              team2={+teamTwo.offensive_points}
+              sort='desc'
+              label='Points'
+              textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={0}
+            />
+            <TeamStats
               team1={+teamOne.offensive_total_yards}
               team2={+teamTwo.offensive_total_yards}
               sort='desc'
@@ -420,7 +428,7 @@ export default function Matchup() {
               team1={+teamOne.offensive_rushing_yards / +teamOne.offensive_rushes}
               team2={+teamTwo.offensive_rushing_yards / +teamTwo.offensive_rushes}
               sort='desc'
-              label='Rush YPC'
+              label='Rush Yards/Carry'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -436,7 +444,7 @@ export default function Matchup() {
               team1={+teamOne.offensive_passing_yards / +teamOne.offensive_attempts}
               team2={+teamTwo.offensive_passing_yards / +teamTwo.offensive_attempts}
               sort='desc'
-              label='Pass YPA'
+              label='Pass Yards/Att'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -487,7 +495,7 @@ export default function Matchup() {
               team1={+teamOne.defensive_rushing_yards / +teamOne.defensive_rushes}
               team2={+teamTwo.defensive_rushing_yards / +teamOne.defensive_rushes}
               sort='asc'
-              label='Rush YPC'
+              label='Rush Yards/Carry'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -503,7 +511,7 @@ export default function Matchup() {
               team1={+teamOne.defensive_passing_yards / +teamOne.defensive_attempts}
               team2={+teamTwo.defensive_passing_yards / +teamOne.defensive_attempts}
               sort='asc'
-              label='Pass YPA'
+              label='Pass Yards/Att'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -546,10 +554,18 @@ export default function Matchup() {
             />
             <Typography typography={{ xs: 'body1', sm: 'h6' }}>Offense</Typography>
             <TeamStats
+              team1={topTenTeamOneGames.offensive_points / topTenTeamOneGames.games}
+              team2={topTenTeamTwoGames.offensive_points / topTenTeamTwoGames.games}
+              sort='desc'
+              label='Points/Game'
+              textSize={{ xs: 'body2', sm: 'body1' }}
+              decimals={1}
+            />
+            <TeamStats
               team1={topTenTeamOneGames.offensive_total_yards / topTenTeamOneGames.games}
               team2={topTenTeamTwoGames.offensive_total_yards / topTenTeamTwoGames.games}
               sort='desc'
-              label='Total YPG'
+              label='Total Yards/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -557,7 +573,7 @@ export default function Matchup() {
               team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.games}
               team2={topTenTeamTwoGames.offensive_rushing_yards / topTenTeamTwoGames.games}
               sort='desc'
-              label='Rush YPG'
+              label='Rush Yards/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -565,7 +581,7 @@ export default function Matchup() {
               team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.offensive_rushes}
               team2={topTenTeamTwoGames.offensive_rushing_yards / topTenTeamTwoGames.offensive_rushes}
               sort='desc'
-              label='Rush YPC'
+              label='Rush Yards/Carry'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -573,7 +589,7 @@ export default function Matchup() {
               team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.games}
               team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.games}
               sort='desc'
-              label='Pass YPG'
+              label='Pass Yards/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -581,7 +597,7 @@ export default function Matchup() {
               team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.offensive_attempts}
               team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.offensive_attempts}
               sort='desc'
-              label='Pass YPA'
+              label='Pass Yards/Att'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -616,7 +632,7 @@ export default function Matchup() {
               team1={topTenTeamOneGames.defensive_total_yards / topTenTeamOneGames.games}
               team2={topTenTeamTwoGames.defensive_total_yards / topTenTeamTwoGames.games}
               sort='asc'
-              label='Total YPG'
+              label='Total Yards/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -624,7 +640,7 @@ export default function Matchup() {
               team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.games}
               team2={topTenTeamTwoGames.defensive_rushing_yards / topTenTeamTwoGames.games}
               sort='asc'
-              label='Rush YPG'
+              label='Rush Yards/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -632,7 +648,7 @@ export default function Matchup() {
               team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.defensive_rushes}
               team2={topTenTeamTwoGames.defensive_rushing_yards / topTenTeamTwoGames.defensive_rushes}
               sort='asc'
-              label='Rush YPC'
+              label='Rush Yards/Carry'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -640,7 +656,7 @@ export default function Matchup() {
               team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.games}
               team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.games}
               sort='asc'
-              label='Pass YPG'
+              label='Pass Yards/Game'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
@@ -648,7 +664,7 @@ export default function Matchup() {
               team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.defensive_attempts}
               team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.defensive_attempts}
               sort='asc'
-              label='Pass YPA'
+              label='Pass Yards/Att'
               textSize={{ xs: 'body2', sm: 'body1' }}
               decimals={1}
             />
