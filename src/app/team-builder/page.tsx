@@ -206,9 +206,10 @@ export default function TeamBuilder() {
     const handleClick = () => {
       setDataGridLoading(true);
       const id = generateGuid();
+      const lastOrderIndex = Math.max(...players.map((x) => x.order_index));
       setPlayers((oldRows: any) => [
         ...oldRows,
-        { id, player_name: '', position: '', trait1: '', trait2: '', trait3: '', contract: '', salary: 0, is_new: true },
+        { id, player_name: '', position: '', trait1: '', trait2: '', trait3: '', contract: '', salary: 0, is_new: true, order_index: lastOrderIndex + 1 },
       ]);
       setRowModesModel((oldModel) => ({
         ...oldModel,
@@ -346,7 +347,8 @@ export default function TeamBuilder() {
 
   const handleCloneClick = (id: GridRowId) => () => {
     setDataGridLoading(true);
-    const newPlayer = { ...players.find((x) => x.id === id), id: generateGuid(), is_new: false };
+    const lastOrderIndex = Math.max(...players.map((x) => x.order_index));
+    const newPlayer = { ...players.find((x) => x.id === id), id: generateGuid(), is_new: false, order_index: lastOrderIndex + 1 };
     setPlayers((oldRows: any) => [...oldRows, newPlayer]);
     setTimeout(() => {
       setDataGridLoading(false);
@@ -375,7 +377,7 @@ export default function TeamBuilder() {
 
   const processRowUpdate = (newRow: GridRowModel) => {
     const updatedRow = { ...newRow, is_new: false };
-    setPlayers(players.map((row) => (row.id === newRow.id ? updatedRow : row)));
+    setPlayers(players.map((row, i) => (row.id === newRow.id ? { ...updatedRow, order_index: i } : { ...row, order_index: i })));
     return updatedRow;
   };
 

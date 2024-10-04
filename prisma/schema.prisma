@@ -434,6 +434,7 @@ model TeamBuilderPlayers {
   trait3           String?          @db.NVarChar(Max)
   salary           Decimal?         @db.Decimal(18, 1)
   is_new           Boolean
+  order_index      Int
   team_id          String           @db.UniqueIdentifier
   TeamBuilderTeams TeamBuilderTeams @relation(fields: [team_id], references: [id], onUpdate: NoAction, map: "FK_TeamBuilderPlayers_TeamBuilderTeams")
 }
