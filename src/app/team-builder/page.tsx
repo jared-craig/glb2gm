@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Button, Container, Grid2, LinearProgress, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, Container, LinearProgress, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Trait } from './trait';
 import { TeamBuilderPlayer } from './teamBuilderPlayer';
@@ -31,6 +31,11 @@ import {
 } from '@mui/x-data-grid-pro';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import React from 'react';
+import { TeamBuilderTeam } from './teamBuilderTeam';
+import LoadTeamDialog from './LoadTeamDialog';
+import SaveTeamDialog from './SaveTeamDialog';
+import DeleteTeamDialog from './DeleteTeamDialog';
+import UpdateTeamDialog from './UpdateTeamDialog';
 
 function generateGuid() {
   return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/[x]/g, function (c) {
@@ -45,12 +50,139 @@ export default function TeamBuilder() {
   const desktop = useMediaQuery(theme.breakpoints.up('lg'));
 
   const [traits, setTraits] = useState<Trait[]>();
+  const [team, setTeam] = useState<TeamBuilderTeam>();
   const [players, setPlayers] = useState<TeamBuilderPlayer[] | GridRowsProp>([]);
   const [capRemaining, setCapRemaining] = useState<number>(150000000);
   const [fetching, setFetching] = useState<boolean>(true);
   const [dataGridLoading, setDataGridLoading] = useState(false);
+  const [teamOptions, setTeamOptions] = useState<TeamBuilderTeam[]>([]);
+  const [openSaveTeamDialog, setOpenSaveTeamDialog] = useState(false);
+  const [openLoadTeamDialog, setOpenLoadTeamDialog] = useState(false);
+  const [openUpdateTeamDialog, setOpenUpdateTeamDialog] = useState(false);
+  const [openDeleteTeamDialog, setOpenDeleteTeamDialog] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<string>('');
+  const [teamNameSaveInput, setTeamNameSaveInput] = useState<string>('');
+  const [teamNameUpdateInput, setTeamNameUpdateInput] = useState<string>('');
 
   const { user } = useUser();
+
+  // #region Dialogs
+  const handleCloseSaveTeamDialog = (value?: string) => {
+    setOpenSaveTeamDialog(false);
+    if (value) setTeamNameSaveInput(value);
+  };
+
+  const handleCloseLoadTeamDialog = (value?: string) => {
+    setOpenLoadTeamDialog(false);
+    if (value) setSelectedTeam(value);
+  };
+
+  const handleCloseUpdateTeamDialog = (value?: string) => {
+    setOpenUpdateTeamDialog(false);
+    if (value) setTeamNameUpdateInput(value);
+  };
+
+  const handleCloseDeleteTeamDialog = (shouldDelete: boolean) => {
+    setOpenDeleteTeamDialog(false);
+    if (shouldDelete) {
+      deleteTeam();
+    }
+  };
+
+  const saveTeam = async () => {
+    const teamToSave: TeamBuilderTeam = {
+      id: team?.id ?? generateGuid(),
+      user_email: user?.email!,
+      team_name: teamNameSaveInput,
+      players: (players as TeamBuilderPlayer[]).map((x) => ({ ...x, is_new: false })),
+    };
+    const res = await fetch('/api/team-builder', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(teamToSave),
+    });
+    if (!res.ok || res.status === 500) {
+      console.error('failed to save team');
+    } else {
+      setTeam(teamToSave);
+      setTimeout(async () => {
+        await fetchTeams();
+      }, 500);
+    }
+    setTeamNameSaveInput('');
+  };
+
+  const updateTeam = async () => {
+    if (!team) return;
+    const teamToSave: TeamBuilderTeam = {
+      id: team.id,
+      user_email: user?.email!,
+      team_name: teamNameUpdateInput,
+      players: (players as TeamBuilderPlayer[]).map((x) => ({ ...x, is_new: false })),
+    };
+    const res = await fetch('/api/team-builder', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(teamToSave),
+    });
+    if (!res.ok || res.status === 500) {
+      console.error('failed to update team');
+    } else {
+      setTeam(teamToSave);
+      setTimeout(async () => {
+        await fetchTeams();
+      }, 500);
+    }
+    setTeamNameUpdateInput('');
+  };
+
+  const deleteTeam = async () => {
+    if (!team) return;
+    const res = await fetch('/api/team-builder', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: team.id }),
+    });
+    if (!res.ok || res.status === 500) {
+      console.error('failed to delete team');
+    } else {
+      setTeam(undefined);
+      setPlayers([]);
+      setTimeout(async () => {
+        await fetchTeams();
+      }, 500);
+    }
+  };
+
+  useEffect(() => {
+    if (!teamOptions || !selectedTeam || selectedTeam.length <= 0) return;
+    setTeam(teamOptions.find((x) => x.id === selectedTeam));
+  }, [selectedTeam]);
+
+  useEffect(() => {
+    if (!team) return;
+    setPlayers(team.players ?? []);
+  }, [team]);
+
+  useEffect(() => {
+    if (!teamNameSaveInput || teamNameSaveInput.length <= 0) return;
+    saveTeam();
+  }, [teamNameSaveInput]);
+
+  useEffect(() => {
+    if (!teamNameUpdateInput || teamNameUpdateInput.length <= 0) return;
+    updateTeam();
+  }, [teamNameUpdateInput]);
+  // #endregion
+
+  // #region Datagrid
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const getTraitClassName = (traitKey: string) => {
     const salaryMod = traits?.find((x) => x.trait_key === traitKey)?.salary_modifier;
@@ -60,9 +192,6 @@ export default function TeamBuilder() {
     if (salaryMod > 0) return 'yellow-text';
     return '';
   };
-
-  // Datagrid
-  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   interface EditToolbarProps {
     setPlayers: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -77,7 +206,7 @@ export default function TeamBuilder() {
       const id = generateGuid();
       setPlayers((oldRows: any) => [
         ...oldRows,
-        { id, player_name: '', position: '', trait1: '', trait2: '', trait3: '', contract: '', salary: 0, isNew: true },
+        { id, player_name: '', position: '', trait1: '', trait2: '', trait3: '', contract: '', salary: 0, is_new: true },
       ]);
       setRowModesModel((oldModel) => ({
         ...oldModel,
@@ -88,116 +217,111 @@ export default function TeamBuilder() {
       }, 250);
     };
 
+    const handleSaveTeamClick = () => {
+      setOpenSaveTeamDialog(true);
+    };
+
+    const handleLoadTeamClick = () => {
+      setOpenLoadTeamDialog(true);
+    };
+
+    const handleUpdateTeamClick = () => {
+      setOpenUpdateTeamDialog(true);
+    };
+
+    const handleDeleteTeamClick = () => {
+      setOpenDeleteTeamDialog(true);
+    };
+
     return (
       <GridToolbarContainer>
         <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', alignItems: 'center', p: 0.5 }}>
           <Stack>
-            <Stack direction='row' spacing={2}>
-              <Button variant='contained' size='small' disabled={!user || true}>
-                Load Team (Soon)
-              </Button>
-              <Button variant='contained' size='small' disabled={!user || players.length <= 0 || true}>
-                Save Team (Soon)
-              </Button>
-            </Stack>
-            {!user && (
-              <Typography variant='body2' sx={{ color: 'yellow', px: 1 }}>
-                In order to load or save, please login.
+            <Stack>
+              <Typography variant='body1' sx={{ color: 'yellow', px: 1 }}>
+                BETA - Please report any bugs to MadKingCraig
               </Typography>
-            )}
-          </Stack>
-
-          <Stack sx={{ flexGrow: 1, px: 4 }}>
-            <Grid2 container spacing={1} columns={8}>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'QB').length > 2 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'QB').length}/2 QB
+              {!user && (
+                <Typography variant='body2' sx={{ color: 'red', px: 1 }}>
+                  Please login before starting to save progress
                 </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'HB').length > 3 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'HB').length}/3 HB
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'FB').length > 2 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'FB').length}/2 FB
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'TE').length > 3 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'TE').length}/3 TE
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'WR').length > 8 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'WR').length}/8 WR
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'C').length > 3 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'C').length}/3 C
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'G').length > 5 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'G').length}/5 G
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'OT').length > 5 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'OT').length}/5 OT
-                </Typography>
-              </Grid2>
-            </Grid2>
-            <Grid2 container spacing={1} columns={8}>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'DT').length > 5 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'DT').length}/5 DT
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'DE').length > 5 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'DE').length}/5 DE
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'LB').length > 8 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'LB').length}/8 LB
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'CB').length > 8 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'CB').length}/8 CB
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'FS').length > 4 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'FS').length}/4 FS
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'SS').length > 4 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'SS').length}/4 SS
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'K').length > 1 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'K').length}/1 K
-                </Typography>
-              </Grid2>
-              <Grid2 size={1}>
-                <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'P').length > 1 ? 'red' : '' }}>
-                  {players.filter((x) => x.position === 'P').length}/1 P
-                </Typography>
-              </Grid2>
-            </Grid2>
+              )}
+            </Stack>
+            <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
+              <Button variant='contained' size='small' onClick={handleSaveTeamClick} disabled={!user?.email || players.length <= 0}>
+                Save New Team
+              </Button>
+              <Button variant='contained' size='small' onClick={handleLoadTeamClick} disabled={!user?.email || !teamOptions || teamOptions.length <= 0}>
+                Load Team
+              </Button>
+              <Button variant='contained' size='small' onClick={handleUpdateTeamClick} disabled={!user?.email || players.length <= 0 || !team}>
+                Update Team
+              </Button>
+              <Button variant='contained' size='small' color='warning' onClick={handleDeleteTeamClick} disabled={!user?.email || !team}>
+                Delete Team
+              </Button>
+              <Typography>{team?.team_name ?? ''}</Typography>
+            </Stack>
           </Stack>
           <Stack direction='row' spacing={2} sx={{ alignItems: 'center' }}>
             <Typography sx={{ color: capRemaining < 0 ? 'red' : '' }}>Cap Space: {capRemaining.toLocaleString()}</Typography>
             <Button color='secondary' startIcon={<AddIcon />} onClick={handleClick} disabled={players.length >= 48}>
               Add Player
             </Button>
+          </Stack>
+        </Stack>
+        <Stack direction={{ xs: 'column', lg: 'row' }} sx={{ width: '100%', justifyContent: 'space-around' }}>
+          <Stack direction='row' spacing={1}>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'QB').length > 2 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'QB').length}/2 QB
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'HB').length > 3 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'HB').length}/3 HB
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'FB').length > 2 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'FB').length}/2 FB
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'TE').length > 3 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'TE').length}/3 TE
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'WR').length > 8 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'WR').length}/8 WR
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'C').length > 3 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'C').length}/3 C
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'G').length > 5 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'G').length}/5 G
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'OT').length > 5 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'OT').length}/5 OT
+            </Typography>
+          </Stack>
+          <Stack direction='row' spacing={1}>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'DT').length > 5 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'DT').length}/5 DT
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'DE').length > 5 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'DE').length}/5 DE
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'LB').length > 8 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'LB').length}/8 LB
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'CB').length > 8 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'CB').length}/8 CB
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'FS').length > 4 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'FS').length}/4 FS
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'SS').length > 4 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'SS').length}/4 SS
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'K').length > 1 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'K').length}/1 K
+            </Typography>
+            <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'P').length > 1 ? 'red' : '' }}>
+              {players.filter((x) => x.position === 'P').length}/1 P
+            </Typography>
           </Stack>
         </Stack>
       </GridToolbarContainer>
@@ -220,7 +344,7 @@ export default function TeamBuilder() {
 
   const handleCloneClick = (id: GridRowId) => () => {
     setDataGridLoading(true);
-    const newPlayer = { ...players.find((x) => x.id === id), id: generateGuid(), isNew: true };
+    const newPlayer = { ...players.find((x) => x.id === id), id: generateGuid(), is_new: true };
     setPlayers((oldRows: any) => [...oldRows, newPlayer]);
     setTimeout(() => {
       setDataGridLoading(false);
@@ -242,13 +366,13 @@ export default function TeamBuilder() {
     });
 
     const editedRow = players.find((row) => row.id === id);
-    if (editedRow!.isNew) {
+    if (editedRow!.is_new) {
       setPlayers(players.filter((row) => row.id !== id));
     }
   };
 
   const processRowUpdate = (newRow: GridRowModel) => {
-    const updatedRow = { ...newRow, isNew: false };
+    const updatedRow = { ...newRow, is_new: false };
     setPlayers(players.map((row) => (row.id === newRow.id ? updatedRow : row)));
     return updatedRow;
   };
@@ -395,8 +519,10 @@ export default function TeamBuilder() {
                 <ArrowCircleUpIcon />
               ) : params.value === 'Medium' ? (
                 <RemoveCircleOutlineIcon sx={{ opacity: 0.67 }} />
-              ) : (
+              ) : params.value === 'Medium' ? (
                 <ArrowCircleDownIcon sx={{ opacity: 0.33 }} />
+              ) : (
+                params.value
               )}
             </Box>
           ),
@@ -615,7 +741,7 @@ export default function TeamBuilder() {
           },
         },
       ];
-  //
+  // #endregion
 
   const fetchData = async () => {
     setFetching(true);
@@ -637,6 +763,14 @@ export default function TeamBuilder() {
       })
     );
     setFetching(false);
+  };
+
+  const fetchTeams = async () => {
+    if (user?.email) {
+      const teamRes = await fetch('/api/team-builder');
+      const teamData: TeamBuilderTeam[] = await teamRes.json();
+      setTeamOptions(teamData);
+    }
   };
 
   const getSalary = (player: any): number => {
@@ -686,6 +820,10 @@ export default function TeamBuilder() {
     calculateCap();
   }, [players]);
 
+  useEffect(() => {
+    fetchTeams();
+  }, [user]);
+
   if (fetching) return <LinearProgress sx={{ borderRadius: 2 }} />;
 
   return (
@@ -720,6 +858,17 @@ export default function TeamBuilder() {
           }}
         />
       )}
+      <SaveTeamDialog value={teamNameSaveInput} open={openSaveTeamDialog} onClose={handleCloseSaveTeamDialog} />
+      <LoadTeamDialog
+        id='load-team-dialog'
+        keepMounted
+        open={openLoadTeamDialog}
+        onClose={handleCloseLoadTeamDialog}
+        options={teamOptions ?? []}
+        value={selectedTeam}
+      />
+      <UpdateTeamDialog value={teamNameUpdateInput} open={openUpdateTeamDialog} onClose={handleCloseUpdateTeamDialog} />
+      <DeleteTeamDialog value={team?.team_name ?? ''} open={openDeleteTeamDialog} onClose={handleCloseDeleteTeamDialog} />
     </Container>
   );
 }
