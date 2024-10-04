@@ -32,7 +32,17 @@ export async function POST(req: Request) {
         user_email: reqData.user_email,
         team_name: reqData.team_name,
         TeamBuilderPlayers: {
-          create: reqData.players,
+          create: reqData.players.map((x) => ({
+            id: x.id,
+            player_name: x.player_name,
+            position: x.position,
+            contract: x.contract,
+            trait1: x.trait1,
+            trait2: x.trait2,
+            trait3: x.trait3,
+            salary: x.salary,
+            is_new: x.is_new,
+          })),
         },
       },
     });
@@ -58,7 +68,17 @@ export async function PUT(req: Request) {
         user_email: reqData.user_email,
         team_name: reqData.team_name,
         TeamBuilderPlayers: {
-          create: reqData.players,
+          create: reqData.players.map((x) => ({
+            id: x.id,
+            player_name: x.player_name,
+            position: x.position,
+            contract: x.contract,
+            trait1: x.trait1,
+            trait2: x.trait2,
+            trait3: x.trait3,
+            salary: x.salary,
+            is_new: x.is_new,
+          })),
         },
       },
     });

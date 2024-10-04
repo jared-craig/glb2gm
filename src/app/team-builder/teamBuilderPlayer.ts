@@ -6,5 +6,6 @@ export interface TeamBuilderPlayer {
   trait1: string;
   trait2: string;
   trait3: string;
+  salary: number;
   is_new: boolean;
 }
