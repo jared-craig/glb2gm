@@ -91,10 +91,10 @@ export default function TeamBuilder() {
 
   const saveTeam = async () => {
     const teamToSave: TeamBuilderTeam = {
-      id: team?.id ?? generateGuid(),
+      id: generateGuid(),
       user_email: user?.email!,
       team_name: teamNameSaveInput,
-      players: (players as TeamBuilderPlayer[]).map((x) => ({ ...x, is_new: false })),
+      players: (players as TeamBuilderPlayer[]).map((x) => ({ ...x, id: generateGuid(), is_new: false })),
     };
     const res = await fetch('/api/team-builder', {
       method: 'POST',
@@ -107,6 +107,7 @@ export default function TeamBuilder() {
       console.error('failed to save team');
     } else {
       setTeam(teamToSave);
+      setSelectedTeam('');
       setTimeout(async () => {
         await fetchTeams();
       }, 500);
@@ -120,7 +121,7 @@ export default function TeamBuilder() {
       id: team.id,
       user_email: user?.email!,
       team_name: teamNameUpdateInput,
-      players: (players as TeamBuilderPlayer[]).map((x) => ({ ...x, is_new: false })),
+      players: (players as TeamBuilderPlayer[]).map((x) => ({ ...x, id: generateGuid(), is_new: false })),
     };
     const res = await fetch('/api/team-builder', {
       method: 'PUT',
@@ -154,6 +155,7 @@ export default function TeamBuilder() {
     } else {
       setTeam(undefined);
       setPlayers([]);
+      setSelectedTeam('');
       setTimeout(async () => {
         await fetchTeams();
       }, 500);
@@ -344,7 +346,7 @@ export default function TeamBuilder() {
 
   const handleCloneClick = (id: GridRowId) => () => {
     setDataGridLoading(true);
-    const newPlayer = { ...players.find((x) => x.id === id), id: generateGuid(), is_new: true };
+    const newPlayer = { ...players.find((x) => x.id === id), id: generateGuid(), is_new: false };
     setPlayers((oldRows: any) => [...oldRows, newPlayer]);
     setTimeout(() => {
       setDataGridLoading(false);
@@ -859,14 +861,7 @@ export default function TeamBuilder() {
         />
       )}
       <SaveTeamDialog value={teamNameSaveInput} open={openSaveTeamDialog} onClose={handleCloseSaveTeamDialog} />
-      <LoadTeamDialog
-        id='load-team-dialog'
-        keepMounted
-        open={openLoadTeamDialog}
-        onClose={handleCloseLoadTeamDialog}
-        options={teamOptions ?? []}
-        value={selectedTeam}
-      />
+      <LoadTeamDialog open={openLoadTeamDialog} onClose={handleCloseLoadTeamDialog} options={teamOptions ?? []} value={selectedTeam} />
       <UpdateTeamDialog value={teamNameUpdateInput} open={openUpdateTeamDialog} onClose={handleCloseUpdateTeamDialog} />
       <DeleteTeamDialog value={team?.team_name ?? ''} open={openDeleteTeamDialog} onClose={handleCloseDeleteTeamDialog} />
     </Container>
