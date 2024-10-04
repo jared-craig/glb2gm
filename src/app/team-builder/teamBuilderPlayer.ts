@@ -8,4 +8,5 @@ export interface TeamBuilderPlayer {
   trait3: string;
   salary: number;
   is_new: boolean;
+  order_index: number;
 }
