@@ -423,3 +423,24 @@ model Returning {
   tier          String   @db.NVarChar(Max)
   updated_at    DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Returning_updated_at") @db.DateTime
 }
+
+model TeamBuilderPlayers {
+  id               String           @id(map: "PK_TeamBuilderPlayers") @db.UniqueIdentifier
+  player_name      String?          @db.NVarChar(Max)
+  position         String?          @db.NVarChar(50)
+  contract         String?          @db.NVarChar(50)
+  trait1           String?          @db.NVarChar(Max)
+  trait2           String?          @db.NVarChar(Max)
+  trait3           String?          @db.NVarChar(Max)
+  salary           Decimal?         @db.Decimal(18, 1)
+  is_new           Boolean
+  team_id          String           @db.UniqueIdentifier
+  TeamBuilderTeams TeamBuilderTeams @relation(fields: [team_id], references: [id], onUpdate: NoAction, map: "FK_TeamBuilderPlayers_TeamBuilderTeams")
+}
+
+model TeamBuilderTeams {
+  id                 String               @id(map: "PK_TeamBuilderTeams") @db.UniqueIdentifier
+  user_email         String               @db.NVarChar(Max)
+  team_name          String               @db.NVarChar(Max)
+  TeamBuilderPlayers TeamBuilderPlayers[]
+}

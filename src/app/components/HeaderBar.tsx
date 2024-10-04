@@ -92,7 +92,7 @@ function HeaderBar() {
             <Image src={logo} width={40} height={40} alt='logo' priority={true} />
           </Box>
           <Box sx={{ flexGrow: 1 }}>
-            <Typography variant='h4' sx={{ lineHeight: 1.5 }}>
+            <Typography variant='h4' sx={{ lineHeight: 1.5, pt: 0.4 }}>
               <Link href='/' style={{ color: 'inherit', textDecoration: 'inherit' }}>
                 GLB2GM
               </Link>
