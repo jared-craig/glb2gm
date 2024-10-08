@@ -156,6 +156,8 @@ export default function TeamBuilder() {
       setTeam(undefined);
       setPlayers([]);
       setSelectedTeam('');
+      setTeamNameSaveInput('');
+      setTeamNameUpdateInput('');
       setTimeout(async () => {
         await fetchTeams();
       }, 500);
@@ -447,7 +449,8 @@ export default function TeamBuilder() {
           editable: true,
           type: 'singleSelect',
           getOptionValue: (value: any) => value.trait_key,
-          getOptionLabel: (value: any) => value.trait_name,
+          getOptionLabel: (value: any) =>
+            value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
               ? (traits?.filter(
@@ -469,7 +472,8 @@ export default function TeamBuilder() {
           editable: true,
           type: 'singleSelect',
           getOptionValue: (value: any) => value.trait_key,
-          getOptionLabel: (value: any) => value.trait_name,
+          getOptionLabel: (value: any) =>
+            value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
               ? (traits?.filter(
@@ -491,7 +495,8 @@ export default function TeamBuilder() {
           editable: true,
           type: 'singleSelect',
           getOptionValue: (value: any) => value.trait_key,
-          getOptionLabel: (value: any) => value.trait_name,
+          getOptionLabel: (value: any) =>
+            value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
               ? (traits?.filter(
@@ -618,7 +623,8 @@ export default function TeamBuilder() {
           editable: true,
           type: 'singleSelect',
           getOptionValue: (value: any) => value.trait_key,
-          getOptionLabel: (value: any) => value.trait_name,
+          getOptionLabel: (value: any) =>
+            value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
               ? (traits?.filter(
@@ -640,7 +646,8 @@ export default function TeamBuilder() {
           editable: true,
           type: 'singleSelect',
           getOptionValue: (value: any) => value.trait_key,
-          getOptionLabel: (value: any) => value.trait_name,
+          getOptionLabel: (value: any) =>
+            value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
               ? (traits?.filter(
@@ -662,7 +669,8 @@ export default function TeamBuilder() {
           editable: true,
           type: 'singleSelect',
           getOptionValue: (value: any) => value.trait_key,
-          getOptionLabel: (value: any) => value.trait_name,
+          getOptionLabel: (value: any) =>
+            value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
               ? (traits?.filter(
@@ -822,7 +830,6 @@ export default function TeamBuilder() {
 
   useEffect(() => {
     calculateCap();
-    console.log(players.map((x) => ({ pos: x.position, order: x.order_index })));
   }, [players]);
 
   useEffect(() => {
