@@ -169,7 +169,7 @@ export default function TeamBuilder() {
 
   useEffect(() => {
     if (!team) return;
-    setPlayers(team.players ?? []);
+    setPlayers(team.players.sort((a, b) => a.order_index - b.order_index) ?? []);
   }, [team]);
 
   useEffect(() => {
@@ -377,7 +377,7 @@ export default function TeamBuilder() {
 
   const processRowUpdate = (newRow: GridRowModel) => {
     const updatedRow = { ...newRow, is_new: false };
-    setPlayers(players.map((row, i) => (row.id === newRow.id ? { ...updatedRow, order_index: i } : { ...row, order_index: i })));
+    setPlayers(players.map((row) => (row.id === newRow.id ? updatedRow : row)));
     return updatedRow;
   };
 
@@ -396,9 +396,9 @@ export default function TeamBuilder() {
 
   const handleRowOrderChange = async (params: GridRowOrderChangeParams) => {
     setDataGridLoading(true);
-    const newRows = await updateRowPosition(params.oldIndex, params.targetIndex, players as TeamBuilderPlayer[]);
+    let newRows = await updateRowPosition(params.oldIndex, params.targetIndex, players as TeamBuilderPlayer[]);
 
-    setPlayers(newRows);
+    setPlayers(newRows.map((row: any, i: number) => ({ ...row, order_index: i })));
     setTimeout(() => {
       setDataGridLoading(false);
     }, 250);
@@ -822,6 +822,7 @@ export default function TeamBuilder() {
 
   useEffect(() => {
     calculateCap();
+    console.log(players.map((x) => ({ pos: x.position, order: x.order_index })));
   }, [players]);
 
   useEffect(() => {

@@ -79,11 +79,28 @@ export default function PlayerPassingStats() {
     const topTeamLosses = teamOneTopTeamLosses.length + teamTwoTopTeamLosses.length;
     const badTeamLosses = teamOneBadTeamLosses.length + teamTwoBadTeamLosses.length;
 
-    const pointDif =
-      teamOneWins.reduce((acc, cur) => acc + (cur.team_one_points - cur.team_two_points), 0) +
-      teamTwoWins.reduce((acc, cur) => acc + (cur.team_two_points - cur.team_one_points), 0);
+    // const pointDif =
+    //   teamOneWins.reduce((acc, cur) => acc + (cur.team_one_points - cur.team_two_points), 0) +
+    //   teamTwoWins.reduce((acc, cur) => acc + (cur.team_two_points - cur.team_one_points), 0);
 
-    let bonus = 50.0 * topTeamWins + 10.0 * topTeamLosses - 50.0 * badTeamLosses;
+    let bonusFactor = 0.0;
+    if (tier === 'All Tiers') {
+      switch (teamData.tier) {
+        case 'Rookie':
+          bonusFactor = 20.0;
+          break;
+        case 'Sophomore':
+          bonusFactor = 40.0;
+          break;
+        case 'Professional':
+          bonusFactor = 60.0;
+          break;
+        case 'Veteran':
+          bonusFactor = 100.0;
+          break;
+      }
+    }
+    let bonus = bonusFactor * topTeamWins + (bonusFactor / 10.0) * topTeamLosses - (bonusFactor / 2.0) * badTeamLosses;
 
     return bonus;
   };
