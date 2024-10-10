@@ -61,6 +61,7 @@ export default function Matchup() {
   const [allTeamOneGames, setAllTeamOneGames] = useState<GameData[]>();
   const [allTeamTwoGames, setAllTeamTwoGames] = useState<GameData[]>();
   const [headToHeadGames, setHeadToHeadGames] = useState<GameData[]>();
+  const [commonGames, setCommonGames] = useState<GameData[]>();
   const [topTenTeamOneGames, setTopTenTeamOneGames] = useState<any>();
   const [topTenTeamTwoGames, setTopTenTeamTwoGames] = useState<any>();
   const [fetching, setFetching] = useState<boolean>(true);
@@ -68,6 +69,45 @@ export default function Matchup() {
   const [teamOneSelection, setTeamOneSelection] = useState<TeamData | null>(null);
   const [teamTwoInputValue, setTeamTwoInputValue] = useState<string>('');
   const [teamTwoSelection, setTeamTwoSelection] = useState<TeamData | null>(null);
+
+  function findCommonOpponentGames(team1Id: number, team2Id: number, team1Games: GameData[], team2Games: GameData[]): GameData[] {
+    const team1Opponents = new Set<number>();
+    const team2Opponents = new Set<number>();
+
+    team1Games.forEach((game) => {
+      if (game.team_one_id === team1Id) {
+        team1Opponents.add(game.team_two_id);
+      } else if (game.team_two_id === team1Id) {
+        team1Opponents.add(game.team_one_id);
+      }
+    });
+
+    team2Games.forEach((game) => {
+      if (game.team_one_id === team2Id) {
+        team2Opponents.add(game.team_two_id);
+      } else if (game.team_two_id === team2Id) {
+        team2Opponents.add(game.team_one_id);
+      }
+    });
+
+    const commonGames: GameData[] = [];
+
+    team1Games.forEach((game) => {
+      const opponentId = game.team_one_id === team1Id ? game.team_two_id : game.team_one_id;
+      if (team2Opponents.has(opponentId)) {
+        commonGames.push(game);
+      }
+    });
+
+    team2Games.forEach((game) => {
+      const opponentId = game.team_one_id === team2Id ? game.team_two_id : game.team_one_id;
+      if (team1Opponents.has(opponentId)) {
+        commonGames.push(game);
+      }
+    });
+
+    return commonGames;
+  }
 
   const fetchData = async () => {
     setFetching(true);
@@ -92,11 +132,14 @@ export default function Matchup() {
       (x) => (x.team_one_id === team1?.id && x.team_two_id === team2?.id) || (x.team_one_id === team2?.id && x.team_two_id === team1?.id)
     );
 
+    const commonGames = findCommonOpponentGames(team1?.id!, team2?.id!, teamOneGameData, teamTwoGameData);
+
     setTeamOne(team1);
     setTeamTwo(team2);
     setAllTeamOneGames(teamOneGameData);
     setAllTeamTwoGames(teamTwoGameData);
     setHeadToHeadGames(headToHeadGames);
+    setCommonGames(commonGames);
     setFetching(false);
   };
 
@@ -276,111 +319,13 @@ export default function Matchup() {
       )}
       {teamOne && teamTwo && topTenTeamOneGames && topTenTeamTwoGames && (
         <Grid2 container sx={{ mb: 2 }}>
-          {headToHeadGames && headToHeadGames.length > 0 && (
-            <>
-              <Grid2 size={{ xs: 12, xl: 'grow' }} sx={{ textAlign: 'center' }} spacing={1}>
-                <Divider variant='middle'>
-                  <Typography typography={{ xs: 'h6' }}>H2H</Typography>
-                </Divider>
-                <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
-                {headToHeadGames.map((x) => (
-                  <Fragment key={x.id}>
-                    <Stack spacing={0} sx={{ py: 1 }}>
-                      <Box>
-                        <TeamStats
-                          team1={x.team_one_id === teamOne.id ? +x.team_one_points : +x.team_two_points}
-                          team2={x.team_one_id === teamOne.id ? +x.team_two_points : +x.team_one_points}
-                          sort='desc'
-                          label='Score'
-                          textSize={{ xs: 'body1' }}
-                          decimals={0}
-                        />
-                      </Box>
-                      <TeamStats
-                        team1={
-                          x.team_one_id === teamOne.id
-                            ? (+x.team_one_rushes / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
-                            : (+x.team_two_rushes / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
-                        }
-                        team2={
-                          x.team_one_id === teamOne.id
-                            ? (+x.team_two_rushes / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
-                            : (+x.team_one_rushes / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
-                        }
-                        sort=''
-                        label='Run %'
-                        textSize={{ xs: 'body2' }}
-                        decimals={1}
-                      />
-                      <TeamStats
-                        team1={
-                          x.team_one_id === teamOne.id
-                            ? ((+x.team_one_attempts + +x.team_one_sacks) / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
-                            : ((+x.team_two_attempts + +x.team_one_sacks) / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
-                        }
-                        team2={
-                          x.team_one_id === teamOne.id
-                            ? ((+x.team_two_attempts + +x.team_one_sacks) / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
-                            : ((+x.team_one_attempts + +x.team_one_sacks) / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
-                        }
-                        sort=''
-                        label='Pass %'
-                        textSize={{ xs: 'body2' }}
-                        decimals={1}
-                      />
-                      <TeamStats
-                        team1={x.team_one_id === teamOne.id ? +x.team_one_rushing_yards : +x.team_two_rushing_yards}
-                        team2={x.team_one_id === teamOne.id ? +x.team_two_rushing_yards : +x.team_one_rushing_yards}
-                        sort='desc'
-                        label='Rush Yards'
-                        textSize={{ xs: 'body2' }}
-                        decimals={1}
-                      />
-                      <TeamStats
-                        team1={x.team_one_id === teamOne.id ? +x.team_one_passing_yards : +x.team_two_passing_yards}
-                        team2={x.team_one_id === teamOne.id ? +x.team_two_passing_yards : +x.team_one_passing_yards}
-                        sort='desc'
-                        label='Pass Yards'
-                        textSize={{ xs: 'body2' }}
-                        decimals={1}
-                      />
-                      <TeamStats
-                        team1={x.team_one_id === teamOne.id ? +x.team_two_sacks : +x.team_one_sacks}
-                        team2={x.team_one_id === teamOne.id ? +x.team_one_sacks : +x.team_two_sacks}
-                        sort='desc'
-                        label='Sacks'
-                        textSize={{ xs: 'body2' }}
-                        decimals={0}
-                      />
-                      <TeamStats
-                        team1={
-                          x.team_one_id === teamOne.id
-                            ? +x.team_one_interceptions + +x.team_one_fumbles_lost
-                            : +x.team_two_interceptions + +x.team_two_fumbles_lost
-                        }
-                        team2={
-                          x.team_one_id === teamOne.id
-                            ? +x.team_two_interceptions + +x.team_two_fumbles_lost
-                            : +x.team_one_interceptions + +x.team_one_fumbles_lost
-                        }
-                        sort='asc'
-                        label='Turnovers'
-                        textSize={{ xs: 'body2' }}
-                        decimals={0}
-                      />
-                    </Stack>
-                  </Fragment>
-                ))}
-              </Grid2>
-              <Divider orientation='vertical' flexItem />
-            </>
-          )}
-          <Grid2 size={{ xs: 12, xl: 'grow' }} sx={{ textAlign: 'center' }} spacing={0}>
+          <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
             <Divider variant='middle'>
               <Typography typography={{ xs: 'h6' }}>Overall</Typography>
             </Divider>
             <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
             <Typography typography={{ xs: 'body1' }}>Offense</Typography>
+
             <TeamStats
               team1={(+teamOne.offensive_rushes / (+teamOne.offensive_rushes + +teamOne.offensive_attempts + +teamOne.offensive_sacks)) * 100.0}
               team2={(+teamTwo.offensive_rushes / (+teamTwo.offensive_rushes + +teamTwo.offensive_attempts + +teamTwo.offensive_sacks)) * 100.0}
@@ -524,8 +469,7 @@ export default function Matchup() {
               decimals={0}
             />
           </Grid2>
-          <Divider orientation='vertical' flexItem />
-          <Grid2 size={{ xs: 12, xl: 'grow' }} sx={{ textAlign: 'center' }} spacing={0}>
+          <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
             <Divider variant='middle'>
               <Typography typography={{ xs: 'h6' }}>VS Top Teams</Typography>
             </Divider>
@@ -679,6 +623,249 @@ export default function Matchup() {
               decimals={1}
             />
           </Grid2>
+          {headToHeadGames && headToHeadGames.length > 0 && (
+            <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={1}>
+              <Divider variant='middle'>
+                <Typography typography={{ xs: 'h6' }}>H2H</Typography>
+              </Divider>
+              <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
+              {headToHeadGames.map((x) => (
+                <Fragment key={x.id}>
+                  <Box>
+                    <TeamStats
+                      team1={x.team_one_id === teamOne.id ? +x.team_one_points : +x.team_two_points}
+                      team2={x.team_one_id === teamOne.id ? +x.team_two_points : +x.team_one_points}
+                      sort='desc'
+                      label='Score'
+                      textSize={{ xs: 'body1' }}
+                      decimals={0}
+                    />
+                  </Box>
+                  <TeamStats
+                    team1={
+                      x.team_one_id === teamOne.id
+                        ? (+x.team_one_rushes / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
+                        : (+x.team_two_rushes / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
+                    }
+                    team2={
+                      x.team_one_id === teamOne.id
+                        ? (+x.team_two_rushes / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
+                        : (+x.team_one_rushes / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
+                    }
+                    sort=''
+                    label='Run %'
+                    textSize={{ xs: 'body2' }}
+                    decimals={1}
+                  />
+                  <TeamStats
+                    team1={
+                      x.team_one_id === teamOne.id
+                        ? ((+x.team_one_attempts + +x.team_one_sacks) / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
+                        : ((+x.team_two_attempts + +x.team_one_sacks) / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
+                    }
+                    team2={
+                      x.team_one_id === teamOne.id
+                        ? ((+x.team_two_attempts + +x.team_one_sacks) / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
+                        : ((+x.team_one_attempts + +x.team_one_sacks) / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
+                    }
+                    sort=''
+                    label='Pass %'
+                    textSize={{ xs: 'body2' }}
+                    decimals={1}
+                  />
+                  <TeamStats
+                    team1={x.team_one_id === teamOne.id ? +x.team_one_rushing_yards : +x.team_two_rushing_yards}
+                    team2={x.team_one_id === teamOne.id ? +x.team_two_rushing_yards : +x.team_one_rushing_yards}
+                    sort='desc'
+                    label='Rush Yards'
+                    textSize={{ xs: 'body2' }}
+                    decimals={1}
+                  />
+                  <TeamStats
+                    team1={x.team_one_id === teamOne.id ? +x.team_one_passing_yards : +x.team_two_passing_yards}
+                    team2={x.team_one_id === teamOne.id ? +x.team_two_passing_yards : +x.team_one_passing_yards}
+                    sort='desc'
+                    label='Pass Yards'
+                    textSize={{ xs: 'body2' }}
+                    decimals={1}
+                  />
+                  <TeamStats
+                    team1={x.team_one_id === teamOne.id ? +x.team_two_sacks : +x.team_one_sacks}
+                    team2={x.team_one_id === teamOne.id ? +x.team_one_sacks : +x.team_two_sacks}
+                    sort='desc'
+                    label='Sacks'
+                    textSize={{ xs: 'body2' }}
+                    decimals={0}
+                  />
+                  <TeamStats
+                    team1={
+                      x.team_one_id === teamOne.id ? +x.team_one_interceptions + +x.team_one_fumbles_lost : +x.team_two_interceptions + +x.team_two_fumbles_lost
+                    }
+                    team2={
+                      x.team_one_id === teamOne.id ? +x.team_two_interceptions + +x.team_two_fumbles_lost : +x.team_one_interceptions + +x.team_one_fumbles_lost
+                    }
+                    sort='asc'
+                    label='Turnovers'
+                    textSize={{ xs: 'body2' }}
+                    decimals={0}
+                  />
+                </Fragment>
+              ))}
+            </Grid2>
+          )}
+          {commonGames && commonGames.length > 0 && (
+            <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={1}>
+              <Divider variant='middle'>
+                <Typography typography={{ xs: 'h6' }}>Common Opponents</Typography>
+              </Divider>
+              <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
+              <Typography typography={{ xs: 'body1' }}>Offense</Typography>
+              <TeamStats
+                team1={
+                  +commonGames.reduce(
+                    (acc, cur) => acc + +(cur.team_one_id === teamOne.id ? cur.team_one_points : cur.team_two_id === teamOne.id ? cur.team_two_points : 0),
+                    0
+                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamOne.id ? 1 : cur.team_two_id === teamOne.id ? 1 : 0), 0)
+                }
+                team2={
+                  +commonGames.reduce(
+                    (acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? cur.team_one_points : cur.team_two_id === teamTwo.id ? cur.team_two_points : 0),
+                    0
+                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? 1 : cur.team_two_id === teamTwo.id ? 1 : 0), 0)
+                }
+                sort='desc'
+                label={'PPG'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={
+                  +commonGames.reduce(
+                    (acc, cur) =>
+                      acc +
+                      +(cur.team_one_id === teamOne.id
+                        ? +cur.team_one_rushing_yards + +cur.team_one_passing_yards
+                        : cur.team_two_id === teamOne.id
+                          ? +cur.team_two_rushing_yards + +cur.team_two_passing_yards
+                          : 0),
+                    0
+                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamOne.id ? 1 : cur.team_two_id === teamOne.id ? 1 : 0), 0)
+                }
+                team2={
+                  +commonGames.reduce(
+                    (acc, cur) =>
+                      acc +
+                      +(cur.team_one_id === teamTwo.id
+                        ? +cur.team_one_rushing_yards + +cur.team_one_passing_yards
+                        : cur.team_two_id === teamTwo.id
+                          ? +cur.team_two_rushing_yards + +cur.team_two_passing_yards
+                          : 0),
+                    0
+                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? 1 : cur.team_two_id === teamTwo.id ? 1 : 0), 0)
+                }
+                sort='desc'
+                label={'Total YPG'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={
+                  +commonGames.reduce(
+                    (acc, cur) =>
+                      acc + +(cur.team_one_id === teamOne.id ? +cur.team_one_rushing_yards : cur.team_two_id === teamOne.id ? +cur.team_two_rushing_yards : 0),
+                    0
+                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamOne.id ? 1 : cur.team_two_id === teamOne.id ? 1 : 0), 0)
+                }
+                team2={
+                  +commonGames.reduce(
+                    (acc, cur) =>
+                      acc + +(cur.team_one_id === teamTwo.id ? +cur.team_one_rushing_yards : cur.team_two_id === teamTwo.id ? +cur.team_two_rushing_yards : 0),
+                    0
+                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? 1 : cur.team_two_id === teamTwo.id ? 1 : 0), 0)
+                }
+                sort='desc'
+                label={'Rush YPG'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={
+                  +commonGames.reduce(
+                    (acc, cur) =>
+                      acc + +(cur.team_one_id === teamOne.id ? cur.team_one_rushing_yards : cur.team_two_id === teamOne.id ? cur.team_two_rushing_yards : 0),
+                    0
+                  ) /
+                  +commonGames.reduce(
+                    (acc, cur) => acc + +(cur.team_one_id === teamOne.id ? cur.team_one_rushes : cur.team_two_id === teamOne.id ? cur.team_two_rushes : 0),
+                    0
+                  )
+                }
+                team2={
+                  +commonGames.reduce(
+                    (acc, cur) =>
+                      acc + +(cur.team_one_id === teamTwo.id ? cur.team_one_rushing_yards : cur.team_two_id === teamTwo.id ? cur.team_two_rushing_yards : 0),
+                    0
+                  ) /
+                  +commonGames.reduce(
+                    (acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? cur.team_one_rushes : cur.team_two_id === teamTwo.id ? cur.team_two_rushes : 0),
+                    0
+                  )
+                }
+                sort='desc'
+                label={'Rush YPC'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={
+                  +commonGames.reduce(
+                    (acc, cur) =>
+                      acc + +(cur.team_one_id === teamOne.id ? +cur.team_one_passing_yards : cur.team_two_id === teamOne.id ? +cur.team_two_passing_yards : 0),
+                    0
+                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamOne.id ? 1 : cur.team_two_id === teamOne.id ? 1 : 0), 0)
+                }
+                team2={
+                  +commonGames.reduce(
+                    (acc, cur) =>
+                      acc + +(cur.team_one_id === teamTwo.id ? +cur.team_one_passing_yards : cur.team_two_id === teamTwo.id ? +cur.team_two_passing_yards : 0),
+                    0
+                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? 1 : cur.team_two_id === teamTwo.id ? 1 : 0), 0)
+                }
+                sort='desc'
+                label={'Pass YPG'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={
+                  +commonGames.reduce(
+                    (acc, cur) =>
+                      acc + +(cur.team_one_id === teamOne.id ? cur.team_one_passing_yards : cur.team_two_id === teamOne.id ? cur.team_two_passing_yards : 0),
+                    0
+                  ) /
+                  +commonGames.reduce(
+                    (acc, cur) => acc + +(cur.team_one_id === teamOne.id ? cur.team_one_attempts : cur.team_two_id === teamOne.id ? cur.team_two_attempts : 0),
+                    0
+                  )
+                }
+                team2={
+                  +commonGames.reduce(
+                    (acc, cur) =>
+                      acc + +(cur.team_one_id === teamTwo.id ? cur.team_one_passing_yards : cur.team_two_id === teamTwo.id ? cur.team_two_passing_yards : 0),
+                    0
+                  ) /
+                  +commonGames.reduce(
+                    (acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? cur.team_one_attempts : cur.team_two_id === teamTwo.id ? cur.team_two_attempts : 0),
+                    0
+                  )
+                }
+                sort='desc'
+                label={'Pass YPA'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+            </Grid2>
+          )}
         </Grid2>
       )}
     </Container>
