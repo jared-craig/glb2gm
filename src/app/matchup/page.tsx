@@ -3,7 +3,7 @@
 import { GameData } from '@/app/games/gameData';
 import { TeamData } from '@/app/teams/teamData';
 import { Autocomplete, Box, Container, Divider, Grid2, LinearProgress, Stack, TextField, Typography } from '@mui/material';
-import { Fragment, Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { extractTeamData, getRecord, sumArray } from '../teams/teamHelpers';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -300,8 +300,8 @@ export default function Matchup() {
   if (fetching) return <LinearProgress sx={{ borderRadius: 2 }} />;
 
   return (
-    <Container maxWidth={false}>
-      <Suspense>
+    <Suspense>
+      <Container maxWidth={false}>
         {allTeams && (
           <Stack direction='row' sx={{ alignItems: 'center', justifyContent: 'center', my: 2 }}>
             <Autocomplete
@@ -897,7 +897,7 @@ export default function Matchup() {
             )}
           </Grid2>
         )}
-      </Suspense>
-    </Container>
+      </Container>
+    </Suspense>
   );
 }
