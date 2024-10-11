@@ -324,7 +324,9 @@ export default function Matchup() {
         <Grid2 container sx={{ mb: 2 }}>
           <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
             <Divider variant='middle'>
-              <Typography typography={{ xs: 'h6' }}>Overall</Typography>
+              <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
+                Overall
+              </Typography>
             </Divider>
             <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
             <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
@@ -475,7 +477,9 @@ export default function Matchup() {
           </Grid2>
           <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
             <Divider variant='middle'>
-              <Typography typography={{ xs: 'h6' }}>VS Top Teams</Typography>
+              <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
+                VS Top Teams
+              </Typography>
             </Divider>
             <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
             <TeamStats
@@ -632,12 +636,14 @@ export default function Matchup() {
           {headToHeadGames && headToHeadGames.length > 0 && (
             <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={1}>
               <Divider variant='middle'>
-                <Typography typography={{ xs: 'h6' }}>H2H</Typography>
+                <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
+                  H2H
+                </Typography>
               </Divider>
               <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
               {headToHeadGames.map((x) => (
                 <Fragment key={x.id}>
-                  <Box>
+                  <Box sx={{ pt: 1 }}>
                     <TeamStats
                       team1={x.team_one_id === teamOne.id ? +x.team_one_points : +x.team_two_points}
                       team2={x.team_one_id === teamOne.id ? +x.team_two_points : +x.team_one_points}
@@ -722,7 +728,9 @@ export default function Matchup() {
           {teamOneCommonGames && teamTwoCommonGames && (
             <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={1}>
               <Divider variant='middle'>
-                <Typography typography={{ xs: 'h6' }}>Common Opponents</Typography>
+                <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
+                  Common Opponents
+                </Typography>
               </Divider>
               <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
               <TeamStats
@@ -790,7 +798,7 @@ export default function Matchup() {
               <TeamStats
                 team1={teamOneCommonGames.defensive_points / teamOneCommonGames.games}
                 team2={teamTwoCommonGames.defensive_points / teamTwoCommonGames.games}
-                sort='desc'
+                sort='asc'
                 label={'PPG'}
                 textSize={{ xs: 'body2' }}
                 decimals={1}
@@ -798,7 +806,7 @@ export default function Matchup() {
               <TeamStats
                 team1={teamOneCommonGames.defensive_total_yards / teamOneCommonGames.games}
                 team2={teamTwoCommonGames.defensive_total_yards / teamTwoCommonGames.games}
-                sort='desc'
+                sort='asc'
                 label={'Total YPG'}
                 textSize={{ xs: 'body2' }}
                 decimals={1}
@@ -806,7 +814,7 @@ export default function Matchup() {
               <TeamStats
                 team1={teamOneCommonGames.defensive_rushing_yards / teamOneCommonGames.games}
                 team2={teamTwoCommonGames.defensive_rushing_yards / teamTwoCommonGames.games}
-                sort='desc'
+                sort='asc'
                 label={'Rush YPG'}
                 textSize={{ xs: 'body2' }}
                 decimals={1}
@@ -814,7 +822,7 @@ export default function Matchup() {
               <TeamStats
                 team1={teamOneCommonGames.defensive_rushing_yards / teamOneCommonGames.defensive_rushes}
                 team2={teamTwoCommonGames.defensive_rushing_yards / teamTwoCommonGames.defensive_rushes}
-                sort='desc'
+                sort='asc'
                 label={'Rush YPC'}
                 textSize={{ xs: 'body2' }}
                 decimals={1}
@@ -822,7 +830,7 @@ export default function Matchup() {
               <TeamStats
                 team1={teamOneCommonGames.defensive_passing_yards / teamOneCommonGames.games}
                 team2={teamTwoCommonGames.defensive_passing_yards / teamTwoCommonGames.games}
-                sort='desc'
+                sort='asc'
                 label={'Pass YPG'}
                 textSize={{ xs: 'body2' }}
                 decimals={1}
@@ -830,7 +838,7 @@ export default function Matchup() {
               <TeamStats
                 team1={teamOneCommonGames.defensive_passing_yards / teamOneCommonGames.defensive_attempts}
                 team2={teamTwoCommonGames.defensive_passing_yards / teamTwoCommonGames.defensive_attempts}
-                sort='desc'
+                sort='asc'
                 label={'Pass YPA'}
                 textSize={{ xs: 'body2' }}
                 decimals={1}
