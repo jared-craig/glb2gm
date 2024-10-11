@@ -1,9 +1,6 @@
-export interface PlayerKickingData {
-  id: number;
-  playerName: string;
-  teamName: string;
-  position: string;
-  games_played: number;
+import { PlayerData } from '@/app/players/playerData';
+
+export interface PlayerKickingData extends PlayerData {
   fg_made: number;
   fg_attempts: number;
   zero_to_nineteen_made: number;

@@ -138,8 +138,7 @@ export default function PlayerPassingStats() {
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Stack sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               <Link
-                href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`}
-                target='_blank'
+                href={`/player-details/${params.row.id}`}
                 style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
               >
                 <strong>{params.value}</strong>
