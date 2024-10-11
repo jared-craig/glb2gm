@@ -6,7 +6,7 @@ import { Container, LinearProgress, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Link from 'next/link';
 import { GameData } from '@/app/games/gameData';
-import { sumArray, extractTeamData, getRecord } from '@/app/teams/teamHelpers';
+import { sumArray, extractTeamData, getRecord, getTopTeamRank } from '@/app/teams/teamHelpers';
 
 export default function TeamDetails({ params }: { params: { teamId: string } }) {
   const [leagueData, setLeagueData] = useState<TeamData[]>();
@@ -30,9 +30,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
   const getTopTenGames = () => {
     if (!allTeams || !teamData || !allTeamOneGames) return;
 
-    const teamOneTopTeams = [...allTeams].filter(
-      (x) => x.tier === teamData.tier && x.tier_rank <= (teamData.tier === 'Professional' ? 6.0 : 10.0) && x.id !== teamData.id
-    );
+    const teamOneTopTeams = [...allTeams].filter((x) => x.tier === teamData.tier && x.tier_rank <= getTopTeamRank(teamData.tier) && x.id !== teamData.id);
 
     const teamOneTopGames = [...allTeamOneGames].filter((x) => x.team_one_id === teamData.id && teamOneTopTeams.some((y) => y.id === x.team_two_id));
     const teamOneRecord = getRecord(teamOneTopGames, teamData.id);
