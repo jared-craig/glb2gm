@@ -1,9 +1,6 @@
-export interface PlayerDefensiveData {
-  id: number;
-  player_name: string;
-  team_name: string;
-  position: string;
-  games_played: number;
+import { PlayerData } from '@/app/players/playerData';
+
+export interface PlayerDefensiveData extends PlayerData {
   tackles: number;
   tackle_assists: number;
   missed_tackles: number;

@@ -1,9 +1,6 @@
-export interface PlayerRushingData {
-  id: number;
-  player_name: string;
-  team_name: string;
-  position: string;
-  games_played: number;
+import { PlayerData } from '@/app/players/playerData';
+
+export interface PlayerRushingData extends PlayerData {
   rushes: number;
   yards: number;
   average: number;
@@ -13,7 +10,6 @@ export interface PlayerRushingData {
   tackles_for_loss: number;
   fumbles: number;
   fumbles_lost: number;
-  tier: string;
   rec_yards: number;
   rec_touchdowns: number;
 }

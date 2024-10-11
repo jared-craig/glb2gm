@@ -1,16 +1,13 @@
-export interface PlayerReturningData {
-  id: number;
-  playerName: string;
-  teamName: string;
-  position: string;
-  gamesPlayed: number;
+import { PlayerData } from '@/app/players/playerData';
+
+export interface PlayerReturningData extends PlayerData {
   krs: number;
-  krYards: number;
-  krAverage: number;
-  krTouchdowns: number;
+  kr_yards: number;
+  kr_average: number;
+  kr_touchdowns: number;
   prs: number;
-  prYards: number;
-  prAverage: number;
-  prTouchdowns: number;
+  pr_yards: number;
+  pr_average: number;
+  pr_touchdowns: number;
   tier: string;
 }

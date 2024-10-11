@@ -54,6 +54,13 @@ export default function PlayerReturningStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'kr_yards',
+          headerName: 'KR YARDS',
+          width: 120,
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
           field: 'kr_average',
           headerName: 'KR AVG',
           width: 120,
@@ -63,6 +70,13 @@ export default function PlayerReturningStats() {
         {
           field: 'kr_touchdowns',
           headerName: 'KR TD',
+          width: 120,
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'pr_yards',
+          headerName: 'PR YARDS',
           width: 120,
           pinnable: false,
           disableColumnMenu: true,
@@ -101,8 +115,7 @@ export default function PlayerReturningStats() {
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Stack sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               <Link
-                href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`}
-                target='_blank'
+                href={`/player-details/${params.row.id}`}
                 style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
               >
                 <strong>{params.value}</strong>
@@ -118,6 +131,12 @@ export default function PlayerReturningStats() {
           pinnable: false,
         },
         {
+          field: 'kr_yards',
+          headerName: 'KR YARDS',
+          flex: 1,
+          pinnable: false,
+        },
+        {
           field: 'kr_average',
           headerName: 'KR AVG',
           flex: 1,
@@ -126,6 +145,12 @@ export default function PlayerReturningStats() {
         {
           field: 'kr_touchdowns',
           headerName: 'KR TD',
+          flex: 1,
+          pinnable: false,
+        },
+        {
+          field: 'pr_yards',
+          headerName: 'PR YARDS',
           flex: 1,
           pinnable: false,
         },
