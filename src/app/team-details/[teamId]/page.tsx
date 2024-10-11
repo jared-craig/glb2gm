@@ -128,17 +128,22 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack spacing={{ xs: 0, md: 0.5 }}>
-              <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>
-                Offense (
-                {(
-                  ((+teamData.offensive_attempts + +teamData.offensive_sacks) /
-                    (+teamData.offensive_rushes + +teamData.offensive_attempts + +teamData.offensive_sacks)) *
-                  100.0
-                ).toFixed(1)}
-                % Pass{' | '}
-                {((+teamData.offensive_rushes / (+teamData.offensive_rushes + +teamData.offensive_attempts + +teamData.offensive_sacks)) * 100.0).toFixed(1)}%
-                Run)
-              </Typography>
+              <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>Offense</Typography>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
+                  Run:{' '}
+                  {((+teamData.offensive_rushes / (+teamData.offensive_rushes + +teamData.offensive_attempts + +teamData.offensive_sacks)) * 100.0).toFixed(1)}%
+                </Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
+                  Pass:{' '}
+                  {(
+                    ((+teamData.offensive_attempts + +teamData.offensive_sacks) /
+                      (+teamData.offensive_rushes + +teamData.offensive_attempts + +teamData.offensive_sacks)) *
+                    100.0
+                  ).toFixed(1)}
+                  %
+                </Typography>
+              </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Total Yards: {teamData.offensive_total_yards}</Typography>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getLeagueRank('offensive_total_yards', 'desc')} )</Typography>
@@ -218,6 +223,9 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
               </Stack>
             </Stack>
           </Grid>
+          <Grid size={12}>
+            <Typography variant='caption'>* ( League Rank )</Typography>
+          </Grid>
           <Grid size={{ xs: 12 }}>
             <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>
               VS Top Teams ({topTenGames.wins}-{topTenGames.losses}-{topTenGames.ties})
@@ -225,20 +233,26 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack spacing={{ xs: 0, md: 0.5 }}>
-              <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>
-                Offense (
-                {(
-                  ((+topTenGames.offensive_attempts + +topTenGames.offensive_sacks) /
-                    (+topTenGames.offensive_rushes + +topTenGames.offensive_attempts + +topTenGames.offensive_sacks)) *
-                  100.0
-                ).toFixed(1)}
-                % Pass{' | '}
-                {(
-                  (+topTenGames.offensive_rushes / (+topTenGames.offensive_rushes + +topTenGames.offensive_attempts + +topTenGames.offensive_sacks)) *
-                  100.0
-                ).toFixed(1)}
-                % Run)
-              </Typography>
+              <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>Offense</Typography>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
+                  Run:{' '}
+                  {(
+                    (+topTenGames.offensive_rushes / (+topTenGames.offensive_rushes + +topTenGames.offensive_attempts + +topTenGames.offensive_sacks)) *
+                    100.0
+                  ).toFixed(1)}
+                  %
+                </Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
+                  Pass:{' '}
+                  {(
+                    ((+topTenGames.offensive_attempts + +topTenGames.offensive_sacks) /
+                      (+topTenGames.offensive_rushes + +topTenGames.offensive_attempts + +topTenGames.offensive_sacks)) *
+                    100.0
+                  ).toFixed(1)}
+                  %
+                </Typography>
+              </Stack>
               <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                 Total YPG: {(topTenGames.offensive_total_yards / topTenGames.games).toFixed(2)}
               </Typography>
@@ -293,9 +307,6 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 Forced Fumbles/Game: {(topTenGames.defensive_fumbles_lost / topTenGames.games).toFixed(2)}
               </Typography>
             </Stack>
-          </Grid>
-          <Grid size={12}>
-            <Typography variant='caption'>* ( League Rank )</Typography>
           </Grid>
         </Grid>
       )}
