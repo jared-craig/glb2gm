@@ -6,7 +6,7 @@ import { Container, LinearProgress, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Link from 'next/link';
 import { GameData } from '@/app/games/gameData';
-import { sumArray, extractTeamData } from '@/app/teams/topTeamHelpers';
+import { sumArray, extractTeamData, getRecord } from '@/app/teams/teamHelpers';
 
 export default function TeamDetails({ params }: { params: { teamId: string } }) {
   const [leagueData, setLeagueData] = useState<TeamData[]>();
@@ -35,35 +35,11 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
     );
 
     const teamOneTopGames = [...allTeamOneGames].filter((x) => x.team_one_id === teamData.id && teamOneTopTeams.some((y) => y.id === x.team_two_id));
-    const teamOneRecord = teamOneTopGames.reduce(
-      (acc, curr) => {
-        if (curr.team_one_points > curr.team_two_points) {
-          acc.wins++;
-        } else if (curr.team_one_points < curr.team_two_points) {
-          acc.losses++;
-        } else {
-          acc.ties++;
-        }
-        return acc;
-      },
-      { wins: 0, losses: 0, ties: 0 }
-    );
+    const teamOneRecord = getRecord(teamOneTopGames, teamData.id);
     const teamOneTopGamesSum = sumArray(teamOneTopGames.map((x) => extractTeamData(x, 'team_one_')));
     if (teamOneTopGamesSum) teamOneTopGamesSum['games'] = teamOneTopGames.length;
     const teamTwoTopGames = [...allTeamOneGames].filter((x) => x.team_two_id === teamData.id && teamOneTopTeams.some((y) => y.id === x.team_one_id));
-    const teamTwoRecord = teamTwoTopGames.reduce(
-      (acc, curr) => {
-        if (curr.team_one_points < curr.team_two_points) {
-          acc.wins++;
-        } else if (curr.team_one_points > curr.team_two_points) {
-          acc.losses++;
-        } else {
-          acc.ties++;
-        }
-        return acc;
-      },
-      { wins: 0, losses: 0, ties: 0 }
-    );
+    const teamTwoRecord = getRecord(teamTwoTopGames, teamData.id);
     const teamTwoTopGamesSum = sumArray(teamTwoTopGames.map((x) => extractTeamData(x, 'team_two_')));
     if (teamTwoTopGamesSum) teamTwoTopGamesSum['games'] = teamTwoTopGames.length;
 
