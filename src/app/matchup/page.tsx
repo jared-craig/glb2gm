@@ -4,7 +4,7 @@ import { GameData } from '@/app/games/gameData';
 import { TeamData } from '@/app/teams/teamData';
 import { Autocomplete, Box, Container, Divider, Grid2, LinearProgress, Stack, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { extractTeamData, getRecord, sumArray } from '../teams/teamHelpers';
+import { extractTeamData, getRecord, getTopTeamRank, sumArray } from '../teams/teamHelpers';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface TeamStatsParams {
@@ -116,12 +116,8 @@ export default function Matchup() {
   const getTopTenGames = () => {
     if (!allTeams || !teamOne || !teamTwo || !allTeamOneGames || !allTeamTwoGames) return;
 
-    const teamOneTopTeams = [...allTeams].filter(
-      (x) => x.tier === teamOne.tier && x.tier_rank <= (teamOne.tier === 'Professional' ? 6.0 : 10.0) && x.id !== teamOne.id
-    );
-    const teamTwoTopTeams = [...allTeams].filter(
-      (x) => x.tier === teamTwo.tier && x.tier_rank <= (teamTwo.tier === 'Professional' ? 6.0 : 10.0) && x.id !== teamTwo.id
-    );
+    const teamOneTopTeams = [...allTeams].filter((x) => x.tier === teamOne.tier && x.tier_rank <= getTopTeamRank(teamOne.tier) && x.id !== teamOne.id);
+    const teamTwoTopTeams = [...allTeams].filter((x) => x.tier === teamTwo.tier && x.tier_rank <= getTopTeamRank(teamTwo.tier) && x.id !== teamTwo.id);
 
     const teamOneTeamOneTopGames = [...allTeamOneGames].filter((x) => x.team_one_id === teamOne.id && teamOneTopTeams.some((y) => y.id === x.team_two_id));
     const teamOneTeamOneRecord = getRecord(teamOneTeamOneTopGames, teamOne.id);
@@ -139,6 +135,11 @@ export default function Matchup() {
         : teamOneTeamOneTopGamesSum
           ? teamOneTeamOneTopGamesSum
           : teamOneTeamTwoTopGamesSum;
+
+    if (!teamOneTopTenGames) {
+      setTopTenTeamOneGames(null);
+      return;
+    }
 
     teamOneTopTenGames['wins'] = teamOneTeamOneRecord.wins + teamOneTeamTwoRecord.wins;
     teamOneTopTenGames['losses'] = teamOneTeamOneRecord.losses + teamOneTeamTwoRecord.losses;
@@ -160,6 +161,11 @@ export default function Matchup() {
         : teamTwoTeamOneTopGamesSum
           ? teamTwoTeamOneTopGamesSum
           : teamTwoTeamTwoTopGamesSum;
+
+    if (!teamTwoTopTenGames) {
+      setTopTenTeamTwoGames(null);
+      return;
+    }
 
     teamTwoTopTenGames['wins'] = teamTwoOneRecord.wins + teamTwoTeamTwoRecord.wins;
     teamTwoTopTenGames['losses'] = teamTwoOneRecord.losses + teamTwoTeamTwoRecord.losses;
@@ -340,7 +346,7 @@ export default function Matchup() {
           />
         </Stack>
       )}
-      {teamOne && teamTwo && topTenTeamOneGames && topTenTeamTwoGames && (
+      {teamOne && teamTwo && (
         <Grid2 container sx={{ mb: 2 }}>
           <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
             <Divider variant='middle'>
@@ -510,198 +516,200 @@ export default function Matchup() {
               />
             </Box>
           </Grid2>
-          <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
-            <Divider variant='middle'>
-              <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
-                Top Opponents
-              </Typography>
-            </Divider>
-            <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
-            <Box sx={{ py: 1 }}>
-              <TeamStats
-                team1={`${topTenTeamOneGames.wins}-${topTenTeamOneGames.losses}-${topTenTeamOneGames.ties}`}
-                team2={`${topTenTeamTwoGames.wins}-${topTenTeamTwoGames.losses}-${topTenTeamTwoGames.ties}`}
-                sort=''
-                label='Record'
-                textSize={{ xs: 'body2' }}
-                decimals={0}
-              />
-              <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
-                Offense
-              </Typography>
-              <TeamStats
-                team1={
-                  (+topTenTeamOneGames.offensive_rushes /
-                    (+topTenTeamOneGames.offensive_rushes + +topTenTeamOneGames.offensive_attempts + +topTenTeamOneGames.offensive_sacks)) *
-                  100.0
-                }
-                team2={
-                  (+topTenTeamTwoGames.offensive_rushes /
-                    (+topTenTeamTwoGames.offensive_rushes + +topTenTeamTwoGames.offensive_attempts + +topTenTeamTwoGames.offensive_sacks)) *
-                  100.0
-                }
-                sort=''
-                label='Run %'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={
-                  ((+topTenTeamOneGames.offensive_attempts + +topTenTeamOneGames.offensive_sacks) /
-                    (+topTenTeamOneGames.offensive_rushes + +topTenTeamOneGames.offensive_attempts + +topTenTeamOneGames.offensive_sacks)) *
-                  100.0
-                }
-                team2={
-                  ((+topTenTeamTwoGames.offensive_attempts + +topTenTeamTwoGames.offensive_sacks) /
-                    (+topTenTeamTwoGames.offensive_rushes + +topTenTeamTwoGames.offensive_attempts + +topTenTeamTwoGames.offensive_sacks)) *
-                  100.0
-                }
-                sort=''
-                label='Pass %'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.offensive_points / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.offensive_points / topTenTeamTwoGames.games}
-                sort='desc'
-                label='PPG'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.offensive_total_yards / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.offensive_total_yards / topTenTeamTwoGames.games}
-                sort='desc'
-                label='Total YPG'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.offensive_rushing_yards / topTenTeamTwoGames.games}
-                sort='desc'
-                label='Rush YPG'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.offensive_rushes}
-                team2={topTenTeamTwoGames.offensive_rushing_yards / topTenTeamTwoGames.offensive_rushes}
-                sort='desc'
-                label='Rush YPC'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.games}
-                sort='desc'
-                label='Pass YPG'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.offensive_attempts}
-                team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.offensive_attempts}
-                sort='desc'
-                label='Pass YPA'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.offensive_sacks / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.offensive_sacks / topTenTeamTwoGames.games}
-                sort='asc'
-                label='Sacked/Game'
-                textSize={{ xs: 'body2' }}
-                decimals={0}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.offensive_interceptions / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.offensive_interceptions / topTenTeamTwoGames.games}
-                sort='asc'
-                label='Ints/Game'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.offensive_fumbles_lost / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.offensive_fumbles_lost / topTenTeamTwoGames.games}
-                sort='asc'
-                label='Fumbles/Game'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
-                Defense
-              </Typography>
-              <TeamStats
-                team1={topTenTeamOneGames.defensive_total_yards / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.defensive_total_yards / topTenTeamTwoGames.games}
-                sort='asc'
-                label='Total YPG'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.defensive_rushing_yards / topTenTeamTwoGames.games}
-                sort='asc'
-                label='Rush YPG'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.defensive_rushes}
-                team2={topTenTeamTwoGames.defensive_rushing_yards / topTenTeamTwoGames.defensive_rushes}
-                sort='asc'
-                label='Rush YPC'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.games}
-                sort='asc'
-                label='Pass YPG'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.defensive_attempts}
-                team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.defensive_attempts}
-                sort='asc'
-                label='Pass YPA'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.defensive_sacks / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.defensive_sacks / topTenTeamTwoGames.games}
-                sort='desc'
-                label='Sacks/Game'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.defensive_interceptions / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.defensive_interceptions / topTenTeamTwoGames.games}
-                sort='desc'
-                label='Ints/Game'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={topTenTeamOneGames.defensive_fumbles_lost / topTenTeamOneGames.games}
-                team2={topTenTeamTwoGames.defensive_fumbles_lost / topTenTeamTwoGames.games}
-                sort='desc'
-                label='FF/Game'
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-            </Box>
-          </Grid2>
+          {topTenTeamOneGames && topTenTeamTwoGames && (
+            <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
+              <Divider variant='middle'>
+                <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
+                  Top Opponents
+                </Typography>
+              </Divider>
+              <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
+              <Box sx={{ py: 1 }}>
+                <TeamStats
+                  team1={`${topTenTeamOneGames.wins}-${topTenTeamOneGames.losses}-${topTenTeamOneGames.ties}`}
+                  team2={`${topTenTeamTwoGames.wins}-${topTenTeamTwoGames.losses}-${topTenTeamTwoGames.ties}`}
+                  sort=''
+                  label='Record'
+                  textSize={{ xs: 'body2' }}
+                  decimals={0}
+                />
+                <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+                  Offense
+                </Typography>
+                <TeamStats
+                  team1={
+                    (+topTenTeamOneGames.offensive_rushes /
+                      (+topTenTeamOneGames.offensive_rushes + +topTenTeamOneGames.offensive_attempts + +topTenTeamOneGames.offensive_sacks)) *
+                    100.0
+                  }
+                  team2={
+                    (+topTenTeamTwoGames.offensive_rushes /
+                      (+topTenTeamTwoGames.offensive_rushes + +topTenTeamTwoGames.offensive_attempts + +topTenTeamTwoGames.offensive_sacks)) *
+                    100.0
+                  }
+                  sort=''
+                  label='Run %'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={
+                    ((+topTenTeamOneGames.offensive_attempts + +topTenTeamOneGames.offensive_sacks) /
+                      (+topTenTeamOneGames.offensive_rushes + +topTenTeamOneGames.offensive_attempts + +topTenTeamOneGames.offensive_sacks)) *
+                    100.0
+                  }
+                  team2={
+                    ((+topTenTeamTwoGames.offensive_attempts + +topTenTeamTwoGames.offensive_sacks) /
+                      (+topTenTeamTwoGames.offensive_rushes + +topTenTeamTwoGames.offensive_attempts + +topTenTeamTwoGames.offensive_sacks)) *
+                    100.0
+                  }
+                  sort=''
+                  label='Pass %'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.offensive_points / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.offensive_points / topTenTeamTwoGames.games}
+                  sort='desc'
+                  label='PPG'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.offensive_total_yards / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.offensive_total_yards / topTenTeamTwoGames.games}
+                  sort='desc'
+                  label='Total YPG'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.offensive_rushing_yards / topTenTeamTwoGames.games}
+                  sort='desc'
+                  label='Rush YPG'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.offensive_rushes}
+                  team2={topTenTeamTwoGames.offensive_rushing_yards / topTenTeamTwoGames.offensive_rushes}
+                  sort='desc'
+                  label='Rush YPC'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.games}
+                  sort='desc'
+                  label='Pass YPG'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.offensive_attempts}
+                  team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.offensive_attempts}
+                  sort='desc'
+                  label='Pass YPA'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.offensive_sacks / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.offensive_sacks / topTenTeamTwoGames.games}
+                  sort='asc'
+                  label='Sacked/Game'
+                  textSize={{ xs: 'body2' }}
+                  decimals={0}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.offensive_interceptions / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.offensive_interceptions / topTenTeamTwoGames.games}
+                  sort='asc'
+                  label='Ints/Game'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.offensive_fumbles_lost / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.offensive_fumbles_lost / topTenTeamTwoGames.games}
+                  sort='asc'
+                  label='Fumbles/Game'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+                  Defense
+                </Typography>
+                <TeamStats
+                  team1={topTenTeamOneGames.defensive_total_yards / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.defensive_total_yards / topTenTeamTwoGames.games}
+                  sort='asc'
+                  label='Total YPG'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.defensive_rushing_yards / topTenTeamTwoGames.games}
+                  sort='asc'
+                  label='Rush YPG'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.defensive_rushes}
+                  team2={topTenTeamTwoGames.defensive_rushing_yards / topTenTeamTwoGames.defensive_rushes}
+                  sort='asc'
+                  label='Rush YPC'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.games}
+                  sort='asc'
+                  label='Pass YPG'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.defensive_attempts}
+                  team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.defensive_attempts}
+                  sort='asc'
+                  label='Pass YPA'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.defensive_sacks / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.defensive_sacks / topTenTeamTwoGames.games}
+                  sort='desc'
+                  label='Sacks/Game'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.defensive_interceptions / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.defensive_interceptions / topTenTeamTwoGames.games}
+                  sort='desc'
+                  label='Ints/Game'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={topTenTeamOneGames.defensive_fumbles_lost / topTenTeamOneGames.games}
+                  team2={topTenTeamTwoGames.defensive_fumbles_lost / topTenTeamTwoGames.games}
+                  sort='desc'
+                  label='FF/Game'
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+              </Box>
+            </Grid2>
+          )}
           {teamOneCommonGames && teamTwoCommonGames && (
             <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={1}>
               <Divider variant='middle'>
