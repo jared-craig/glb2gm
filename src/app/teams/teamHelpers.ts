@@ -1,3 +1,5 @@
+import { GameData } from '../games/gameData';
+
 export const extractTeamData = (originalObject: any, keyword: string) => {
   const newObject: any = {};
   for (const property in originalObject) {
@@ -44,4 +46,31 @@ export const sumArray = (arr: any[]) => {
   });
 
   return sumObject;
+};
+
+export const getRecord = (games: GameData[], teamId: number): { wins: number; losses: number; ties: number } => {
+  return games.reduce(
+    (acc, curr) => {
+      if (curr.team_one_id === teamId) {
+        if (curr.team_one_points > curr.team_two_points) {
+          acc.wins++;
+        } else if (curr.team_one_points < curr.team_two_points) {
+          acc.losses++;
+        } else {
+          acc.ties++;
+        }
+        return acc;
+      } else {
+        if (curr.team_two_points > curr.team_one_points) {
+          acc.wins++;
+        } else if (curr.team_two_points < curr.team_one_points) {
+          acc.losses++;
+        } else {
+          acc.ties++;
+        }
+        return acc;
+      }
+    },
+    { wins: 0, losses: 0, ties: 0 }
+  );
 };

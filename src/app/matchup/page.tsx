@@ -4,7 +4,7 @@ import { GameData } from '@/app/games/gameData';
 import { TeamData } from '@/app/teams/teamData';
 import { Autocomplete, Box, Container, Divider, Grid2, LinearProgress, Stack, TextField, Typography } from '@mui/material';
 import { Fragment, useEffect, useState } from 'react';
-import { extractTeamData, sumArray } from '../teams/topTeamHelpers';
+import { extractTeamData, getRecord, sumArray } from '../teams/teamHelpers';
 
 interface TeamStatsParams {
   team1: string | number;
@@ -61,7 +61,8 @@ export default function Matchup() {
   const [allTeamOneGames, setAllTeamOneGames] = useState<GameData[]>();
   const [allTeamTwoGames, setAllTeamTwoGames] = useState<GameData[]>();
   const [headToHeadGames, setHeadToHeadGames] = useState<GameData[]>();
-  const [commonGames, setCommonGames] = useState<GameData[]>();
+  const [teamOneCommonGames, setTeamOneCommonGames] = useState<any>();
+  const [teamTwoCommonGames, setTeamTwoCommonGames] = useState<any>();
   const [topTenTeamOneGames, setTopTenTeamOneGames] = useState<any>();
   const [topTenTeamTwoGames, setTopTenTeamTwoGames] = useState<any>();
   const [fetching, setFetching] = useState<boolean>(true);
@@ -70,7 +71,12 @@ export default function Matchup() {
   const [teamTwoInputValue, setTeamTwoInputValue] = useState<string>('');
   const [teamTwoSelection, setTeamTwoSelection] = useState<TeamData | null>(null);
 
-  function findCommonOpponentGames(team1Id: number, team2Id: number, team1Games: GameData[], team2Games: GameData[]): GameData[] {
+  function findCommonOpponentGames(
+    team1Id: number,
+    team2Id: number,
+    team1Games: GameData[],
+    team2Games: GameData[]
+  ): { teamOneCommonGames: any; teamTwoCommonGames: any } {
     const team1Opponents = new Set<number>();
     const team2Opponents = new Set<number>();
 
@@ -90,23 +96,67 @@ export default function Matchup() {
       }
     });
 
-    const commonGames: GameData[] = [];
+    let teamOneCommonGames: GameData[] = [];
+    let teamTwoCommonGames: GameData[] = [];
 
     team1Games.forEach((game) => {
       const opponentId = game.team_one_id === team1Id ? game.team_two_id : game.team_one_id;
       if (team2Opponents.has(opponentId)) {
-        commonGames.push(game);
+        teamOneCommonGames.push(game);
       }
     });
 
     team2Games.forEach((game) => {
       const opponentId = game.team_one_id === team2Id ? game.team_two_id : game.team_one_id;
       if (team1Opponents.has(opponentId)) {
-        commonGames.push(game);
+        teamTwoCommonGames.push(game);
       }
     });
 
-    return commonGames;
+    const teamOneTeamOneCommonGames = [...teamOneCommonGames].filter((x) => x.team_one_id === team1Id);
+    const teamOneTeamOneRecord = getRecord(teamOneTeamOneCommonGames, team1Id);
+    const teamOneTeamOneCommonGamesSum = sumArray(teamOneTeamOneCommonGames.map((x) => extractTeamData(x, 'team_one_')));
+    if (teamOneTeamOneCommonGamesSum) teamOneTeamOneCommonGamesSum['games'] = teamOneTeamOneCommonGames.length;
+    const teamOneTeamTwoCommonGames = [...teamOneCommonGames].filter((x) => x.team_two_id === team1Id);
+    const teamOneTeamTwoRecord = getRecord(teamOneTeamTwoCommonGames, team1Id);
+    const teamOneTeamTwoCommonGamesSum = sumArray(teamOneTeamTwoCommonGames.map((x) => extractTeamData(x, 'team_two_')));
+    if (teamOneTeamTwoCommonGamesSum) teamOneTeamTwoCommonGamesSum['games'] = teamOneTeamTwoCommonGames.length;
+
+    const teamOneCommonTenGames =
+      teamOneTeamOneCommonGamesSum && teamOneTeamTwoCommonGamesSum
+        ? sumArray([teamOneTeamOneCommonGamesSum, teamOneTeamTwoCommonGamesSum])
+        : teamOneTeamOneCommonGamesSum
+          ? teamOneTeamOneCommonGamesSum
+          : teamOneTeamTwoCommonGamesSum;
+
+    teamOneCommonTenGames['wins'] = teamOneTeamOneRecord.wins + teamOneTeamTwoRecord.wins;
+    teamOneCommonTenGames['losses'] = teamOneTeamOneRecord.losses + teamOneTeamTwoRecord.losses;
+    teamOneCommonTenGames['ties'] = teamOneTeamOneRecord.ties + teamOneTeamTwoRecord.ties;
+
+    const teamTwoTeamOneCommonGames = [...teamTwoCommonGames].filter((x) => x.team_one_id === team2Id);
+    const teamTwoOneRecord = getRecord(teamTwoTeamOneCommonGames, team2Id);
+    const teamTwoTeamOneCommonGamesSum = sumArray(teamTwoTeamOneCommonGames.map((x) => extractTeamData(x, 'team_one_')));
+    if (teamTwoTeamOneCommonGamesSum) teamTwoTeamOneCommonGamesSum['games'] = teamTwoTeamOneCommonGames.length;
+
+    const teamTwoTeamTwoCommonGames = [...teamTwoCommonGames].filter((x) => x.team_two_id === team2Id);
+    const teamTwoTeamTwoRecord = getRecord(teamTwoTeamTwoCommonGames, team2Id);
+    const teamTwoTeamTwoCommonGamesSum = sumArray(teamTwoTeamTwoCommonGames.map((x) => extractTeamData(x, 'team_two_')));
+    if (teamTwoTeamTwoCommonGamesSum) teamTwoTeamTwoCommonGamesSum['games'] = teamTwoTeamTwoCommonGames.length;
+
+    const teamTwoCommonTenGames =
+      teamTwoTeamOneCommonGamesSum && teamTwoTeamTwoCommonGamesSum
+        ? sumArray([teamTwoTeamOneCommonGamesSum, teamTwoTeamTwoCommonGamesSum])
+        : teamTwoTeamOneCommonGamesSum
+          ? teamTwoTeamOneCommonGamesSum
+          : teamTwoTeamTwoCommonGamesSum;
+
+    teamTwoCommonTenGames['wins'] = teamTwoOneRecord.wins + teamTwoTeamTwoRecord.wins;
+    teamTwoCommonTenGames['losses'] = teamTwoOneRecord.losses + teamTwoTeamTwoRecord.losses;
+    teamTwoCommonTenGames['ties'] = teamTwoOneRecord.ties + teamTwoTeamTwoRecord.ties;
+
+    console.log(teamOneCommonTenGames, teamTwoCommonTenGames);
+
+    return { teamOneCommonGames: teamOneCommonTenGames, teamTwoCommonGames: teamTwoCommonTenGames };
   }
 
   const fetchData = async () => {
@@ -132,14 +182,15 @@ export default function Matchup() {
       (x) => (x.team_one_id === team1?.id && x.team_two_id === team2?.id) || (x.team_one_id === team2?.id && x.team_two_id === team1?.id)
     );
 
-    const commonGames = findCommonOpponentGames(team1?.id!, team2?.id!, teamOneGameData, teamTwoGameData);
+    const { teamOneCommonGames, teamTwoCommonGames } = findCommonOpponentGames(team1?.id!, team2?.id!, teamOneGameData, teamTwoGameData);
 
     setTeamOne(team1);
     setTeamTwo(team2);
     setAllTeamOneGames(teamOneGameData);
     setAllTeamTwoGames(teamTwoGameData);
     setHeadToHeadGames(headToHeadGames);
-    setCommonGames(commonGames);
+    setTeamOneCommonGames(teamOneCommonGames);
+    setTeamTwoCommonGames(teamTwoCommonGames);
     setFetching(false);
   };
 
@@ -154,36 +205,12 @@ export default function Matchup() {
     );
 
     const teamOneTeamOneTopGames = [...allTeamOneGames].filter((x) => x.team_one_id === teamOne.id && teamOneTopTeams.some((y) => y.id === x.team_two_id));
-    const teamOneTeamOneRecord = teamOneTeamOneTopGames.reduce(
-      (acc, curr) => {
-        if (curr.team_one_points > curr.team_two_points) {
-          acc.wins++;
-        } else if (curr.team_one_points < curr.team_two_points) {
-          acc.losses++;
-        } else {
-          acc.ties++;
-        }
-        return acc;
-      },
-      { wins: 0, losses: 0, ties: 0 }
-    );
+    const teamOneTeamOneRecord = getRecord(teamOneTeamOneTopGames, teamOne.id);
     const teamOneTeamOneTopGamesSum = sumArray(teamOneTeamOneTopGames.map((x) => extractTeamData(x, 'team_one_')));
     if (teamOneTeamOneTopGamesSum) teamOneTeamOneTopGamesSum['games'] = teamOneTeamOneTopGames.length;
 
     const teamOneTeamTwoTopGames = [...allTeamOneGames].filter((x) => x.team_two_id === teamOne.id && teamOneTopTeams.some((y) => y.id === x.team_one_id));
-    const teamOneTeamTwoRecord = teamOneTeamTwoTopGames.reduce(
-      (acc, curr) => {
-        if (curr.team_one_points < curr.team_two_points) {
-          acc.wins++;
-        } else if (curr.team_one_points > curr.team_two_points) {
-          acc.losses++;
-        } else {
-          acc.ties++;
-        }
-        return acc;
-      },
-      { wins: 0, losses: 0, ties: 0 }
-    );
+    const teamOneTeamTwoRecord = getRecord(teamOneTeamTwoTopGames, teamOne.id);
     const teamOneTeamTwoTopGamesSum = sumArray(teamOneTeamTwoTopGames.map((x) => extractTeamData(x, 'team_two_')));
     if (teamOneTeamTwoTopGamesSum) teamOneTeamTwoTopGamesSum['games'] = teamOneTeamTwoTopGames.length;
 
@@ -199,36 +226,12 @@ export default function Matchup() {
     teamOneTopTenGames['ties'] = teamOneTeamOneRecord.ties + teamOneTeamTwoRecord.ties;
 
     const teamTwoTeamOneTopGames = [...allTeamTwoGames].filter((x) => x.team_one_id === teamTwo.id && teamTwoTopTeams.some((y) => y.id === x.team_two_id));
-    const teamTwoOneRecord = teamTwoTeamOneTopGames.reduce(
-      (acc, curr) => {
-        if (curr.team_one_points > curr.team_two_points) {
-          acc.wins++;
-        } else if (curr.team_one_points < curr.team_two_points) {
-          acc.losses++;
-        } else {
-          acc.ties++;
-        }
-        return acc;
-      },
-      { wins: 0, losses: 0, ties: 0 }
-    );
+    const teamTwoOneRecord = getRecord(teamTwoTeamOneTopGames, teamTwo.id);
     const teamTwoTeamOneTopGamesSum = sumArray(teamTwoTeamOneTopGames.map((x) => extractTeamData(x, 'team_one_')));
     if (teamTwoTeamOneTopGamesSum) teamTwoTeamOneTopGamesSum['games'] = teamTwoTeamOneTopGames.length;
 
     const teamTwoTeamTwoTopGames = [...allTeamTwoGames].filter((x) => x.team_two_id === teamTwo.id && teamTwoTopTeams.some((y) => y.id === x.team_one_id));
-    const teamTwoTeamTwoRecord = teamTwoTeamTwoTopGames.reduce(
-      (acc, curr) => {
-        if (curr.team_one_points < curr.team_two_points) {
-          acc.wins++;
-        } else if (curr.team_one_points > curr.team_two_points) {
-          acc.losses++;
-        } else {
-          acc.ties++;
-        }
-        return acc;
-      },
-      { wins: 0, losses: 0, ties: 0 }
-    );
+    const teamTwoTeamTwoRecord = getRecord(teamTwoTeamTwoTopGames, teamTwo.id);
     const teamTwoTeamTwoTopGamesSum = sumArray(teamTwoTeamTwoTopGames.map((x) => extractTeamData(x, 'team_two_')));
     if (teamTwoTeamTwoTopGamesSum) teamTwoTeamTwoTopGamesSum['games'] = teamTwoTeamTwoTopGames.length;
 
@@ -324,8 +327,9 @@ export default function Matchup() {
               <Typography typography={{ xs: 'h6' }}>Overall</Typography>
             </Divider>
             <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
-            <Typography typography={{ xs: 'body1' }}>Offense</Typography>
-
+            <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+              Offense
+            </Typography>
             <TeamStats
               team1={(+teamOne.offensive_rushes / (+teamOne.offensive_rushes + +teamOne.offensive_attempts + +teamOne.offensive_sacks)) * 100.0}
               team2={(+teamTwo.offensive_rushes / (+teamTwo.offensive_rushes + +teamTwo.offensive_attempts + +teamTwo.offensive_sacks)) * 100.0}
@@ -482,7 +486,9 @@ export default function Matchup() {
               textSize={{ xs: 'body2' }}
               decimals={0}
             />
-            <Typography typography={{ xs: 'body1' }}>Offense</Typography>
+            <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+              Offense
+            </Typography>
             <TeamStats
               team1={topTenTeamOneGames.offensive_points / topTenTeamOneGames.games}
               team2={topTenTeamTwoGames.offensive_points / topTenTeamTwoGames.games}
@@ -713,152 +719,117 @@ export default function Matchup() {
               ))}
             </Grid2>
           )}
-          {commonGames && commonGames.length > 0 && (
+          {teamOneCommonGames && teamTwoCommonGames && (
             <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={1}>
               <Divider variant='middle'>
                 <Typography typography={{ xs: 'h6' }}>Common Opponents</Typography>
               </Divider>
               <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
-              <Typography typography={{ xs: 'body1' }}>Offense</Typography>
               <TeamStats
-                team1={
-                  +commonGames.reduce(
-                    (acc, cur) => acc + +(cur.team_one_id === teamOne.id ? cur.team_one_points : cur.team_two_id === teamOne.id ? cur.team_two_points : 0),
-                    0
-                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamOne.id ? 1 : cur.team_two_id === teamOne.id ? 1 : 0), 0)
-                }
-                team2={
-                  +commonGames.reduce(
-                    (acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? cur.team_one_points : cur.team_two_id === teamTwo.id ? cur.team_two_points : 0),
-                    0
-                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? 1 : cur.team_two_id === teamTwo.id ? 1 : 0), 0)
-                }
+                team1={`${teamOneCommonGames.wins}-${teamOneCommonGames.losses}-${teamOneCommonGames.ties}`}
+                team2={`${teamTwoCommonGames.wins}-${teamTwoCommonGames.losses}-${teamTwoCommonGames.ties}`}
+                sort=''
+                label='Record'
+                textSize={{ xs: 'body2' }}
+                decimals={0}
+              />
+              <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+                Offense
+              </Typography>
+              <TeamStats
+                team1={teamOneCommonGames.offensive_points / teamOneCommonGames.games}
+                team2={teamTwoCommonGames.offensive_points / teamTwoCommonGames.games}
                 sort='desc'
                 label={'PPG'}
                 textSize={{ xs: 'body2' }}
                 decimals={1}
               />
               <TeamStats
-                team1={
-                  +commonGames.reduce(
-                    (acc, cur) =>
-                      acc +
-                      +(cur.team_one_id === teamOne.id
-                        ? +cur.team_one_rushing_yards + +cur.team_one_passing_yards
-                        : cur.team_two_id === teamOne.id
-                          ? +cur.team_two_rushing_yards + +cur.team_two_passing_yards
-                          : 0),
-                    0
-                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamOne.id ? 1 : cur.team_two_id === teamOne.id ? 1 : 0), 0)
-                }
-                team2={
-                  +commonGames.reduce(
-                    (acc, cur) =>
-                      acc +
-                      +(cur.team_one_id === teamTwo.id
-                        ? +cur.team_one_rushing_yards + +cur.team_one_passing_yards
-                        : cur.team_two_id === teamTwo.id
-                          ? +cur.team_two_rushing_yards + +cur.team_two_passing_yards
-                          : 0),
-                    0
-                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? 1 : cur.team_two_id === teamTwo.id ? 1 : 0), 0)
-                }
+                team1={teamOneCommonGames.offensive_total_yards / teamOneCommonGames.games}
+                team2={teamTwoCommonGames.offensive_total_yards / teamTwoCommonGames.games}
                 sort='desc'
                 label={'Total YPG'}
                 textSize={{ xs: 'body2' }}
                 decimals={1}
               />
               <TeamStats
-                team1={
-                  +commonGames.reduce(
-                    (acc, cur) =>
-                      acc + +(cur.team_one_id === teamOne.id ? +cur.team_one_rushing_yards : cur.team_two_id === teamOne.id ? +cur.team_two_rushing_yards : 0),
-                    0
-                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamOne.id ? 1 : cur.team_two_id === teamOne.id ? 1 : 0), 0)
-                }
-                team2={
-                  +commonGames.reduce(
-                    (acc, cur) =>
-                      acc + +(cur.team_one_id === teamTwo.id ? +cur.team_one_rushing_yards : cur.team_two_id === teamTwo.id ? +cur.team_two_rushing_yards : 0),
-                    0
-                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? 1 : cur.team_two_id === teamTwo.id ? 1 : 0), 0)
-                }
+                team1={teamOneCommonGames.offensive_rushing_yards / teamOneCommonGames.games}
+                team2={teamTwoCommonGames.offensive_rushing_yards / teamTwoCommonGames.games}
                 sort='desc'
                 label={'Rush YPG'}
                 textSize={{ xs: 'body2' }}
                 decimals={1}
               />
               <TeamStats
-                team1={
-                  +commonGames.reduce(
-                    (acc, cur) =>
-                      acc + +(cur.team_one_id === teamOne.id ? cur.team_one_rushing_yards : cur.team_two_id === teamOne.id ? cur.team_two_rushing_yards : 0),
-                    0
-                  ) /
-                  +commonGames.reduce(
-                    (acc, cur) => acc + +(cur.team_one_id === teamOne.id ? cur.team_one_rushes : cur.team_two_id === teamOne.id ? cur.team_two_rushes : 0),
-                    0
-                  )
-                }
-                team2={
-                  +commonGames.reduce(
-                    (acc, cur) =>
-                      acc + +(cur.team_one_id === teamTwo.id ? cur.team_one_rushing_yards : cur.team_two_id === teamTwo.id ? cur.team_two_rushing_yards : 0),
-                    0
-                  ) /
-                  +commonGames.reduce(
-                    (acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? cur.team_one_rushes : cur.team_two_id === teamTwo.id ? cur.team_two_rushes : 0),
-                    0
-                  )
-                }
+                team1={teamOneCommonGames.offensive_rushing_yards / teamOneCommonGames.offensive_rushes}
+                team2={teamTwoCommonGames.offensive_rushing_yards / teamTwoCommonGames.offensive_rushes}
                 sort='desc'
                 label={'Rush YPC'}
                 textSize={{ xs: 'body2' }}
                 decimals={1}
               />
               <TeamStats
-                team1={
-                  +commonGames.reduce(
-                    (acc, cur) =>
-                      acc + +(cur.team_one_id === teamOne.id ? +cur.team_one_passing_yards : cur.team_two_id === teamOne.id ? +cur.team_two_passing_yards : 0),
-                    0
-                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamOne.id ? 1 : cur.team_two_id === teamOne.id ? 1 : 0), 0)
-                }
-                team2={
-                  +commonGames.reduce(
-                    (acc, cur) =>
-                      acc + +(cur.team_one_id === teamTwo.id ? +cur.team_one_passing_yards : cur.team_two_id === teamTwo.id ? +cur.team_two_passing_yards : 0),
-                    0
-                  ) / +commonGames.reduce((acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? 1 : cur.team_two_id === teamTwo.id ? 1 : 0), 0)
-                }
+                team1={teamOneCommonGames.offensive_passing_yards / teamOneCommonGames.games}
+                team2={teamTwoCommonGames.offensive_passing_yards / teamTwoCommonGames.games}
                 sort='desc'
                 label={'Pass YPG'}
                 textSize={{ xs: 'body2' }}
                 decimals={1}
               />
               <TeamStats
-                team1={
-                  +commonGames.reduce(
-                    (acc, cur) =>
-                      acc + +(cur.team_one_id === teamOne.id ? cur.team_one_passing_yards : cur.team_two_id === teamOne.id ? cur.team_two_passing_yards : 0),
-                    0
-                  ) /
-                  +commonGames.reduce(
-                    (acc, cur) => acc + +(cur.team_one_id === teamOne.id ? cur.team_one_attempts : cur.team_two_id === teamOne.id ? cur.team_two_attempts : 0),
-                    0
-                  )
-                }
-                team2={
-                  +commonGames.reduce(
-                    (acc, cur) =>
-                      acc + +(cur.team_one_id === teamTwo.id ? cur.team_one_passing_yards : cur.team_two_id === teamTwo.id ? cur.team_two_passing_yards : 0),
-                    0
-                  ) /
-                  +commonGames.reduce(
-                    (acc, cur) => acc + +(cur.team_one_id === teamTwo.id ? cur.team_one_attempts : cur.team_two_id === teamTwo.id ? cur.team_two_attempts : 0),
-                    0
-                  )
-                }
+                team1={teamOneCommonGames.offensive_passing_yards / teamOneCommonGames.offensive_attempts}
+                team2={teamTwoCommonGames.offensive_passing_yards / teamTwoCommonGames.offensive_attempts}
+                sort='desc'
+                label={'Pass YPA'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+                Defense
+              </Typography>
+              <TeamStats
+                team1={teamOneCommonGames.defensive_points / teamOneCommonGames.games}
+                team2={teamTwoCommonGames.defensive_points / teamTwoCommonGames.games}
+                sort='desc'
+                label={'PPG'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={teamOneCommonGames.defensive_total_yards / teamOneCommonGames.games}
+                team2={teamTwoCommonGames.defensive_total_yards / teamTwoCommonGames.games}
+                sort='desc'
+                label={'Total YPG'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={teamOneCommonGames.defensive_rushing_yards / teamOneCommonGames.games}
+                team2={teamTwoCommonGames.defensive_rushing_yards / teamTwoCommonGames.games}
+                sort='desc'
+                label={'Rush YPG'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={teamOneCommonGames.defensive_rushing_yards / teamOneCommonGames.defensive_rushes}
+                team2={teamTwoCommonGames.defensive_rushing_yards / teamTwoCommonGames.defensive_rushes}
+                sort='desc'
+                label={'Rush YPC'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={teamOneCommonGames.defensive_passing_yards / teamOneCommonGames.games}
+                team2={teamTwoCommonGames.defensive_passing_yards / teamTwoCommonGames.games}
+                sort='desc'
+                label={'Pass YPG'}
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={teamOneCommonGames.defensive_passing_yards / teamOneCommonGames.defensive_attempts}
+                team2={teamTwoCommonGames.defensive_passing_yards / teamTwoCommonGames.defensive_attempts}
                 sort='desc'
                 label={'Pass YPA'}
                 textSize={{ xs: 'body2' }}
