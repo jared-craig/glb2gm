@@ -513,7 +513,7 @@ export default function Matchup() {
           <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
             <Divider variant='middle'>
               <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
-                VS Top Teams
+                Top Opponents
               </Typography>
             </Divider>
             <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
