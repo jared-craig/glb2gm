@@ -348,6 +348,14 @@ export default function Matchup() {
             </Divider>
             <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
             <Box sx={{ py: 1 }}>
+              <TeamStats
+                team1={`${teamOne.wins}-${teamOne.losses}-${teamOne.ties}`}
+                team2={`${teamTwo.wins}-${teamTwo.losses}-${teamTwo.ties}`}
+                sort=''
+                label='Record'
+                textSize={{ xs: 'body2' }}
+                decimals={0}
+              />
               <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
                 Offense
               </Typography>
@@ -521,6 +529,38 @@ export default function Matchup() {
               <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
                 Offense
               </Typography>
+              <TeamStats
+                team1={
+                  (+topTenTeamOneGames.offensive_rushes /
+                    (+topTenTeamOneGames.offensive_rushes + +topTenTeamOneGames.offensive_attempts + +topTenTeamOneGames.offensive_sacks)) *
+                  100.0
+                }
+                team2={
+                  (+topTenTeamTwoGames.offensive_rushes /
+                    (+topTenTeamTwoGames.offensive_rushes + +topTenTeamTwoGames.offensive_attempts + +topTenTeamTwoGames.offensive_sacks)) *
+                  100.0
+                }
+                sort=''
+                label='Run %'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={
+                  ((+topTenTeamOneGames.offensive_attempts + +topTenTeamOneGames.offensive_sacks) /
+                    (+topTenTeamOneGames.offensive_rushes + +topTenTeamOneGames.offensive_attempts + +topTenTeamOneGames.offensive_sacks)) *
+                  100.0
+                }
+                team2={
+                  ((+topTenTeamTwoGames.offensive_attempts + +topTenTeamTwoGames.offensive_sacks) /
+                    (+topTenTeamTwoGames.offensive_rushes + +topTenTeamTwoGames.offensive_attempts + +topTenTeamTwoGames.offensive_sacks)) *
+                  100.0
+                }
+                sort=''
+                label='Pass %'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
               <TeamStats
                 team1={topTenTeamOneGames.offensive_points / topTenTeamOneGames.games}
                 team2={topTenTeamTwoGames.offensive_points / topTenTeamTwoGames.games}
