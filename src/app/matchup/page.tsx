@@ -5,6 +5,7 @@ import { TeamData } from '@/app/teams/teamData';
 import { Autocomplete, Box, Container, Divider, Grid2, LinearProgress, Stack, TextField, Typography } from '@mui/material';
 import { Fragment, useEffect, useState } from 'react';
 import { extractTeamData, getRecord, sumArray } from '../teams/teamHelpers';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface TeamStatsParams {
   team1: string | number;
@@ -55,6 +56,12 @@ function TeamStats({ team1, team2, sort, label, textSize, decimals }: TeamStatsP
 }
 
 export default function Matchup() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const team1Id = searchParams.get('team1');
+  const team2Id = searchParams.get('team2');
+
   const [allTeams, setAllTeams] = useState<TeamData[]>();
   const [teamOne, setTeamOne] = useState<TeamData>();
   const [teamTwo, setTeamTwo] = useState<TeamData>();
@@ -70,94 +77,6 @@ export default function Matchup() {
   const [teamOneSelection, setTeamOneSelection] = useState<TeamData | null>(null);
   const [teamTwoInputValue, setTeamTwoInputValue] = useState<string>('');
   const [teamTwoSelection, setTeamTwoSelection] = useState<TeamData | null>(null);
-
-  function findCommonOpponentGames(
-    team1Id: number,
-    team2Id: number,
-    team1Games: GameData[],
-    team2Games: GameData[]
-  ): { teamOneCommonGames: any; teamTwoCommonGames: any } {
-    const team1Opponents = new Set<number>();
-    const team2Opponents = new Set<number>();
-
-    team1Games.forEach((game) => {
-      if (game.team_one_id === team1Id) {
-        team1Opponents.add(game.team_two_id);
-      } else if (game.team_two_id === team1Id) {
-        team1Opponents.add(game.team_one_id);
-      }
-    });
-
-    team2Games.forEach((game) => {
-      if (game.team_one_id === team2Id) {
-        team2Opponents.add(game.team_two_id);
-      } else if (game.team_two_id === team2Id) {
-        team2Opponents.add(game.team_one_id);
-      }
-    });
-
-    let teamOneCommonGames: GameData[] = [];
-    let teamTwoCommonGames: GameData[] = [];
-
-    team1Games.forEach((game) => {
-      const opponentId = game.team_one_id === team1Id ? game.team_two_id : game.team_one_id;
-      if (team2Opponents.has(opponentId)) {
-        teamOneCommonGames.push(game);
-      }
-    });
-
-    team2Games.forEach((game) => {
-      const opponentId = game.team_one_id === team2Id ? game.team_two_id : game.team_one_id;
-      if (team1Opponents.has(opponentId)) {
-        teamTwoCommonGames.push(game);
-      }
-    });
-
-    const teamOneTeamOneCommonGames = [...teamOneCommonGames].filter((x) => x.team_one_id === team1Id);
-    const teamOneTeamOneRecord = getRecord(teamOneTeamOneCommonGames, team1Id);
-    const teamOneTeamOneCommonGamesSum = sumArray(teamOneTeamOneCommonGames.map((x) => extractTeamData(x, 'team_one_')));
-    if (teamOneTeamOneCommonGamesSum) teamOneTeamOneCommonGamesSum['games'] = teamOneTeamOneCommonGames.length;
-    const teamOneTeamTwoCommonGames = [...teamOneCommonGames].filter((x) => x.team_two_id === team1Id);
-    const teamOneTeamTwoRecord = getRecord(teamOneTeamTwoCommonGames, team1Id);
-    const teamOneTeamTwoCommonGamesSum = sumArray(teamOneTeamTwoCommonGames.map((x) => extractTeamData(x, 'team_two_')));
-    if (teamOneTeamTwoCommonGamesSum) teamOneTeamTwoCommonGamesSum['games'] = teamOneTeamTwoCommonGames.length;
-
-    const teamOneCommonTenGames =
-      teamOneTeamOneCommonGamesSum && teamOneTeamTwoCommonGamesSum
-        ? sumArray([teamOneTeamOneCommonGamesSum, teamOneTeamTwoCommonGamesSum])
-        : teamOneTeamOneCommonGamesSum
-          ? teamOneTeamOneCommonGamesSum
-          : teamOneTeamTwoCommonGamesSum;
-
-    teamOneCommonTenGames['wins'] = teamOneTeamOneRecord.wins + teamOneTeamTwoRecord.wins;
-    teamOneCommonTenGames['losses'] = teamOneTeamOneRecord.losses + teamOneTeamTwoRecord.losses;
-    teamOneCommonTenGames['ties'] = teamOneTeamOneRecord.ties + teamOneTeamTwoRecord.ties;
-
-    const teamTwoTeamOneCommonGames = [...teamTwoCommonGames].filter((x) => x.team_one_id === team2Id);
-    const teamTwoOneRecord = getRecord(teamTwoTeamOneCommonGames, team2Id);
-    const teamTwoTeamOneCommonGamesSum = sumArray(teamTwoTeamOneCommonGames.map((x) => extractTeamData(x, 'team_one_')));
-    if (teamTwoTeamOneCommonGamesSum) teamTwoTeamOneCommonGamesSum['games'] = teamTwoTeamOneCommonGames.length;
-
-    const teamTwoTeamTwoCommonGames = [...teamTwoCommonGames].filter((x) => x.team_two_id === team2Id);
-    const teamTwoTeamTwoRecord = getRecord(teamTwoTeamTwoCommonGames, team2Id);
-    const teamTwoTeamTwoCommonGamesSum = sumArray(teamTwoTeamTwoCommonGames.map((x) => extractTeamData(x, 'team_two_')));
-    if (teamTwoTeamTwoCommonGamesSum) teamTwoTeamTwoCommonGamesSum['games'] = teamTwoTeamTwoCommonGames.length;
-
-    const teamTwoCommonTenGames =
-      teamTwoTeamOneCommonGamesSum && teamTwoTeamTwoCommonGamesSum
-        ? sumArray([teamTwoTeamOneCommonGamesSum, teamTwoTeamTwoCommonGamesSum])
-        : teamTwoTeamOneCommonGamesSum
-          ? teamTwoTeamOneCommonGamesSum
-          : teamTwoTeamTwoCommonGamesSum;
-
-    teamTwoCommonTenGames['wins'] = teamTwoOneRecord.wins + teamTwoTeamTwoRecord.wins;
-    teamTwoCommonTenGames['losses'] = teamTwoOneRecord.losses + teamTwoTeamTwoRecord.losses;
-    teamTwoCommonTenGames['ties'] = teamTwoOneRecord.ties + teamTwoTeamTwoRecord.ties;
-
-    console.log(teamOneCommonTenGames, teamTwoCommonTenGames);
-
-    return { teamOneCommonGames: teamOneCommonTenGames, teamTwoCommonGames: teamTwoCommonTenGames };
-  }
 
   const fetchData = async () => {
     setFetching(true);
@@ -250,6 +169,94 @@ export default function Matchup() {
     setTopTenTeamTwoGames(teamTwoTopTenGames);
   };
 
+  function findCommonOpponentGames(
+    team1Id: number,
+    team2Id: number,
+    team1Games: GameData[],
+    team2Games: GameData[]
+  ): { teamOneCommonGames: any; teamTwoCommonGames: any } {
+    const team1Opponents = new Set<number>();
+    const team2Opponents = new Set<number>();
+
+    team1Games.forEach((game) => {
+      if (game.team_one_id === team1Id) {
+        team1Opponents.add(game.team_two_id);
+      } else if (game.team_two_id === team1Id) {
+        team1Opponents.add(game.team_one_id);
+      }
+    });
+
+    team2Games.forEach((game) => {
+      if (game.team_one_id === team2Id) {
+        team2Opponents.add(game.team_two_id);
+      } else if (game.team_two_id === team2Id) {
+        team2Opponents.add(game.team_one_id);
+      }
+    });
+
+    let teamOneCommonGames: GameData[] = [];
+    let teamTwoCommonGames: GameData[] = [];
+
+    team1Games.forEach((game) => {
+      const opponentId = game.team_one_id === team1Id ? game.team_two_id : game.team_one_id;
+      if (team2Opponents.has(opponentId)) {
+        teamOneCommonGames.push(game);
+      }
+    });
+
+    team2Games.forEach((game) => {
+      const opponentId = game.team_one_id === team2Id ? game.team_two_id : game.team_one_id;
+      if (team1Opponents.has(opponentId)) {
+        teamTwoCommonGames.push(game);
+      }
+    });
+
+    if (teamOneCommonGames.length <= 0 || teamTwoCommonGames.length <= 0) return { teamOneCommonGames: null, teamTwoCommonGames: null };
+
+    const teamOneTeamOneCommonGames = [...teamOneCommonGames].filter((x) => x.team_one_id === team1Id);
+    const teamOneTeamOneRecord = getRecord(teamOneTeamOneCommonGames, team1Id);
+    const teamOneTeamOneCommonGamesSum = sumArray(teamOneTeamOneCommonGames.map((x) => extractTeamData(x, 'team_one_')));
+    if (teamOneTeamOneCommonGamesSum) teamOneTeamOneCommonGamesSum['games'] = teamOneTeamOneCommonGames.length;
+    const teamOneTeamTwoCommonGames = [...teamOneCommonGames].filter((x) => x.team_two_id === team1Id);
+    const teamOneTeamTwoRecord = getRecord(teamOneTeamTwoCommonGames, team1Id);
+    const teamOneTeamTwoCommonGamesSum = sumArray(teamOneTeamTwoCommonGames.map((x) => extractTeamData(x, 'team_two_')));
+    if (teamOneTeamTwoCommonGamesSum) teamOneTeamTwoCommonGamesSum['games'] = teamOneTeamTwoCommonGames.length;
+
+    const teamOneCommonTenGames =
+      teamOneTeamOneCommonGamesSum && teamOneTeamTwoCommonGamesSum
+        ? sumArray([teamOneTeamOneCommonGamesSum, teamOneTeamTwoCommonGamesSum])
+        : teamOneTeamOneCommonGamesSum
+          ? teamOneTeamOneCommonGamesSum
+          : teamOneTeamTwoCommonGamesSum;
+
+    teamOneCommonTenGames['wins'] = teamOneTeamOneRecord.wins + teamOneTeamTwoRecord.wins;
+    teamOneCommonTenGames['losses'] = teamOneTeamOneRecord.losses + teamOneTeamTwoRecord.losses;
+    teamOneCommonTenGames['ties'] = teamOneTeamOneRecord.ties + teamOneTeamTwoRecord.ties;
+
+    const teamTwoTeamOneCommonGames = [...teamTwoCommonGames].filter((x) => x.team_one_id === team2Id);
+    const teamTwoOneRecord = getRecord(teamTwoTeamOneCommonGames, team2Id);
+    const teamTwoTeamOneCommonGamesSum = sumArray(teamTwoTeamOneCommonGames.map((x) => extractTeamData(x, 'team_one_')));
+    if (teamTwoTeamOneCommonGamesSum) teamTwoTeamOneCommonGamesSum['games'] = teamTwoTeamOneCommonGames.length;
+
+    const teamTwoTeamTwoCommonGames = [...teamTwoCommonGames].filter((x) => x.team_two_id === team2Id);
+    const teamTwoTeamTwoRecord = getRecord(teamTwoTeamTwoCommonGames, team2Id);
+    const teamTwoTeamTwoCommonGamesSum = sumArray(teamTwoTeamTwoCommonGames.map((x) => extractTeamData(x, 'team_two_')));
+    if (teamTwoTeamTwoCommonGamesSum) teamTwoTeamTwoCommonGamesSum['games'] = teamTwoTeamTwoCommonGames.length;
+
+    const teamTwoCommonTenGames =
+      teamTwoTeamOneCommonGamesSum && teamTwoTeamTwoCommonGamesSum
+        ? sumArray([teamTwoTeamOneCommonGamesSum, teamTwoTeamTwoCommonGamesSum])
+        : teamTwoTeamOneCommonGamesSum
+          ? teamTwoTeamOneCommonGamesSum
+          : teamTwoTeamTwoCommonGamesSum;
+
+    teamTwoCommonTenGames['wins'] = teamTwoOneRecord.wins + teamTwoTeamTwoRecord.wins;
+    teamTwoCommonTenGames['losses'] = teamTwoOneRecord.losses + teamTwoTeamTwoRecord.losses;
+    teamTwoCommonTenGames['ties'] = teamTwoOneRecord.ties + teamTwoTeamTwoRecord.ties;
+
+    return { teamOneCommonGames: teamOneCommonTenGames, teamTwoCommonGames: teamTwoCommonTenGames };
+  }
+
   const getTierAbbreviation = (tier: string) => {
     switch (tier) {
       case 'Rookie':
@@ -270,6 +277,19 @@ export default function Matchup() {
   }, []);
 
   useEffect(() => {
+    if (allTeams && team1Id && team2Id) {
+      setTeamOneSelection(allTeams.find((x) => x.id === +team1Id)!);
+      setTeamTwoSelection(allTeams.find((x) => x.id === +team2Id)!);
+    }
+  }, [allTeams, team1Id, team2Id]);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (teamOneSelection && teamTwoSelection) {
+      params.set('team1', teamOneSelection.id.toString());
+      params.set('team2', teamTwoSelection.id.toString());
+      router.push(pathname + '?' + params.toString());
+    }
     fetchTeams();
   }, [teamOneSelection, teamTwoSelection]);
 
@@ -324,156 +344,163 @@ export default function Matchup() {
         <Grid2 container sx={{ mb: 2 }}>
           <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
             <Divider variant='middle'>
-              <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
-                Overall
-              </Typography>
+              <Typography typography={{ xs: 'h6' }}>Overall</Typography>
             </Divider>
             <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
-            <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
-              Offense
-            </Typography>
-            <TeamStats
-              team1={(+teamOne.offensive_rushes / (+teamOne.offensive_rushes + +teamOne.offensive_attempts + +teamOne.offensive_sacks)) * 100.0}
-              team2={(+teamTwo.offensive_rushes / (+teamTwo.offensive_rushes + +teamTwo.offensive_attempts + +teamTwo.offensive_sacks)) * 100.0}
-              sort=''
-              label='Run %'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={
-                ((+teamOne.offensive_attempts + +teamOne.offensive_sacks) /
-                  (+teamOne.offensive_rushes + +teamOne.offensive_attempts + +teamOne.offensive_sacks)) *
-                100.0
-              }
-              team2={
-                ((+teamTwo.offensive_attempts + +teamTwo.offensive_sacks) /
-                  (+teamTwo.offensive_rushes + +teamTwo.offensive_attempts + +teamTwo.offensive_sacks)) *
-                100.0
-              }
-              sort=''
-              label='Pass %'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats team1={+teamOne.offensive_points} team2={+teamTwo.offensive_points} sort='desc' label='Points' textSize={{ xs: 'body2' }} decimals={0} />
-            <TeamStats
-              team1={+teamOne.offensive_total_yards}
-              team2={+teamTwo.offensive_total_yards}
-              sort='desc'
-              label='Total Yards'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={+teamOne.offensive_rushing_yards}
-              team2={+teamTwo.offensive_rushing_yards}
-              sort='desc'
-              label='Rush Yards'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={+teamOne.offensive_rushing_yards / +teamOne.offensive_rushes}
-              team2={+teamTwo.offensive_rushing_yards / +teamTwo.offensive_rushes}
-              sort='desc'
-              label='Rush YPC'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={+teamOne.offensive_passing_yards}
-              team2={+teamTwo.offensive_passing_yards}
-              sort='desc'
-              label='Pass Yards'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={+teamOne.offensive_passing_yards / +teamOne.offensive_attempts}
-              team2={+teamTwo.offensive_passing_yards / +teamTwo.offensive_attempts}
-              sort='desc'
-              label='Pass YPA'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats team1={+teamOne.offensive_sacks} team2={+teamTwo.offensive_sacks} sort='asc' label='Sacked' textSize={{ xs: 'body2' }} decimals={0} />
-            <TeamStats
-              team1={+teamOne.offensive_interceptions}
-              team2={+teamTwo.offensive_interceptions}
-              sort='asc'
-              label='Ints'
-              textSize={{ xs: 'body2' }}
-              decimals={0}
-            />
-            <TeamStats
-              team1={+teamOne.offensive_fumbles_lost}
-              team2={+teamTwo.offensive_fumbles_lost}
-              sort='asc'
-              label='FL'
-              textSize={{ xs: 'body2' }}
-              decimals={0}
-            />
-            <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
-              Defense
-            </Typography>
-            <TeamStats
-              team1={+teamOne.defensive_total_yards}
-              team2={+teamTwo.defensive_total_yards}
-              sort='asc'
-              label='Total Yards'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={+teamOne.defensive_rushing_yards}
-              team2={+teamTwo.defensive_rushing_yards}
-              sort='asc'
-              label='Rush Yards'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={+teamOne.defensive_rushing_yards / +teamOne.defensive_rushes}
-              team2={+teamTwo.defensive_rushing_yards / +teamOne.defensive_rushes}
-              sort='asc'
-              label='Rush YPC'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={+teamOne.defensive_passing_yards}
-              team2={+teamTwo.defensive_passing_yards}
-              sort='asc'
-              label='Pass Yards'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={+teamOne.defensive_passing_yards / +teamOne.defensive_attempts}
-              team2={+teamTwo.defensive_passing_yards / +teamOne.defensive_attempts}
-              sort='asc'
-              label='Pass YPA'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats team1={+teamOne.defensive_sacks} team2={+teamTwo.defensive_sacks} sort='desc' label='Sacks' textSize={{ xs: 'body2' }} decimals={0} />
-            <TeamStats
-              team1={+teamOne.defensive_interceptions}
-              team2={+teamTwo.defensive_interceptions}
-              sort='desc'
-              label='Ints'
-              textSize={{ xs: 'body2' }}
-              decimals={0}
-            />
-            <TeamStats
-              team1={+teamOne.defensive_fumbles_lost}
-              team2={+teamTwo.defensive_fumbles_lost}
-              sort='desc'
-              label='FF'
-              textSize={{ xs: 'body2' }}
-              decimals={0}
-            />
+            <Box sx={{ py: 1 }}>
+              <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+                Offense
+              </Typography>
+              <TeamStats
+                team1={(+teamOne.offensive_rushes / (+teamOne.offensive_rushes + +teamOne.offensive_attempts + +teamOne.offensive_sacks)) * 100.0}
+                team2={(+teamTwo.offensive_rushes / (+teamTwo.offensive_rushes + +teamTwo.offensive_attempts + +teamTwo.offensive_sacks)) * 100.0}
+                sort=''
+                label='Run %'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={
+                  ((+teamOne.offensive_attempts + +teamOne.offensive_sacks) /
+                    (+teamOne.offensive_rushes + +teamOne.offensive_attempts + +teamOne.offensive_sacks)) *
+                  100.0
+                }
+                team2={
+                  ((+teamTwo.offensive_attempts + +teamTwo.offensive_sacks) /
+                    (+teamTwo.offensive_rushes + +teamTwo.offensive_attempts + +teamTwo.offensive_sacks)) *
+                  100.0
+                }
+                sort=''
+                label='Pass %'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={+teamOne.offensive_points}
+                team2={+teamTwo.offensive_points}
+                sort='desc'
+                label='Points'
+                textSize={{ xs: 'body2' }}
+                decimals={0}
+              />
+              <TeamStats
+                team1={+teamOne.offensive_total_yards}
+                team2={+teamTwo.offensive_total_yards}
+                sort='desc'
+                label='Total Yards'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={+teamOne.offensive_rushing_yards}
+                team2={+teamTwo.offensive_rushing_yards}
+                sort='desc'
+                label='Rush Yards'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={+teamOne.offensive_rushing_yards / +teamOne.offensive_rushes}
+                team2={+teamTwo.offensive_rushing_yards / +teamTwo.offensive_rushes}
+                sort='desc'
+                label='Rush YPC'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={+teamOne.offensive_passing_yards}
+                team2={+teamTwo.offensive_passing_yards}
+                sort='desc'
+                label='Pass Yards'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={+teamOne.offensive_passing_yards / +teamOne.offensive_attempts}
+                team2={+teamTwo.offensive_passing_yards / +teamTwo.offensive_attempts}
+                sort='desc'
+                label='Pass YPA'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats team1={+teamOne.offensive_sacks} team2={+teamTwo.offensive_sacks} sort='asc' label='Sacked' textSize={{ xs: 'body2' }} decimals={0} />
+              <TeamStats
+                team1={+teamOne.offensive_interceptions}
+                team2={+teamTwo.offensive_interceptions}
+                sort='asc'
+                label='Ints'
+                textSize={{ xs: 'body2' }}
+                decimals={0}
+              />
+              <TeamStats
+                team1={+teamOne.offensive_fumbles_lost}
+                team2={+teamTwo.offensive_fumbles_lost}
+                sort='asc'
+                label='FL'
+                textSize={{ xs: 'body2' }}
+                decimals={0}
+              />
+              <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+                Defense
+              </Typography>
+              <TeamStats
+                team1={+teamOne.defensive_total_yards}
+                team2={+teamTwo.defensive_total_yards}
+                sort='asc'
+                label='Total Yards'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={+teamOne.defensive_rushing_yards}
+                team2={+teamTwo.defensive_rushing_yards}
+                sort='asc'
+                label='Rush Yards'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={+teamOne.defensive_rushing_yards / +teamOne.defensive_rushes}
+                team2={+teamTwo.defensive_rushing_yards / +teamOne.defensive_rushes}
+                sort='asc'
+                label='Rush YPC'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={+teamOne.defensive_passing_yards}
+                team2={+teamTwo.defensive_passing_yards}
+                sort='asc'
+                label='Pass Yards'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={+teamOne.defensive_passing_yards / +teamOne.defensive_attempts}
+                team2={+teamTwo.defensive_passing_yards / +teamOne.defensive_attempts}
+                sort='asc'
+                label='Pass YPA'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats team1={+teamOne.defensive_sacks} team2={+teamTwo.defensive_sacks} sort='desc' label='Sacks' textSize={{ xs: 'body2' }} decimals={0} />
+              <TeamStats
+                team1={+teamOne.defensive_interceptions}
+                team2={+teamTwo.defensive_interceptions}
+                sort='desc'
+                label='Ints'
+                textSize={{ xs: 'body2' }}
+                decimals={0}
+              />
+              <TeamStats
+                team1={+teamOne.defensive_fumbles_lost}
+                team2={+teamTwo.defensive_fumbles_lost}
+                sort='desc'
+                label='FF'
+                textSize={{ xs: 'body2' }}
+                decimals={0}
+              />
+            </Box>
           </Grid2>
           <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
             <Divider variant='middle'>
@@ -482,157 +509,281 @@ export default function Matchup() {
               </Typography>
             </Divider>
             <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
-            <TeamStats
-              team1={`${topTenTeamOneGames.wins}-${topTenTeamOneGames.losses}-${topTenTeamOneGames.ties}`}
-              team2={`${topTenTeamTwoGames.wins}-${topTenTeamTwoGames.losses}-${topTenTeamTwoGames.ties}`}
-              sort=''
-              label='Record'
-              textSize={{ xs: 'body2' }}
-              decimals={0}
-            />
-            <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
-              Offense
-            </Typography>
-            <TeamStats
-              team1={topTenTeamOneGames.offensive_points / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.offensive_points / topTenTeamTwoGames.games}
-              sort='desc'
-              label='PPG'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.offensive_total_yards / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.offensive_total_yards / topTenTeamTwoGames.games}
-              sort='desc'
-              label='Total YPG'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.offensive_rushing_yards / topTenTeamTwoGames.games}
-              sort='desc'
-              label='Rush YPG'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.offensive_rushes}
-              team2={topTenTeamTwoGames.offensive_rushing_yards / topTenTeamTwoGames.offensive_rushes}
-              sort='desc'
-              label='Rush YPC'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.games}
-              sort='desc'
-              label='Pass YPG'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.offensive_attempts}
-              team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.offensive_attempts}
-              sort='desc'
-              label='Pass YPA'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.offensive_sacks / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.offensive_sacks / topTenTeamTwoGames.games}
-              sort='asc'
-              label='Sacked/Game'
-              textSize={{ xs: 'body2' }}
-              decimals={0}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.offensive_interceptions / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.offensive_interceptions / topTenTeamTwoGames.games}
-              sort='asc'
-              label='Ints/Game'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.offensive_fumbles_lost / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.offensive_fumbles_lost / topTenTeamTwoGames.games}
-              sort='asc'
-              label='Fumbles/Game'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
-              Defense
-            </Typography>
-            <TeamStats
-              team1={topTenTeamOneGames.defensive_total_yards / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.defensive_total_yards / topTenTeamTwoGames.games}
-              sort='asc'
-              label='Total YPG'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.defensive_rushing_yards / topTenTeamTwoGames.games}
-              sort='asc'
-              label='Rush YPG'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.defensive_rushes}
-              team2={topTenTeamTwoGames.defensive_rushing_yards / topTenTeamTwoGames.defensive_rushes}
-              sort='asc'
-              label='Rush YPC'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.games}
-              sort='asc'
-              label='Pass YPG'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.defensive_attempts}
-              team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.defensive_attempts}
-              sort='asc'
-              label='Pass YPA'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.defensive_sacks / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.defensive_sacks / topTenTeamTwoGames.games}
-              sort='desc'
-              label='Sacks/Game'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.defensive_interceptions / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.defensive_interceptions / topTenTeamTwoGames.games}
-              sort='desc'
-              label='Ints/Game'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
-            <TeamStats
-              team1={topTenTeamOneGames.defensive_fumbles_lost / topTenTeamOneGames.games}
-              team2={topTenTeamTwoGames.defensive_fumbles_lost / topTenTeamTwoGames.games}
-              sort='desc'
-              label='FF/Game'
-              textSize={{ xs: 'body2' }}
-              decimals={1}
-            />
+            <Box sx={{ py: 1 }}>
+              <TeamStats
+                team1={`${topTenTeamOneGames.wins}-${topTenTeamOneGames.losses}-${topTenTeamOneGames.ties}`}
+                team2={`${topTenTeamTwoGames.wins}-${topTenTeamTwoGames.losses}-${topTenTeamTwoGames.ties}`}
+                sort=''
+                label='Record'
+                textSize={{ xs: 'body2' }}
+                decimals={0}
+              />
+              <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+                Offense
+              </Typography>
+              <TeamStats
+                team1={topTenTeamOneGames.offensive_points / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.offensive_points / topTenTeamTwoGames.games}
+                sort='desc'
+                label='PPG'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.offensive_total_yards / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.offensive_total_yards / topTenTeamTwoGames.games}
+                sort='desc'
+                label='Total YPG'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.offensive_rushing_yards / topTenTeamTwoGames.games}
+                sort='desc'
+                label='Rush YPG'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.offensive_rushing_yards / topTenTeamOneGames.offensive_rushes}
+                team2={topTenTeamTwoGames.offensive_rushing_yards / topTenTeamTwoGames.offensive_rushes}
+                sort='desc'
+                label='Rush YPC'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.games}
+                sort='desc'
+                label='Pass YPG'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.offensive_passing_yards / topTenTeamOneGames.offensive_attempts}
+                team2={topTenTeamTwoGames.offensive_passing_yards / topTenTeamTwoGames.offensive_attempts}
+                sort='desc'
+                label='Pass YPA'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.offensive_sacks / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.offensive_sacks / topTenTeamTwoGames.games}
+                sort='asc'
+                label='Sacked/Game'
+                textSize={{ xs: 'body2' }}
+                decimals={0}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.offensive_interceptions / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.offensive_interceptions / topTenTeamTwoGames.games}
+                sort='asc'
+                label='Ints/Game'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.offensive_fumbles_lost / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.offensive_fumbles_lost / topTenTeamTwoGames.games}
+                sort='asc'
+                label='Fumbles/Game'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+                Defense
+              </Typography>
+              <TeamStats
+                team1={topTenTeamOneGames.defensive_total_yards / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.defensive_total_yards / topTenTeamTwoGames.games}
+                sort='asc'
+                label='Total YPG'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.defensive_rushing_yards / topTenTeamTwoGames.games}
+                sort='asc'
+                label='Rush YPG'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.defensive_rushing_yards / topTenTeamOneGames.defensive_rushes}
+                team2={topTenTeamTwoGames.defensive_rushing_yards / topTenTeamTwoGames.defensive_rushes}
+                sort='asc'
+                label='Rush YPC'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.games}
+                sort='asc'
+                label='Pass YPG'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.defensive_passing_yards / topTenTeamOneGames.defensive_attempts}
+                team2={topTenTeamTwoGames.defensive_passing_yards / topTenTeamTwoGames.defensive_attempts}
+                sort='asc'
+                label='Pass YPA'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.defensive_sacks / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.defensive_sacks / topTenTeamTwoGames.games}
+                sort='desc'
+                label='Sacks/Game'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.defensive_interceptions / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.defensive_interceptions / topTenTeamTwoGames.games}
+                sort='desc'
+                label='Ints/Game'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+              <TeamStats
+                team1={topTenTeamOneGames.defensive_fumbles_lost / topTenTeamOneGames.games}
+                team2={topTenTeamTwoGames.defensive_fumbles_lost / topTenTeamTwoGames.games}
+                sort='desc'
+                label='FF/Game'
+                textSize={{ xs: 'body2' }}
+                decimals={1}
+              />
+            </Box>
           </Grid2>
+          {teamOneCommonGames && teamTwoCommonGames && (
+            <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={1}>
+              <Divider variant='middle'>
+                <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
+                  Common Opponents
+                </Typography>
+              </Divider>
+              <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
+              <Box sx={{ py: 1 }}>
+                <TeamStats
+                  team1={`${teamOneCommonGames.wins}-${teamOneCommonGames.losses}-${teamOneCommonGames.ties}`}
+                  team2={`${teamTwoCommonGames.wins}-${teamTwoCommonGames.losses}-${teamTwoCommonGames.ties}`}
+                  sort=''
+                  label='Record'
+                  textSize={{ xs: 'body2' }}
+                  decimals={0}
+                />
+                <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+                  Offense
+                </Typography>
+                <TeamStats
+                  team1={teamOneCommonGames.offensive_points / teamOneCommonGames.games}
+                  team2={teamTwoCommonGames.offensive_points / teamTwoCommonGames.games}
+                  sort='desc'
+                  label={'PPG'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={teamOneCommonGames.offensive_total_yards / teamOneCommonGames.games}
+                  team2={teamTwoCommonGames.offensive_total_yards / teamTwoCommonGames.games}
+                  sort='desc'
+                  label={'Total YPG'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={teamOneCommonGames.offensive_rushing_yards / teamOneCommonGames.games}
+                  team2={teamTwoCommonGames.offensive_rushing_yards / teamTwoCommonGames.games}
+                  sort='desc'
+                  label={'Rush YPG'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={teamOneCommonGames.offensive_rushing_yards / teamOneCommonGames.offensive_rushes}
+                  team2={teamTwoCommonGames.offensive_rushing_yards / teamTwoCommonGames.offensive_rushes}
+                  sort='desc'
+                  label={'Rush YPC'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={teamOneCommonGames.offensive_passing_yards / teamOneCommonGames.games}
+                  team2={teamTwoCommonGames.offensive_passing_yards / teamTwoCommonGames.games}
+                  sort='desc'
+                  label={'Pass YPG'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={teamOneCommonGames.offensive_passing_yards / teamOneCommonGames.offensive_attempts}
+                  team2={teamTwoCommonGames.offensive_passing_yards / teamTwoCommonGames.offensive_attempts}
+                  sort='desc'
+                  label={'Pass YPA'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
+                  Defense
+                </Typography>
+                <TeamStats
+                  team1={teamOneCommonGames.defensive_points / teamOneCommonGames.games}
+                  team2={teamTwoCommonGames.defensive_points / teamTwoCommonGames.games}
+                  sort='asc'
+                  label={'PPG'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={teamOneCommonGames.defensive_total_yards / teamOneCommonGames.games}
+                  team2={teamTwoCommonGames.defensive_total_yards / teamTwoCommonGames.games}
+                  sort='asc'
+                  label={'Total YPG'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={teamOneCommonGames.defensive_rushing_yards / teamOneCommonGames.games}
+                  team2={teamTwoCommonGames.defensive_rushing_yards / teamTwoCommonGames.games}
+                  sort='asc'
+                  label={'Rush YPG'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={teamOneCommonGames.defensive_rushing_yards / teamOneCommonGames.defensive_rushes}
+                  team2={teamTwoCommonGames.defensive_rushing_yards / teamTwoCommonGames.defensive_rushes}
+                  sort='asc'
+                  label={'Rush YPC'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={teamOneCommonGames.defensive_passing_yards / teamOneCommonGames.games}
+                  team2={teamTwoCommonGames.defensive_passing_yards / teamTwoCommonGames.games}
+                  sort='asc'
+                  label={'Pass YPG'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+                <TeamStats
+                  team1={teamOneCommonGames.defensive_passing_yards / teamOneCommonGames.defensive_attempts}
+                  team2={teamTwoCommonGames.defensive_passing_yards / teamTwoCommonGames.defensive_attempts}
+                  sort='asc'
+                  label={'Pass YPA'}
+                  textSize={{ xs: 'body2' }}
+                  decimals={1}
+                />
+              </Box>
+            </Grid2>
+          )}
           {headToHeadGames && headToHeadGames.length > 0 && (
             <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={1}>
               <Divider variant='middle'>
@@ -642,8 +793,8 @@ export default function Matchup() {
               </Divider>
               <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
               {headToHeadGames.map((x) => (
-                <Fragment key={x.id}>
-                  <Box sx={{ pt: 1 }}>
+                <Box key={x.id} sx={{ py: 1 }}>
+                  <Box>
                     <TeamStats
                       team1={x.team_one_id === teamOne.id ? +x.team_one_points : +x.team_two_points}
                       team2={x.team_one_id === teamOne.id ? +x.team_two_points : +x.team_one_points}
@@ -721,128 +872,8 @@ export default function Matchup() {
                     textSize={{ xs: 'body2' }}
                     decimals={0}
                   />
-                </Fragment>
+                </Box>
               ))}
-            </Grid2>
-          )}
-          {teamOneCommonGames && teamTwoCommonGames && (
-            <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={1}>
-              <Divider variant='middle'>
-                <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
-                  Common Opponents
-                </Typography>
-              </Divider>
-              <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
-              <TeamStats
-                team1={`${teamOneCommonGames.wins}-${teamOneCommonGames.losses}-${teamOneCommonGames.ties}`}
-                team2={`${teamTwoCommonGames.wins}-${teamTwoCommonGames.losses}-${teamTwoCommonGames.ties}`}
-                sort=''
-                label='Record'
-                textSize={{ xs: 'body2' }}
-                decimals={0}
-              />
-              <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
-                Offense
-              </Typography>
-              <TeamStats
-                team1={teamOneCommonGames.offensive_points / teamOneCommonGames.games}
-                team2={teamTwoCommonGames.offensive_points / teamTwoCommonGames.games}
-                sort='desc'
-                label={'PPG'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={teamOneCommonGames.offensive_total_yards / teamOneCommonGames.games}
-                team2={teamTwoCommonGames.offensive_total_yards / teamTwoCommonGames.games}
-                sort='desc'
-                label={'Total YPG'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={teamOneCommonGames.offensive_rushing_yards / teamOneCommonGames.games}
-                team2={teamTwoCommonGames.offensive_rushing_yards / teamTwoCommonGames.games}
-                sort='desc'
-                label={'Rush YPG'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={teamOneCommonGames.offensive_rushing_yards / teamOneCommonGames.offensive_rushes}
-                team2={teamTwoCommonGames.offensive_rushing_yards / teamTwoCommonGames.offensive_rushes}
-                sort='desc'
-                label={'Rush YPC'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={teamOneCommonGames.offensive_passing_yards / teamOneCommonGames.games}
-                team2={teamTwoCommonGames.offensive_passing_yards / teamTwoCommonGames.games}
-                sort='desc'
-                label={'Pass YPG'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={teamOneCommonGames.offensive_passing_yards / teamOneCommonGames.offensive_attempts}
-                team2={teamTwoCommonGames.offensive_passing_yards / teamTwoCommonGames.offensive_attempts}
-                sort='desc'
-                label={'Pass YPA'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <Typography typography={{ xs: 'body1' }} sx={{ pt: 1 }}>
-                Defense
-              </Typography>
-              <TeamStats
-                team1={teamOneCommonGames.defensive_points / teamOneCommonGames.games}
-                team2={teamTwoCommonGames.defensive_points / teamTwoCommonGames.games}
-                sort='asc'
-                label={'PPG'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={teamOneCommonGames.defensive_total_yards / teamOneCommonGames.games}
-                team2={teamTwoCommonGames.defensive_total_yards / teamTwoCommonGames.games}
-                sort='asc'
-                label={'Total YPG'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={teamOneCommonGames.defensive_rushing_yards / teamOneCommonGames.games}
-                team2={teamTwoCommonGames.defensive_rushing_yards / teamTwoCommonGames.games}
-                sort='asc'
-                label={'Rush YPG'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={teamOneCommonGames.defensive_rushing_yards / teamOneCommonGames.defensive_rushes}
-                team2={teamTwoCommonGames.defensive_rushing_yards / teamTwoCommonGames.defensive_rushes}
-                sort='asc'
-                label={'Rush YPC'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={teamOneCommonGames.defensive_passing_yards / teamOneCommonGames.games}
-                team2={teamTwoCommonGames.defensive_passing_yards / teamTwoCommonGames.games}
-                sort='asc'
-                label={'Pass YPG'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
-              <TeamStats
-                team1={teamOneCommonGames.defensive_passing_yards / teamOneCommonGames.defensive_attempts}
-                team2={teamTwoCommonGames.defensive_passing_yards / teamTwoCommonGames.defensive_attempts}
-                sort='asc'
-                label={'Pass YPA'}
-                textSize={{ xs: 'body2' }}
-                decimals={1}
-              />
             </Grid2>
           )}
         </Grid2>
