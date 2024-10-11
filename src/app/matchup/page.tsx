@@ -18,7 +18,7 @@ interface TeamStatsParams {
 
 function TeamStats({ team1, team2, sort, label, textSize, decimals }: TeamStatsParams) {
   return (
-    <Stack direction='row' sx={{ justifyContent: 'center' }}>
+    <Stack direction='row' sx={{ justifyContent: 'center', alignItems: 'center' }}>
       {typeof team1 === 'string' && typeof team2 === 'string' && (
         <>
           <Typography sx={{ width: '300px', typography: textSize, fontWeight: 'bolder' }}>{team1 ?? 'N/A'}</Typography>
