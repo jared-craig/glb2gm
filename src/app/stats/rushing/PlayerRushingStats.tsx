@@ -40,7 +40,7 @@ export default function PlayerRushingStats() {
           headerName: 'NAME',
           width: 140,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Link href={`https://glb2.warriorgeneral.com/game/player/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <Link href={`/player-details/${params.row.id}`} style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
             </Link>
           ),
