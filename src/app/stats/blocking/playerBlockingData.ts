@@ -1,9 +1,6 @@
-export interface PlayerBlockingData {
-  id: number;
-  player_name: string;
-  team_name: string;
-  position: string;
-  games_played: number;
+import { PlayerData } from '@/app/players/playerData';
+
+export interface PlayerBlockingData extends PlayerData {
   plays: number;
   pancakes: number;
   reverse_pancaked: number;

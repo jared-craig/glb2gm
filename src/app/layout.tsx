@@ -10,6 +10,7 @@ import HeaderBar from './components/HeaderBar';
 import { Analytics } from '@vercel/analytics/react';
 
 import { UserProvider } from '@auth0/nextjs-auth0/client';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'GLB2GM',
@@ -34,16 +35,18 @@ export default function RootLayout({
             <ThemeProvider theme={theme}>
               <CssBaseline />
               <HeaderBar />
-              <Box
-                component='main'
-                sx={{
-                  flexGrow: 1,
-                  overflow: 'auto',
-                  m: 1,
-                }}
-              >
-                {children}
-              </Box>
+              <Suspense>
+                <Box
+                  component='main'
+                  sx={{
+                    flexGrow: 1,
+                    overflow: 'auto',
+                    m: 1,
+                  }}
+                >
+                  {children}
+                </Box>
+              </Suspense>
             </ThemeProvider>
           </AppRouterCacheProvider>
         </body>

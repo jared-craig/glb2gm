@@ -1,9 +1,6 @@
-export interface PlayerPassingData {
-  id: number;
-  player_name: string;
-  team_name: string;
-  position: string;
-  games_played: number;
+import { PlayerData } from '@/app/players/playerData';
+
+export interface PlayerPassingData extends PlayerData {
   completions: number;
   attempts: number;
   yards: number;

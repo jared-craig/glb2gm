@@ -74,3 +74,7 @@ export const getRecord = (games: GameData[], teamId: number): { wins: number; lo
     { wins: 0, losses: 0, ties: 0 }
   );
 };
+
+export const getTopTeamRank = (tier: string): number => {
+  return tier === 'Professional' ? 6.0 : 10.0;
+};
