@@ -25,8 +25,8 @@ import { SKILL_LOOKUP, TRAIT_LOOKUP } from '../player-builder/lookups';
 import { Player } from '../players/player';
 import { getPossibleAttributes, getPossibleHeightsWeights, getPossibleTraits } from '../players/possibilities';
 import { SALARIES } from '../team-builder/salaries';
-import LinearProgressWithLabel from '../components/LinearProgressWithLabel';
 import { getBasePlayers } from '../players/basePlayers';
+import LinearProgressWithLabel from '../components/LinearProgressWithLabel';
 
 export interface PlayerBuilderData {
   skills: any;
@@ -59,6 +59,7 @@ export default function PlayerBuilder() {
   const [player, setPlayer] = useState<Player>();
   const [remSkillPoints, setRemSkillPoints] = useState<number>(0);
   const [remCapBoosts, setRemCapBoosts] = useState<number>(0);
+  const [capBoostsSpent, setCapBoostsSpent] = useState<{ [key: string]: number }>({});
   const [skillMins, setSkillMins] = useState<{ [key: string]: number }>();
   const [attCombos, setAttCombos] = useState<any>();
   const [traitCombos, setTraitCombos] = useState<any>();
@@ -68,6 +69,7 @@ export default function PlayerBuilder() {
   const [isPossibleCombo, setIsPossibleCombo] = useState<boolean>(true);
   const [isSuperstar, setIsSuperstar] = useState(true);
   const [isProdigy, setIsProdigy] = useState(false);
+  const [build, setBuild] = useState<any>();
 
   const fetchData = async () => {
     setAttCombos(getPossibleAttributes());
@@ -213,10 +215,12 @@ export default function PlayerBuilder() {
           awareness: result.best.awareness,
           confidence: result.best.confidence,
         };
+        setBuild(result.best.build);
         setPlayer(newPlayer);
         setIsPossibleCombo(true);
         setRemSkillPoints(result.best.sp);
         setRemCapBoosts(result.best.cbr);
+        setCapBoostsSpent(result.best.cbs);
       } else {
         newPlayer = { ...updatedPlayer };
         setIsPossibleCombo(false);
@@ -250,6 +254,46 @@ export default function PlayerBuilder() {
     }
 
     return (salary *= contractModifier);
+  };
+
+  const FindMaxLevel = (skill: string, playerData: Player, capBoostsSpent: any): number => {
+    if (!filteredData.skills[skill]) return 100;
+
+    var maxlevel = 33;
+    maxlevel -= Math.pow(playerData.strength, 1.3) * (filteredData.skills[skill].attributes.strength || 0);
+    maxlevel -= Math.pow(playerData.agility, 1.3) * (filteredData.skills[skill].attributes.agility || 0);
+    maxlevel -= Math.pow(playerData.awareness, 1.3) * (filteredData.skills[skill].attributes.awareness || 0);
+    maxlevel -= Math.pow(playerData.speed, 1.3) * (filteredData.skills[skill].attributes.speed || 0);
+    maxlevel -= Math.pow(playerData.stamina, 1.3) * (filteredData.skills[skill].attributes.stamina || 0);
+    maxlevel -= Math.pow(playerData.confidence, 1.3) * (filteredData.skills[skill].attributes.confidence || 0);
+
+    if (skill in data.traits[playerData.trait1].skill_modifiers) {
+      maxlevel += data.traits[playerData.trait1].skill_modifiers[skill].max || 0;
+    }
+    if (skill in data.traits[playerData.trait2].skill_modifiers) {
+      maxlevel += data.traits[playerData.trait2].skill_modifiers[skill].max || 0;
+    }
+    if (skill in data.traits[playerData.trait3].skill_modifiers) {
+      maxlevel += data.traits[playerData.trait3].skill_modifiers[skill].max || 0;
+    }
+
+    maxlevel += (100 - filteredData.skills[skill].position_multiplier[playerData.position]) * 0.4;
+    maxlevel -= filteredData.skills[skill].height * (playerData.height - 66) * 0.5;
+    maxlevel -= filteredData.skills[skill].weight * playerData.weight * 0.25;
+
+    if (maxlevel < 25) {
+      maxlevel = 25;
+    }
+
+    if (capBoostsSpent?.hasOwnProperty(skill)) maxlevel += capBoostsSpent[skill] * 5.0;
+
+    maxlevel = Math.round(maxlevel);
+
+    if (maxlevel > 100) {
+      maxlevel = 100;
+    }
+
+    return maxlevel;
   };
 
   const handlePositionChange = (event: SelectChangeEvent) => {
@@ -324,6 +368,8 @@ export default function PlayerBuilder() {
   useEffect(() => {
     filterAndSortSkills();
     setPlayer(getBasePlayers(selectedPosition));
+    setRemSkillPoints(0);
+    setRemCapBoosts(0);
   }, [selectedPosition]);
 
   useEffect(() => {
@@ -340,7 +386,7 @@ export default function PlayerBuilder() {
         <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>Player Optimizer is a work in progress...</Typography>
       </Box>
       {isOptimizing ? (
-        <LinearProgressWithLabel variant='determinate' value={optimizeProgress} sx={{ mb: 2 }} />
+        <LinearProgressWithLabel variant='determinate' value={optimizeProgress} />
       ) : (
         <>
           <Grid container rowGap={1} sx={{ mb: 2 }}>
@@ -353,6 +399,8 @@ export default function PlayerBuilder() {
                     <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
                       <MenuItem value={'QB'}>QB</MenuItem>
                       <MenuItem value={'HB'}>HB</MenuItem>
+                      <MenuItem value={'FB'}>FB</MenuItem>
+                      <MenuItem value={'WR'}>WR</MenuItem>
                     </Select>
                   </FormControl>
                 </Stack>
@@ -396,7 +444,7 @@ export default function PlayerBuilder() {
             </>
           )}
           {!isPossibleCombo && skillMins && <Typography sx={{ color: 'red' }}>No possible combinations to achieve skills</Typography>}
-          {selectedPosition && skillMins && (
+          {selectedPosition && skillMins && player && (
             <>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Stack>
@@ -422,7 +470,7 @@ export default function PlayerBuilder() {
                       label='Prodigy'
                     />
                   </FormGroup>
-                  <Button variant='contained' onClick={() => handleOptimizeClick()} disabled={isOptimizing}>
+                  <Button variant='contained' size='small' onClick={() => handleOptimizeClick()} disabled={isOptimizing}>
                     Optimize
                   </Button>
                 </Stack>
@@ -450,20 +498,24 @@ export default function PlayerBuilder() {
                       })
                       .map(([key, value]) => (
                         <Fragment key={key}>
-                          <Grid size={{ xs: 6, lg: 3 }} sx={{ display: 'flex', alignItems: 'center' }}>
+                          <Grid size={{ xs: 8, lg: 3 }} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{SKILL_LOOKUP[key]}</Typography>
+                            {build && (
+                              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
+                                ({build[key]} of {FindMaxLevel(key, player, capBoostsSpent)})
+                              </Typography>
+                            )}
                           </Grid>
-                          <Grid size={{ xs: 6, lg: 3 }}>
-                            <Stack direction='row' spacing={1} sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
-                              <TextField
-                                variant='standard'
-                                size='small'
-                                value={skillMins[key]}
-                                disabled={isOptimizing}
-                                type='number'
-                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSkillMinChange(key, event)}
-                              />
-                            </Stack>
+                          <Grid size={{ xs: 4, lg: 3 }} sx={{ textAlign: 'flex-end' }}>
+                            <TextField
+                              variant='standard'
+                              size='small'
+                              value={skillMins[key]}
+                              disabled={isOptimizing}
+                              type='number'
+                              onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSkillMinChange(key, event)}
+                              sx={{ maxWidth: { xs: '100px', sm: '100%' } }}
+                            />
                           </Grid>
                         </Fragment>
                       ))}

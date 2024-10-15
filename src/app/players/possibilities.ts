@@ -19,6 +19,24 @@ export const getPossibleHeightsWeights = (position: string): { height: number; w
         }
       }
       return combinations;
+    case 'FB':
+      for (let height = 70; height <= 76; height++) {
+        const minWeight = 220 + (height - 70) * 2;
+        const maxWeight = 250 + (height - 70) * 2;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'WR':
+      for (let height = 68; height <= 78; height++) {
+        const minWeight = 165 + (height - 68) * 3;
+        const maxWeight = 205 + (height - 68) * 3;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
     default:
       return combinations;
   }
