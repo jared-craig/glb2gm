@@ -28,10 +28,118 @@ export const getPossibleHeightsWeights = (position: string): { height: number; w
         }
       }
       return combinations;
+    case 'TE':
+      for (let height = 72; height <= 80; height++) {
+        const minWeight = 230 + (height - 72) * 2;
+        const maxWeight = 260 + (height - 72) * 2;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
     case 'WR':
       for (let height = 68; height <= 78; height++) {
         const minWeight = 165 + (height - 68) * 3;
         const maxWeight = 205 + (height - 68) * 3;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'C':
+      for (let height = 72; height <= 78; height++) {
+        const minWeight = 230 + (height - 72) * 5;
+        const maxWeight = 300 + (height - 72) * 5;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'G':
+      for (let height = 74; height <= 79; height++) {
+        const minWeight = 290 + (height - 74) * 6;
+        const maxWeight = 325 + (height - 74) * 6;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'OT':
+      for (let height = 74; height <= 81; height++) {
+        const minWeight = 280 + (height - 74) * 4;
+        const maxWeight = 320 + (height - 74) * 4;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'DT':
+      for (let height = 72; height <= 80; height++) {
+        const minWeight = 250 + (height - 72) * 8;
+        const maxWeight = 300 + (height - 72) * 8;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'DE':
+      for (let height = 71; height <= 80; height++) {
+        const minWeight = 240 + (height - 71) * 5;
+        const maxWeight = 280 + (height - 71) * 5;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'LB':
+      for (let height = 70; height <= 78; height++) {
+        const minWeight = 220 + (height - 70) * 2;
+        const maxWeight = 250 + (height - 70) * 2;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'CB':
+      for (let height = 68; height <= 75; height++) {
+        const minWeight = 170 + (height - 68) * 2;
+        const maxWeight = 200 + (height - 68) * 2;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'FS':
+      for (let height = 68; height <= 76; height++) {
+        const minWeight = 185 + (height - 68) * 2;
+        const maxWeight = 205 + (height - 68) * 2;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'SS':
+      for (let height = 69; height <= 77; height++) {
+        const minWeight = 195 + (height - 69) * 1;
+        const maxWeight = 225 + (height - 69) * 1;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'K':
+      for (let height = 69; height <= 77; height++) {
+        const minWeight = 170 + (height - 69) * 1;
+        const maxWeight = 220 + (height - 69) * 1;
+        for (let weight = minWeight; weight <= maxWeight; weight++) {
+          combinations.push({ height, weight });
+        }
+      }
+      return combinations;
+    case 'P':
+      for (let height = 71; height <= 77; height++) {
+        const minWeight = 180 + (height - 71) * 4;
+        const maxWeight = 230 + (height - 71) * 4;
         for (let weight = minWeight; weight <= maxWeight; weight++) {
           combinations.push({ height, weight });
         }

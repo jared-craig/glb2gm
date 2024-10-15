@@ -34,9 +34,9 @@ const CalcCostSP = (filteredData: any, skill: string, playerData: Player, mod: n
 const FindBaseLevel = (filteredData: any, skill: string, player: Player) => {
   if (!player) return 1;
 
-  var level = 0;
-  var spspent = 0;
-  var spmax = player.trait1 === 'natural' || player.trait2 === 'natural' || player.trait3 === 'natural' ? 1000 : 500;
+  let level = 0;
+  let spspent = 0;
+  let spmax = player.trait1 === 'natural' || player.trait2 === 'natural' || player.trait3 === 'natural' ? 1000 : 500;
   while (spspent < spmax) {
     level += 1;
     spspent += CalcCostSP(filteredData, skill, player, 1, level);
@@ -47,7 +47,7 @@ const FindBaseLevel = (filteredData: any, skill: string, player: Player) => {
 const FindMaxLevel = (filteredData: any, data: any, skill: string, playerData: Player, capBoostsSpent: any): number => {
   if (!filteredData.skills[skill]) return 100;
 
-  var maxlevel = 33;
+  let maxlevel = 33;
   maxlevel -= Math.pow(playerData.strength, 1.3) * (filteredData.skills[skill].attributes.strength || 0);
   maxlevel -= Math.pow(playerData.agility, 1.3) * (filteredData.skills[skill].attributes.agility || 0);
   maxlevel -= Math.pow(playerData.awareness, 1.3) * (filteredData.skills[skill].attributes.awareness || 0);
