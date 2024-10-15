@@ -21,7 +21,7 @@ import {
 import Grid from '@mui/material/Grid2';
 import { Fragment, useEffect, useState } from 'react';
 import { getSkillMins } from '../player-optimizer/skillMins';
-import { SKILL_LOOKUP, TRAIT_LOOKUP } from '../player-builder/lookups';
+import { SKILL_LOOKUP, TRAIT_LOOKUP } from '../players/lookups';
 import { Player } from '../players/player';
 import { getPossibleAttributes, getPossibleHeightsWeights, getPossibleTraits } from '../players/possibilities';
 import { SALARIES } from '../team-builder/salaries';
@@ -309,32 +309,33 @@ export default function PlayerBuilder() {
 
     let newPlayer = { ...player };
 
-    newPlayer = await buildPlayer('hw', newPlayer);
-    setOptimizeProgress(2);
+    setOptimizeProgress(1);
     newPlayer = await buildPlayer('at', newPlayer);
-    setOptimizeProgress(12);
+    setOptimizeProgress(10);
     newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeProgress(13);
+    newPlayer = await buildPlayer('hw', newPlayer);
     setOptimizeProgress(15);
 
-    newPlayer = await buildPlayer('hw', newPlayer);
-    setOptimizeProgress(17);
-    newPlayer = await buildPlayer('tr', newPlayer);
-    setOptimizeProgress(20);
     newPlayer = await buildPlayer('at', newPlayer);
+    setOptimizeProgress(25);
+    newPlayer = await buildPlayer('hw', newPlayer);
+    setOptimizeProgress(27);
+    newPlayer = await buildPlayer('tr', newPlayer);
     setOptimizeProgress(30);
 
-    newPlayer = await buildPlayer('at', newPlayer);
-    setOptimizeProgress(40);
     newPlayer = await buildPlayer('hw', newPlayer);
+    setOptimizeProgress(32);
+    newPlayer = await buildPlayer('at', newPlayer);
     setOptimizeProgress(42);
     newPlayer = await buildPlayer('tr', newPlayer);
     setOptimizeProgress(45);
 
-    newPlayer = await buildPlayer('at', newPlayer);
-    setOptimizeProgress(55);
-    newPlayer = await buildPlayer('tr', newPlayer);
-    setOptimizeProgress(58);
     newPlayer = await buildPlayer('hw', newPlayer);
+    setOptimizeProgress(47);
+    newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeProgress(50);
+    newPlayer = await buildPlayer('at', newPlayer);
     setOptimizeProgress(60);
 
     newPlayer = await buildPlayer('tr', newPlayer);
@@ -401,7 +402,9 @@ export default function PlayerBuilder() {
                       <MenuItem value={'QB'}>QB</MenuItem>
                       <MenuItem value={'HB'}>HB</MenuItem>
                       <MenuItem value={'FB'}>FB</MenuItem>
+                      <MenuItem value={'TE'}>TE</MenuItem>
                       <MenuItem value={'WR'}>WR</MenuItem>
+                      <MenuItem value={'DT'}>DT</MenuItem>
                     </Select>
                   </FormControl>
                 </Stack>

@@ -3,7 +3,7 @@
 import { Box, Button, ButtonGroup, Container, Divider, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Fragment, useEffect, useState } from 'react';
-import { SKILL_LOOKUP, TRAIT_LOOKUP } from './lookups';
+import { SKILL_LOOKUP, TRAIT_LOOKUP } from '../players/lookups';
 import SkillBar from '../components/SkillBar';
 import { Player } from '../players/player';
 import { getFactors } from './factors';
@@ -58,16 +58,9 @@ export default function PlayerBuilder() {
   const FindBaseLevel = (data: any) => {
     if (!player) return 1;
 
-    var level = 0;
-    var spspent = 0;
-    var spmax = 500;
-    // if (
-    //   document.getElementsByClassName('btn-warning')[0].id.indexOf('natural') !== -1 ||
-    //   document.getElementsByClassName('btn-warning')[1].id.indexOf('natural') !== -1 ||
-    //   document.getElementsByClassName('btn-warning')[2].id.indexOf('natural') !== -1
-    // )
-    //   {spmax = 1000;}
-    // else {spmax = 500;}
+    let level = 0;
+    let spspent = 0;
+    let spmax = player.trait1 === 'natural' || player.trait2 === 'natural' || player.trait3 === 'natural' ? 1000 : 500;
     while (spspent < spmax) {
       level += 1;
       spspent += CalcCostSP(data, player, 1, level);
