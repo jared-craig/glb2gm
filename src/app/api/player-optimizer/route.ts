@@ -1,4 +1,4 @@
-import { Player } from '@/app/player-builder/player';
+import { Player } from '@/app/players/player';
 import { PlayerBuilderData } from '@/app/player-optimizer/page';
 import { NextRequest } from 'next/server';
 
@@ -94,10 +94,21 @@ const findElementWithHighestValue = (arr: any[], prop: string) => {
   }, arr[0]);
 };
 
+const findElementWithLowestValue = (arr: any[], prop: string) => {
+  if (arr.length === 0) {
+    return null;
+  }
+
+  return arr.reduce((minElement, currentElement) => {
+    return minElement[prop] < currentElement[prop] ? minElement : currentElement;
+  }, arr[0]);
+};
+
 interface PostRequestProps {
+  position: string;
   attCombos: any;
   traitCombos: any;
-  player: Player;
+  heightWeightCombos: any;
   data: PlayerBuilderData;
   filteredData: PlayerBuilderData;
   skillMins: { [key: string]: number };
@@ -105,87 +116,95 @@ interface PostRequestProps {
 
 export async function POST(request: NextRequest) {
   const reqData: any = await request.json();
-  const { attCombos, traitCombos, player, data, filteredData, skillMins }: PostRequestProps = reqData;
+  const { position, attCombos, traitCombos, heightWeightCombos, data, filteredData, skillMins }: PostRequestProps = reqData;
 
   let combosThatWork: any[] = [];
   let possibleCombos = 0;
-  for (const attCombo of attCombos.slice(10000, 15000)) {
-    for (const traitCombo of traitCombos) {
-      player.trait1 = traitCombo[0];
-      player.trait2 = traitCombo[1];
-      player.trait3 = traitCombo[2];
-      player.strength = attCombo.strength;
-      player.speed = attCombo.speed;
-      player.agility = attCombo.agility;
-      player.stamina = attCombo.stamina;
-      player.awareness = attCombo.awareness;
-      player.confidence = attCombo.confidence;
 
-      let skillPoints =
-        player.trait1.includes('superstar') || player.trait2.includes('superstar') || player.trait3.includes('superstar')
-          ? 220000
-          : player.trait1.includes('prodigy') || player.trait2.includes('prodigy') || player.trait3.includes('prodigy')
-            ? 216000
-            : 210000;
-      let capBoosts = 7;
-      let capBoostsSpent: { [key: string]: number } = {};
-      let suggestedBuild: { [key: string]: number } = {};
+  for (const hwCombo of heightWeightCombos) {
+    for (const attCombo of attCombos) {
+      for (const traitCombo of traitCombos) {
+        let player: Player = {
+          position: position,
+          weight: hwCombo.weight,
+          height: hwCombo.height,
+          strength: attCombo.strength,
+          speed: attCombo.speed,
+          agility: attCombo.agility,
+          stamina: attCombo.stamina,
+          awareness: attCombo.awareness,
+          confidence: attCombo.confidence,
+          trait1: traitCombo[0],
+          trait2: traitCombo[1],
+          trait3: traitCombo[2],
+        };
 
-      for (const key of Object.keys(filteredData.skills)) {
-        suggestedBuild[key] = FindBaseLevel(filteredData, key, player);
-      }
+        let skillPoints =
+          player.trait1.includes('superstar') || player.trait2.includes('superstar') || player.trait3.includes('superstar')
+            ? 220000
+            : player.trait1.includes('prodigy') || player.trait2.includes('prodigy') || player.trait3.includes('prodigy')
+              ? 216000
+              : 210000;
+        let capBoosts = 7;
+        let capBoostsSpent: { [key: string]: number } = {};
+        let suggestedBuild: { [key: string]: number } = {};
 
-      let canAchieveBuild = true;
-
-      for (const [skKey, skValue] of Object.entries(skillMins).filter(([key, value]: any) => value >= 0)) {
-        if (!canAchieveBuild) break;
-
-        const levelsNeeded = skValue - suggestedBuild[skKey];
-
-        let neededSp = 0;
-        for (let i = 1; i <= levelsNeeded; i++) {
-          neededSp += CalcCostSP(filteredData, skKey, player, i, suggestedBuild[skKey]);
+        for (const key of Object.keys(filteredData.skills)) {
+          suggestedBuild[key] = FindBaseLevel(filteredData, key, player);
         }
 
-        if (skillPoints - neededSp < 0) {
-          canAchieveBuild = false;
-          break;
-        }
+        let canAchieveBuild = true;
 
-        skillPoints -= neededSp;
+        for (const [skKey, skValue] of Object.entries(skillMins).filter(([key, value]: any) => value >= 0)) {
+          if (!canAchieveBuild) break;
 
-        suggestedBuild[skKey] += levelsNeeded;
+          const levelsNeeded = skValue - suggestedBuild[skKey];
 
-        if (Number.isNaN(skillPoints)) {
-          canAchieveBuild = false;
-          break;
-        }
+          let neededSp = 0;
+          for (let i = 1; i <= levelsNeeded; i++) {
+            neededSp += CalcCostSP(filteredData, skKey, player, i, suggestedBuild[skKey]);
+          }
 
-        const maxLevel = FindMaxLevel(filteredData, data, skKey, player, capBoostsSpent);
-
-        if (suggestedBuild[skKey] >= maxLevel) {
-          const attDiff = suggestedBuild[skKey] - maxLevel;
-
-          if (capBoosts >= attDiff / 5.0) {
-            capBoosts -= Math.ceil(attDiff / 5.0);
-            if (capBoostsSpent?.hasOwnProperty(skKey)) {
-              capBoostsSpent[skKey] += Math.ceil(attDiff / 5.0);
-            } else {
-              capBoostsSpent[skKey] = Math.ceil(attDiff / 5.0);
-            }
-          } else {
+          if (skillPoints - neededSp < 0) {
             canAchieveBuild = false;
             break;
           }
+
+          skillPoints -= neededSp;
+
+          suggestedBuild[skKey] += levelsNeeded;
+
+          if (Number.isNaN(skillPoints)) {
+            canAchieveBuild = false;
+            break;
+          }
+
+          const maxLevel = FindMaxLevel(filteredData, data, skKey, player, capBoostsSpent);
+
+          if (suggestedBuild[skKey] >= maxLevel) {
+            const attDiff = suggestedBuild[skKey] - maxLevel;
+
+            if (capBoosts >= attDiff / 5.0) {
+              capBoosts -= Math.ceil(attDiff / 5.0);
+              if (capBoostsSpent?.hasOwnProperty(skKey)) {
+                capBoostsSpent[skKey] += Math.ceil(attDiff / 5.0);
+              } else {
+                capBoostsSpent[skKey] = Math.ceil(attDiff / 5.0);
+              }
+            } else {
+              canAchieveBuild = false;
+              break;
+            }
+          }
         }
-      }
 
-      if (!canAchieveBuild) {
-        continue;
-      }
+        if (!canAchieveBuild) {
+          continue;
+        }
 
-      possibleCombos++;
-      combosThatWork = [...combosThatWork, { ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts }];
+        possibleCombos++;
+        combosThatWork = [...combosThatWork, { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts }];
+      }
     }
   }
 

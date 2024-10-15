@@ -93,6 +93,21 @@ export const getTemplates = (position: string): Template[] => {
       trait2: 'early_bloomer',
       trait3: 'egotist',
     },
+    {
+      position: 'HB',
+      templateName: 'Fast',
+      height: 66,
+      weight: 180,
+      strength: 1,
+      speed: 10,
+      agility: 10,
+      stamina: 10,
+      awareness: 1,
+      confidence: 3,
+      trait1: 'superstar_glam',
+      trait2: 'hb_rushing_back',
+      trait3: 'egotist',
+    },
     // TE
     {
       position: 'TE',
