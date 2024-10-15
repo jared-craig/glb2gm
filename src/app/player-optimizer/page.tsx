@@ -311,7 +311,6 @@ export default function PlayerBuilder() {
   };
 
   const handleSkillMinChange = (key: string, event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.value) return;
     setSkillMins((prev) => ({
       ...prev,
       [key]: +event.target.value,
