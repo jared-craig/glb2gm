@@ -305,6 +305,7 @@ export default function PlayerBuilder() {
 
     setIsOptimizing(true);
     setIsPossibleCombo(true);
+    setBuild(undefined);
 
     let newPlayer = { ...player };
 
