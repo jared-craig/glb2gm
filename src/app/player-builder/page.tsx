@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid2';
 import { Fragment, useEffect, useState } from 'react';
 import { SKILL_LOOKUP, TRAIT_LOOKUP } from './lookups';
 import SkillBar from '../components/SkillBar';
-import { Player } from './player';
+import { Player } from '../players/player';
 import { getFactors } from './factors';
 import { getTemplates, Template } from './templates';
 
