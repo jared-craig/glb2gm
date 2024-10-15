@@ -203,7 +203,10 @@ export async function POST(request: NextRequest) {
         }
 
         possibleCombos++;
-        combosThatWork = [...combosThatWork, { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts }];
+        combosThatWork = [
+          ...combosThatWork,
+          { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild },
+        ];
       }
     }
   }
