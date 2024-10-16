@@ -33,10 +33,6 @@ export interface PlayerBuilderData {
   traits: any;
 }
 
-const isNegative = (num: number) => {
-  return num < 0;
-};
-
 const groupOrder: { [key: string]: string[] } = {
   QB: ['Passing', 'Carrying', 'Physical', 'Mental'],
   FB: ['Blocking', 'Receiving', 'Carrying', 'Physical', 'Mental'],
@@ -206,7 +202,7 @@ export default function PlayerBuilder() {
       console.error('failed to optimize player');
     } else {
       const result = await res.json();
-      if (result.best) {
+      if (result.success) {
         newPlayer = {
           position: selectedPosition,
           trait1: result.best[0],
@@ -223,15 +219,31 @@ export default function PlayerBuilder() {
         };
         setBuild(result.best.build);
         setPlayer(newPlayer);
-        setIsPossibleCombo(result.best.sp < 0 || result.best.cbr < 0 ? false : true);
+        setIsPossibleCombo(true);
         setRemSkillPoints(result.best.sp);
         setRemCapBoosts(result.best.cbr);
         setCapBoostsSpent(result.best.cbs);
       } else {
-        newPlayer = { ...updatedPlayer };
+        newPlayer = {
+          position: selectedPosition,
+          trait1: result.bestFailing[0],
+          trait2: result.bestFailing[1],
+          trait3: result.bestFailing[2],
+          height: result.bestFailing.height,
+          weight: result.bestFailing.weight,
+          strength: result.bestFailing.strength,
+          speed: result.bestFailing.speed,
+          agility: result.bestFailing.agility,
+          stamina: result.bestFailing.stamina,
+          awareness: result.bestFailing.awareness,
+          confidence: result.bestFailing.confidence,
+        };
+        setBuild(result.bestFailing.build);
+        setPlayer(newPlayer);
         setIsPossibleCombo(false);
-        setRemSkillPoints(0);
-        setRemCapBoosts(0);
+        setRemSkillPoints(result.bestFailing.sp);
+        setRemCapBoosts(result.bestFailing.cbr);
+        setCapBoostsSpent(result.bestFailing.cbs);
       }
     }
 
@@ -304,6 +316,7 @@ export default function PlayerBuilder() {
 
   const handlePositionChange = (event: SelectChangeEvent) => {
     setSelectedPosition(event.target.value as string);
+    setIsPossibleCombo(true);
   };
 
   const handleOptimizeClick = async () => {
@@ -314,6 +327,17 @@ export default function PlayerBuilder() {
     setBuild(undefined);
 
     let newPlayer = { ...player };
+
+    if (!isSuperstar && newPlayer.trait1.includes('superstar')) {
+      if (isProdigy) newPlayer.trait1 = 'prodigy';
+      else newPlayer.trait1 = 'scholar';
+    } else if (!isSuperstar && newPlayer.trait2.includes('superstar')) {
+      if (isProdigy) newPlayer.trait2 = 'prodigy';
+      else newPlayer.trait2 = 'scholar';
+    } else if (!isSuperstar && newPlayer.trait3.includes('superstar')) {
+      if (isProdigy) newPlayer.trait3 = 'prodigy';
+      else newPlayer.trait3 = 'scholar';
+    }
 
     setOptimizeBuffer(10);
     newPlayer = await buildPlayer('at', newPlayer);
@@ -429,6 +453,7 @@ export default function PlayerBuilder() {
                       <MenuItem value={'TE'}>TE</MenuItem>
                       <MenuItem value={'WR'}>WR</MenuItem>
                       <MenuItem value={'DT'}>DT</MenuItem>
+                      <MenuItem value={'LB'}>LB</MenuItem>
                     </Select>
                   </FormControl>
                 </Stack>

@@ -84,16 +84,6 @@ const FindMaxLevel = (filteredData: any, data: any, skill: string, playerData: P
   return maxlevel;
 };
 
-const findElementWithHighestValue = (arr: any[], prop: string) => {
-  if (arr.length === 0) {
-    return null;
-  }
-
-  return arr.reduce((maxElement, currentElement) => {
-    return maxElement[prop] > currentElement[prop] ? maxElement : currentElement;
-  }, arr[0]);
-};
-
 interface PostRequestProps {
   position: string;
   attCombos: any;
@@ -108,7 +98,8 @@ export async function POST(request: NextRequest) {
   const reqData: any = await request.json();
   const { position, attCombos, traitCombos, heightWeightCombos, data, filteredData, skillMins }: PostRequestProps = reqData;
 
-  let combosThatWork: any[] = [];
+  let best: any = { sp: Number.NEGATIVE_INFINITY };
+  let bestFailing: any = { sp: Number.NEGATIVE_INFINITY };
 
   for (const hwCombo of heightWeightCombos) {
     for (const attCombo of attCombos) {
@@ -142,6 +133,8 @@ export async function POST(request: NextRequest) {
           suggestedBuild[key] = FindBaseLevel(filteredData, key, player);
         }
 
+        let canAchieveBuild = true;
+
         for (const [skKey, skValue] of Object.entries(skillMins).filter(([key, value]: any) => value > FindBaseLevel(filteredData, key, player))) {
           const levelsNeeded = skValue - suggestedBuild[skKey];
 
@@ -149,6 +142,8 @@ export async function POST(request: NextRequest) {
           for (let i = 1; i <= levelsNeeded; i++) {
             neededSp += CalcCostSP(filteredData, skKey, player, i, suggestedBuild[skKey]);
           }
+
+          if (skillPoints - neededSp < 0) canAchieveBuild = false;
 
           skillPoints -= neededSp;
 
@@ -159,6 +154,8 @@ export async function POST(request: NextRequest) {
           if (suggestedBuild[skKey] >= maxLevel) {
             const attDiff = suggestedBuild[skKey] - maxLevel;
 
+            if (capBoosts < attDiff / 5.0) canAchieveBuild = false;
+
             capBoosts -= Math.ceil(attDiff / 5.0);
             if (capBoostsSpent?.hasOwnProperty(skKey)) {
               capBoostsSpent[skKey] += Math.ceil(attDiff / 5.0);
@@ -168,15 +165,13 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        combosThatWork = [
-          ...combosThatWork,
-          { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild },
-        ];
+        if (skillPoints > best.sp && canAchieveBuild)
+          best = { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild };
+        if (skillPoints > bestFailing.sp && !canAchieveBuild)
+          bestFailing = { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild };
       }
     }
   }
 
-  const best = findElementWithHighestValue([...combosThatWork], 'sp');
-
-  return Response.json({ best });
+  return Response.json({ best, bestFailing, success: best.sp > Number.NEGATIVE_INFINITY });
 }
