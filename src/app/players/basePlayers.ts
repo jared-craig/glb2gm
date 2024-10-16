@@ -86,6 +86,20 @@ export const getBasePlayers = (position: string): Player => {
       trait2: 'dl_technique_man',
       trait3: 'natural',
     },
+    LB: {
+      position: 'LB',
+      height: 78,
+      weight: 266,
+      strength: 1,
+      speed: 8,
+      agility: 7,
+      stamina: 7,
+      awareness: 7,
+      confidence: 5,
+      trait1: 'superstar_glam',
+      trait2: 'd_anchor',
+      trait3: 'chasedown_artist',
+    },
   };
 
   return basePlayers[position];
