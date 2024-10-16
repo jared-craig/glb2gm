@@ -33,6 +33,10 @@ export interface PlayerBuilderData {
   traits: any;
 }
 
+const isNegative = (num: number) => {
+  return num < 0;
+};
+
 const groupOrder: { [key: string]: string[] } = {
   QB: ['Passing', 'Carrying', 'Physical', 'Mental'],
   FB: ['Blocking', 'Receiving', 'Carrying', 'Physical', 'Mental'],
@@ -66,6 +70,7 @@ export default function PlayerBuilder() {
   const [heightWeightCombos, setHeightWeightCombos] = useState<any>();
   const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
   const [optimizeProgress, setOptimizeProgress] = useState(0);
+  const [optimizeBuffer, setOptimizeBuffer] = useState(10);
   const [isPossibleCombo, setIsPossibleCombo] = useState<boolean>(true);
   const [isSuperstar, setIsSuperstar] = useState(true);
   const [isProdigy, setIsProdigy] = useState(false);
@@ -126,6 +131,7 @@ export default function PlayerBuilder() {
     let hw: any[] = [];
     let at: any[] = [];
     let tr: any[] = [];
+
     switch (optimize) {
       case 'hw':
         hw = heightWeightCombos;
@@ -217,7 +223,7 @@ export default function PlayerBuilder() {
         };
         setBuild(result.best.build);
         setPlayer(newPlayer);
-        setIsPossibleCombo(true);
+        setIsPossibleCombo(result.best.sp < 0 || result.best.cbr < 0 ? false : true);
         setRemSkillPoints(result.best.sp);
         setRemCapBoosts(result.best.cbr);
         setCapBoostsSpent(result.best.cbs);
@@ -309,51 +315,69 @@ export default function PlayerBuilder() {
 
     let newPlayer = { ...player };
 
-    setOptimizeProgress(1);
+    setOptimizeBuffer(10);
     newPlayer = await buildPlayer('at', newPlayer);
+    setOptimizeBuffer(13);
     setOptimizeProgress(10);
     newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeBuffer(15);
     setOptimizeProgress(13);
     newPlayer = await buildPlayer('hw', newPlayer);
+    setOptimizeBuffer(25);
     setOptimizeProgress(15);
 
     newPlayer = await buildPlayer('at', newPlayer);
+    setOptimizeBuffer(27);
     setOptimizeProgress(25);
     newPlayer = await buildPlayer('hw', newPlayer);
+    setOptimizeBuffer(30);
     setOptimizeProgress(27);
     newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeBuffer(32);
     setOptimizeProgress(30);
 
     newPlayer = await buildPlayer('hw', newPlayer);
+    setOptimizeBuffer(42);
     setOptimizeProgress(32);
     newPlayer = await buildPlayer('at', newPlayer);
+    setOptimizeBuffer(45);
     setOptimizeProgress(42);
     newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeBuffer(47);
     setOptimizeProgress(45);
 
     newPlayer = await buildPlayer('hw', newPlayer);
+    setOptimizeBuffer(50);
     setOptimizeProgress(47);
     newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeBuffer(60);
     setOptimizeProgress(50);
     newPlayer = await buildPlayer('at', newPlayer);
+    setOptimizeBuffer(63);
     setOptimizeProgress(60);
 
     newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeBuffer(65);
     setOptimizeProgress(63);
     newPlayer = await buildPlayer('hw', newPlayer);
+    setOptimizeBuffer(75);
     setOptimizeProgress(65);
     newPlayer = await buildPlayer('at', newPlayer);
+    setOptimizeBuffer(78);
     setOptimizeProgress(75);
 
     newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeBuffer(95);
     setOptimizeProgress(78);
     newPlayer = await buildPlayer('at', newPlayer);
+    setOptimizeBuffer(100);
     setOptimizeProgress(95);
     newPlayer = await buildPlayer('hw', newPlayer);
     setOptimizeProgress(100);
 
     setIsOptimizing(false);
     setOptimizeProgress(0);
+    setOptimizeBuffer(10);
   };
 
   const handleSkillMinChange = (key: string, event: React.ChangeEvent<HTMLInputElement>) => {
@@ -388,7 +412,7 @@ export default function PlayerBuilder() {
         <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>Player Optimizer is a work in progress...</Typography>
       </Box>
       {isOptimizing ? (
-        <LinearProgressWithLabel variant='determinate' value={optimizeProgress} />
+        <LinearProgressWithLabel variant='buffer' value={optimizeProgress} valueBuffer={optimizeBuffer} />
       ) : (
         <>
           <Grid container rowGap={1} sx={{ mb: 2 }}>
@@ -411,7 +435,7 @@ export default function PlayerBuilder() {
               </Box>
             )}
           </Grid>
-          {selectedPosition && skillMins && player && isPossibleCombo && (
+          {selectedPosition && skillMins && player && (
             <>
               <Box sx={{ width: 350 }}>
                 <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
@@ -441,8 +465,12 @@ export default function PlayerBuilder() {
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Medium Salary: {getSalary(player).toLocaleString()}</Typography>
                 </Stack>
                 <Stack>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Skill Points Remaining: {remSkillPoints.toLocaleString()}</Typography>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Cap Boosts Remaining: {remCapBoosts}</Typography>
+                  <Typography sx={{ color: remSkillPoints < 0 ? 'red' : '', typography: { xs: 'body2', lg: 'body1' } }}>
+                    Skill Points Remaining: {remSkillPoints.toLocaleString()}
+                  </Typography>
+                  <Typography sx={{ color: remCapBoosts < 0 ? 'red' : '', typography: { xs: 'body2', lg: 'body1' } }}>
+                    Cap Boosts Remaining: {remCapBoosts}
+                  </Typography>
                 </Stack>
               </Box>
             </>
@@ -505,9 +533,17 @@ export default function PlayerBuilder() {
                           <Grid size={{ xs: 8, lg: 3 }} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{SKILL_LOOKUP[key]}</Typography>
                             {build && (
-                              <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
-                                ({build[key]} of {FindMaxLevel(key, player, capBoostsSpent)})
-                              </Typography>
+                              <>
+                                {capBoostsSpent[key] ? (
+                                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
+                                    {build[key]} - {FindMaxLevel(key, player, capBoostsSpent)} ({capBoostsSpent[key]})
+                                  </Typography>
+                                ) : (
+                                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
+                                    {build[key]} - {FindMaxLevel(key, player, capBoostsSpent)}
+                                  </Typography>
+                                )}
+                              </>
                             )}
                           </Grid>
                           <Grid size={{ xs: 4, lg: 3 }} sx={{ textAlign: 'flex-end' }}>

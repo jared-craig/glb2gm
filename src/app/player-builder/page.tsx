@@ -128,13 +128,13 @@ export default function PlayerBuilder() {
     cost += filteredData.skills[skill].weight * playerData.weight;
 
     if (skill in filteredData.traits[playerData.trait1].skill_modifiers) {
-      cost *= 1 + filteredData.traits[playerData.trait1].skill_modifiers[skill].cost;
+      cost *= 1 + (filteredData.traits[playerData.trait1].skill_modifiers[skill].cost || 0);
     }
     if (skill in filteredData.traits[playerData.trait2].skill_modifiers) {
-      cost *= 1 + filteredData.traits[playerData.trait2].skill_modifiers[skill].cost;
+      cost *= 1 + (filteredData.traits[playerData.trait2].skill_modifiers[skill].cost || 0);
     }
     if (skill in filteredData.traits[playerData.trait3].skill_modifiers) {
-      cost *= 1 + filteredData.traits[playerData.trait3].skill_modifiers[skill].cost;
+      cost *= 1 + (filteredData.traits[playerData.trait3].skill_modifiers[skill].cost || 0);
     }
 
     cost = Math.round(cost * (Math.pow(level, exponent) / 59.0));

@@ -4,7 +4,7 @@ export default function LinearProgressWithLabel(props: LinearProgressProps & { v
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
       <Box sx={{ width: '100%', mr: 1 }}>
-        <LinearProgress variant='determinate' {...props} sx={{ height: '20px', borderRadius: 5 }} />
+        <LinearProgress variant='buffer' {...props} sx={{ borderRadius: 5 }} />
       </Box>
       <Box sx={{ minWidth: 35 }}>
         <Typography variant='body2' sx={{ color: 'text.secondary' }}>{`${Math.round(props.value)}%`}</Typography>

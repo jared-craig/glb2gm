@@ -22,7 +22,7 @@ const CalcCostSP = (filteredData: any, skill: string, playerData: Player, mod: n
 
   for (const trait of [playerData.trait1, playerData.trait2, playerData.trait3]) {
     if (skill in filteredData.traits[trait].skill_modifiers) {
-      cost *= 1 + filteredData.traits[trait].skill_modifiers[skill].cost;
+      cost *= 1 + (filteredData.traits[trait].skill_modifiers[skill].cost || 0);
     }
   }
 
@@ -94,16 +94,6 @@ const findElementWithHighestValue = (arr: any[], prop: string) => {
   }, arr[0]);
 };
 
-const findElementWithLowestValue = (arr: any[], prop: string) => {
-  if (arr.length === 0) {
-    return null;
-  }
-
-  return arr.reduce((minElement, currentElement) => {
-    return minElement[prop] < currentElement[prop] ? minElement : currentElement;
-  }, arr[0]);
-};
-
 interface PostRequestProps {
   position: string;
   attCombos: any;
@@ -119,7 +109,6 @@ export async function POST(request: NextRequest) {
   const { position, attCombos, traitCombos, heightWeightCombos, data, filteredData, skillMins }: PostRequestProps = reqData;
 
   let combosThatWork: any[] = [];
-  let possibleCombos = 0;
 
   for (const hwCombo of heightWeightCombos) {
     for (const attCombo of attCombos) {
@@ -153,11 +142,7 @@ export async function POST(request: NextRequest) {
           suggestedBuild[key] = FindBaseLevel(filteredData, key, player);
         }
 
-        let canAchieveBuild = true;
-
-        for (const [skKey, skValue] of Object.entries(skillMins).filter(([key, value]: any) => value >= 0)) {
-          if (!canAchieveBuild) break;
-
+        for (const [skKey, skValue] of Object.entries(skillMins).filter(([key, value]: any) => value > FindBaseLevel(filteredData, key, player))) {
           const levelsNeeded = skValue - suggestedBuild[skKey];
 
           let neededSp = 0;
@@ -165,44 +150,27 @@ export async function POST(request: NextRequest) {
             neededSp += CalcCostSP(filteredData, skKey, player, i, suggestedBuild[skKey]);
           }
 
-          if (skillPoints - neededSp < 0) {
-            canAchieveBuild = false;
-            break;
-          }
-
           skillPoints -= neededSp;
 
           suggestedBuild[skKey] += levelsNeeded;
-
-          if (Number.isNaN(skillPoints)) {
-            canAchieveBuild = false;
-            break;
-          }
 
           const maxLevel = FindMaxLevel(filteredData, data, skKey, player, capBoostsSpent);
 
           if (suggestedBuild[skKey] >= maxLevel) {
             const attDiff = suggestedBuild[skKey] - maxLevel;
 
-            if (capBoosts >= attDiff / 5.0) {
-              capBoosts -= Math.ceil(attDiff / 5.0);
-              if (capBoostsSpent?.hasOwnProperty(skKey)) {
-                capBoostsSpent[skKey] += Math.ceil(attDiff / 5.0);
-              } else {
-                capBoostsSpent[skKey] = Math.ceil(attDiff / 5.0);
-              }
+            capBoosts -= Math.ceil(attDiff / 5.0);
+            if (capBoostsSpent?.hasOwnProperty(skKey)) {
+              capBoostsSpent[skKey] += Math.ceil(attDiff / 5.0);
             } else {
-              canAchieveBuild = false;
-              break;
+              capBoostsSpent[skKey] = Math.ceil(attDiff / 5.0);
             }
           }
         }
 
-        if (!canAchieveBuild) {
-          continue;
-        }
+        // if (player.trait1 === 'early_bloomer' && player.trait2 === 'hb_rushing_back' && player.trait3 === 'superstar_glam')
+        //   console.log(skillPoints, capBoosts, suggestedBuild);
 
-        possibleCombos++;
         combosThatWork = [
           ...combosThatWork,
           { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild },
@@ -211,7 +179,9 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // if (combosThatWork.length > 0) console.log(combosThatWork.sort((a, b) => a.sp - b.sp).map((x) => x.sp));
+
   const best = findElementWithHighestValue([...combosThatWork], 'sp');
 
-  return Response.json({ best, possibleCombos });
+  return Response.json({ best });
 }
