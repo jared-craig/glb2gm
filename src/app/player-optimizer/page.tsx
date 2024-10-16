@@ -420,6 +420,7 @@ export default function PlayerBuilder() {
     setPlayer(getBasePlayers(selectedPosition));
     setRemSkillPoints(0);
     setRemCapBoosts(0);
+    setBuild(undefined);
   }, [selectedPosition]);
 
   useEffect(() => {
