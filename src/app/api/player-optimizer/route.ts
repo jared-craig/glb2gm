@@ -168,9 +168,6 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // if (player.trait1 === 'early_bloomer' && player.trait2 === 'hb_rushing_back' && player.trait3 === 'superstar_glam')
-        //   console.log(skillPoints, capBoosts, suggestedBuild);
-
         combosThatWork = [
           ...combosThatWork,
           { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild },
@@ -178,8 +175,6 @@ export async function POST(request: NextRequest) {
       }
     }
   }
-
-  // if (combosThatWork.length > 0) console.log(combosThatWork.sort((a, b) => a.sp - b.sp).map((x) => x.sp));
 
   const best = findElementWithHighestValue([...combosThatWork], 'sp');
 
