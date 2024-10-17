@@ -4,7 +4,7 @@ import { Box, Button, Container, LinearProgress, Stack, Typography, useMediaQuer
 import { useEffect, useState } from 'react';
 import { Trait } from './trait';
 import { TeamBuilderPlayer } from './teamBuilderPlayer';
-import { SALARIES } from './salaries';
+import { SALARIES } from '../players/salaries';
 import AddIcon from '@mui/icons-material/Add';
 import CancelIcon from '@mui/icons-material/Cancel';
 import SaveIcon from '@mui/icons-material/Save';
