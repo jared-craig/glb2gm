@@ -24,7 +24,7 @@ import { getSkillMins } from '../player-optimizer/skillMins';
 import { SKILL_LOOKUP, TRAIT_LOOKUP } from '../players/lookups';
 import { Player } from '../players/player';
 import { getPossibleAttributes, getPossibleHeightsWeights, getPossibleTraits } from '../players/possibilities';
-import { SALARIES } from '../team-builder/salaries';
+import { SALARIES } from '../players/salaries';
 import { getBasePlayers } from '../players/basePlayers';
 import LinearProgressWithLabel from '../components/LinearProgressWithLabel';
 
@@ -68,6 +68,7 @@ export default function PlayerBuilder() {
   const [optimizeProgress, setOptimizeProgress] = useState(0);
   const [optimizeBuffer, setOptimizeBuffer] = useState(10);
   const [isPossibleCombo, setIsPossibleCombo] = useState<boolean>(true);
+  const [maxSalary, setMaxSalary] = useState<string>('15000000');
   const [isSuperstar, setIsSuperstar] = useState(true);
   const [isProdigy, setIsProdigy] = useState(false);
   const [build, setBuild] = useState<any>();
@@ -161,10 +162,10 @@ export default function PlayerBuilder() {
           },
         ];
         tr = isSuperstar
-          ? traitCombos.filter((x: any) => x.every((y: string) => !y.includes('prodigy')))
+          ? traitCombos.filter((x: any) => getTraitsSalary(x) <= +maxSalary && x.every((y: string) => !y.includes('prodigy')))
           : isProdigy
-            ? traitCombos.filter((x: any) => x.every((y: string) => !y.includes('superstar')))
-            : traitCombos.filter((x: any) => x.every((y: string) => !y.includes('superstar') && !y.includes('prodigy')));
+            ? traitCombos.filter((x: any) => getTraitsSalary(x) <= +maxSalary && x.every((y: string) => !y.includes('superstar')))
+            : traitCombos.filter((x: any) => getTraitsSalary(x) <= +maxSalary && x.every((y: string) => !y.includes('superstar') && !y.includes('prodigy')));
         break;
     }
 
@@ -176,6 +177,7 @@ export default function PlayerBuilder() {
       data,
       filteredData,
       skillMins,
+      maxSalary,
     };
     const res = await fetch('/api/player-optimizer', {
       method: 'POST',
@@ -254,7 +256,6 @@ export default function PlayerBuilder() {
     if (!filteredData.traits || !player.trait1 || !player.trait2 || !player.trait3) return 0;
     let salary = SALARIES[player.position] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
     let modifier = 0;
-    let contractModifier = 1;
 
     const t1 = filteredData.traits[player.trait1].salary_modifier;
     const t2 = filteredData.traits[player.trait2].salary_modifier;
@@ -271,7 +272,44 @@ export default function PlayerBuilder() {
       salary = 5000 * Math.ceil(salary / 5000);
     }
 
-    return (salary *= contractModifier);
+    return salary;
+  };
+
+  const getTraitsSalary = (traits: any[]): number => {
+    if (!filteredData.traits) return 0;
+    let salary = SALARIES[selectedPosition] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
+    let modifier = 0;
+
+    const t1 = filteredData.traits[traits[0]].salary_modifier;
+    const t2 = filteredData.traits[traits[1]].salary_modifier;
+    const t3 = filteredData.traits[traits[2]].salary_modifier;
+    modifier = +t1! + +t2! + +t3!;
+
+    salary *= 1 + modifier;
+
+    if (salary > 5000000) {
+      salary = 25000 * Math.ceil(salary / 25000);
+    } else if (salary > 1000000) {
+      salary = 10000 * Math.ceil(salary / 10000);
+    } else {
+      salary = 5000 * Math.ceil(salary / 5000);
+    }
+
+    return salary;
+  };
+
+  const getMinSalary = (position: string): number => {
+    let salary = SALARIES[position] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
+
+    if (salary > 5000000) {
+      salary = 25000 * Math.ceil(salary / 25000);
+    } else if (salary > 1000000) {
+      salary = 10000 * Math.ceil(salary / 10000);
+    } else {
+      salary = 5000 * Math.ceil(salary / 5000);
+    }
+
+    return salary;
   };
 
   const FindMaxLevel = (skill: string, playerData: Player, capBoostsSpent: any): number => {
@@ -316,7 +354,6 @@ export default function PlayerBuilder() {
 
   const handlePositionChange = (event: SelectChangeEvent) => {
     setSelectedPosition(event.target.value as string);
-    setIsPossibleCombo(true);
   };
 
   const handleOptimizeClick = async () => {
@@ -337,6 +374,12 @@ export default function PlayerBuilder() {
     } else if (!isSuperstar && newPlayer.trait3.includes('superstar')) {
       if (isProdigy) newPlayer.trait3 = 'prodigy';
       else newPlayer.trait3 = 'scholar';
+    }
+
+    if (getTraitsSalary([newPlayer.trait1, newPlayer.trait2, newPlayer.trait3]) > +maxSalary) {
+      newPlayer.trait1 = 'scholar';
+      newPlayer.trait2 = 'early_bloomer';
+      newPlayer.trait3 = 'workhorse';
     }
 
     setOptimizeBuffer(10);
@@ -405,10 +448,22 @@ export default function PlayerBuilder() {
   };
 
   const handleSkillMinChange = (key: string, event: React.ChangeEvent<HTMLInputElement>) => {
-    setSkillMins((prev) => ({
-      ...prev,
-      [key]: +event.target.value,
-    }));
+    const num = +event.target.value;
+    if (Number.isNaN(num))
+      setSkillMins((prev) => ({
+        ...prev,
+        [key]: 0,
+      }));
+    else
+      setSkillMins((prev) => ({
+        ...prev,
+        [key]: num < 0 ? 0 : num > 100 ? 100 : num,
+      }));
+  };
+
+  const handleMaxSalaryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const num = +event.target.value;
+    if (!Number.isNaN(num)) setMaxSalary(num.toString());
   };
 
   useEffect(() => {
@@ -416,11 +471,12 @@ export default function PlayerBuilder() {
   }, []);
 
   useEffect(() => {
-    filterAndSortSkills();
-    setPlayer(getBasePlayers(selectedPosition));
+    setIsPossibleCombo(true);
     setRemSkillPoints(0);
     setRemCapBoosts(0);
     setBuild(undefined);
+    filterAndSortSkills();
+    setPlayer(getBasePlayers(selectedPosition));
   }, [selectedPosition]);
 
   useEffect(() => {
@@ -447,7 +503,14 @@ export default function PlayerBuilder() {
                 <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
                   <FormControl sx={{ minWidth: { xs: '100%', sm: 350 } }} size='small'>
                     <InputLabel id='position-select-label'>Position</InputLabel>
-                    <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
+                    <Select
+                      labelId='position-select-label'
+                      id='position-select'
+                      label='Position'
+                      value={selectedPosition}
+                      defaultValue=''
+                      onChange={handlePositionChange}
+                    >
                       <MenuItem value={'QB'}>QB</MenuItem>
                       <MenuItem value={'HB'}>HB</MenuItem>
                       <MenuItem value={'FB'}>FB</MenuItem>
@@ -461,7 +524,7 @@ export default function PlayerBuilder() {
               </Box>
             )}
           </Grid>
-          {selectedPosition && skillMins && player && (
+          {selectedPosition && player && build && (
             <>
               <Box sx={{ width: 350 }}>
                 <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
@@ -505,8 +568,9 @@ export default function PlayerBuilder() {
           {selectedPosition && skillMins && player && (
             <>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Stack>
-                  <FormGroup sx={{ flexDirection: 'row' }}>
+                <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
+                  <TextField size='small' fullWidth label='Max Salary' value={maxSalary} onChange={handleMaxSalaryChange} />
+                  <FormGroup sx={{ flexDirection: 'row', flexWrap: 'nowrap' }}>
                     <FormControlLabel
                       control={
                         <Checkbox
@@ -515,7 +579,8 @@ export default function PlayerBuilder() {
                           disabled={isProdigy}
                         />
                       }
-                      label='Superstar'
+                      label={<Typography variant='caption'>Allow Superstar</Typography>}
+                      sx={{ whiteSpace: 'nowrap' }}
                     />
                     <FormControlLabel
                       control={
@@ -525,10 +590,18 @@ export default function PlayerBuilder() {
                           disabled={isSuperstar}
                         />
                       }
-                      label='Prodigy'
+                      label={<Typography variant='caption'>Allow Prodigy</Typography>}
+                      sx={{ whiteSpace: 'nowrap' }}
                     />
                   </FormGroup>
-                  <Button variant='contained' size='small' onClick={() => handleOptimizeClick()} disabled={isOptimizing}>
+                  <Button
+                    variant='contained'
+                    size='small'
+                    fullWidth
+                    onClick={() => handleOptimizeClick()}
+                    disabled={isOptimizing || +maxSalary < getMinSalary(selectedPosition)}
+                    sx={{ minWidth: '100px' }}
+                  >
                     Optimize
                   </Button>
                 </Stack>
@@ -557,15 +630,15 @@ export default function PlayerBuilder() {
                       .map(([key, value]) => (
                         <Fragment key={key}>
                           <Grid size={{ xs: 8, lg: 3 }} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{SKILL_LOOKUP[key]}</Typography>
+                            <Typography sx={{ typography: { xs: 'body2' } }}>{SKILL_LOOKUP[key]}</Typography>
                             {build && (
                               <>
                                 {capBoostsSpent[key] ? (
-                                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
+                                  <Typography sx={{ typography: { xs: 'body2' } }}>
                                     {build[key]} - {FindMaxLevel(key, player, capBoostsSpent)} ({capBoostsSpent[key]})
                                   </Typography>
                                 ) : (
-                                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
+                                  <Typography sx={{ typography: { xs: 'body2' } }}>
                                     {build[key]} - {FindMaxLevel(key, player, capBoostsSpent)}
                                   </Typography>
                                 )}
@@ -578,9 +651,13 @@ export default function PlayerBuilder() {
                               size='small'
                               value={skillMins[key]}
                               disabled={isOptimizing}
-                              type='number'
                               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleSkillMinChange(key, event)}
-                              sx={{ maxWidth: { xs: '100px', sm: '100%' } }}
+                              sx={{
+                                maxWidth: { xs: '100px', sm: '100%' },
+                                '& .MuiInputBase-input': {
+                                  fontSize: '14px',
+                                },
+                              }}
                             />
                           </Grid>
                         </Fragment>
