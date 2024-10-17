@@ -7,11 +7,11 @@ import ForumIcon from '@mui/icons-material/Forum';
 export default function Home() {
   return (
     <Container maxWidth='xl'>
-      <Stack spacing={3}>
+      <Stack spacing={1}>
         <Typography variant='body1'>
           App is currently in <i>development</i>
         </Typography>
-        <Typography variant='body1'>Data is updated nightly</Typography>
+        <Typography variant='body1'>Data is updated nightly (usually)</Typography>
         <Stack spacing={-1}>
           <Typography variant='body1'>Current Features:</Typography>
           <List>
@@ -20,6 +20,9 @@ export default function Home() {
             </ListItem>
             <ListItem disablePadding>
               <ListItemText primary='Player Builder' secondary="Select a position, template, and what's important to you."></ListItemText>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemText primary='Player Optimizer' secondary='Optimize height/weight, attributes, and traits for a build.'></ListItemText>
             </ListItem>
             <ListItem disablePadding>
               <ListItemText primary='Player Statistics' secondary="By tier and category. Filter and sort to your heart's content."></ListItemText>
