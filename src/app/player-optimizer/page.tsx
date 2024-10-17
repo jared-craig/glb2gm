@@ -570,7 +570,7 @@ export default function PlayerBuilder() {
           {selectedPosition && skillMins && player && (
             <>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
+                <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 0, md: 2 }} sx={{ alignItems: 'baseline', mt: 1 }}>
                   <TextField
                     size='small'
                     fullWidth
