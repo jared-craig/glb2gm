@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
 
         if (skillPoints > best.sp && canAchieveBuild)
           best = { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild };
-        if (skillPoints > bestFailing.sp && capBoosts > -3 && !canAchieveBuild)
+        if (skillPoints > bestFailing.sp && capBoosts >= bestFailing.cbr && !canAchieveBuild)
           bestFailing = { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild };
       }
     }
