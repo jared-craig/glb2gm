@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
   const { position, attCombos, traitCombos, heightWeightCombos, data, filteredData, skillMins }: PostRequestProps = reqData;
 
   let best: any = { sp: Number.NEGATIVE_INFINITY };
-  let bestFailing: any = { sp: Number.NEGATIVE_INFINITY };
+  let bestFailing: any = { sp: Number.NEGATIVE_INFINITY, cbr: Number.NEGATIVE_INFINITY };
 
   for (const hwCombo of heightWeightCombos) {
     for (const attCombo of attCombos) {
