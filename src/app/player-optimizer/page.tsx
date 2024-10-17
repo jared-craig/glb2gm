@@ -68,6 +68,7 @@ export default function PlayerBuilder() {
   const [optimizeProgress, setOptimizeProgress] = useState(0);
   const [optimizeBuffer, setOptimizeBuffer] = useState(10);
   const [isPossibleCombo, setIsPossibleCombo] = useState<boolean>(true);
+  const [minSalary, setMinSalary] = useState<number>(0);
   const [maxSalary, setMaxSalary] = useState<string>('15000000');
   const [isSuperstar, setIsSuperstar] = useState(true);
   const [isProdigy, setIsProdigy] = useState(false);
@@ -477,6 +478,7 @@ export default function PlayerBuilder() {
     setBuild(undefined);
     filterAndSortSkills();
     setPlayer(getBasePlayers(selectedPosition));
+    setMinSalary(getMinSalary(selectedPosition));
   }, [selectedPosition]);
 
   useEffect(() => {
@@ -569,7 +571,14 @@ export default function PlayerBuilder() {
             <>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
-                  <TextField size='small' fullWidth label='Max Salary' value={maxSalary} onChange={handleMaxSalaryChange} />
+                  <TextField
+                    size='small'
+                    fullWidth
+                    label='Max Salary'
+                    helperText={`Min: ${minSalary.toLocaleString()}`}
+                    value={maxSalary}
+                    onChange={handleMaxSalaryChange}
+                  />
                   <FormGroup sx={{ flexDirection: 'row', flexWrap: 'nowrap' }}>
                     <FormControlLabel
                       control={
@@ -599,7 +608,7 @@ export default function PlayerBuilder() {
                     size='small'
                     fullWidth
                     onClick={() => handleOptimizeClick()}
-                    disabled={isOptimizing || +maxSalary < getMinSalary(selectedPosition)}
+                    disabled={isOptimizing || +maxSalary < minSalary}
                     sx={{ minWidth: '100px' }}
                   >
                     Optimize
