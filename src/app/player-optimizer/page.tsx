@@ -69,7 +69,8 @@ export default function PlayerBuilder() {
   const [optimizeBuffer, setOptimizeBuffer] = useState(10);
   const [isPossibleCombo, setIsPossibleCombo] = useState<boolean>(true);
   const [minSalary, setMinSalary] = useState<number>(0);
-  const [maxSalary, setMaxSalary] = useState<string>('15000000');
+  const [maxSalary, setMaxSalary] = useState<number>(0);
+  const [maxSalaryInput, setMaxSalaryInput] = useState<string>('15000000');
   const [isSuperstar, setIsSuperstar] = useState(true);
   const [isProdigy, setIsProdigy] = useState(false);
   const [build, setBuild] = useState<any>();
@@ -166,10 +167,12 @@ export default function PlayerBuilder() {
           },
         ];
         tr = isSuperstar
-          ? traitCombos.filter((x: any) => getTraitsSalary(x) <= +maxSalary && x.every((y: string) => !y.includes('prodigy')))
+          ? traitCombos.filter((x: any) => getTraitsSalary(x) <= +maxSalaryInput && x.every((y: string) => !y.includes('prodigy')))
           : isProdigy
-            ? traitCombos.filter((x: any) => getTraitsSalary(x) <= +maxSalary && x.every((y: string) => !y.includes('superstar')))
-            : traitCombos.filter((x: any) => getTraitsSalary(x) <= +maxSalary && x.every((y: string) => !y.includes('superstar') && !y.includes('prodigy')));
+            ? traitCombos.filter((x: any) => getTraitsSalary(x) <= +maxSalaryInput && x.every((y: string) => !y.includes('superstar')))
+            : traitCombos.filter(
+                (x: any) => getTraitsSalary(x) <= +maxSalaryInput && x.every((y: string) => !y.includes('superstar') && !y.includes('prodigy'))
+              );
         break;
     }
 
@@ -315,6 +318,56 @@ export default function PlayerBuilder() {
     return salary;
   };
 
+  const filterConflicts = (sourceArray: any[], targetArray: any[]) => {
+    let count = 0;
+    sourceArray.forEach((sourceItem) => {
+      if (count === 3) return;
+      let hasConflict = false;
+
+      targetArray.forEach((targetItem) => {
+        if (targetItem[1].conflicts.includes(sourceItem[0])) {
+          hasConflict = true;
+          return;
+        }
+      });
+
+      if (!hasConflict) {
+        targetArray.push(sourceItem);
+        count++;
+      }
+    });
+  };
+
+  const getMaxSalary = (position: string): number => {
+    if (!filteredData.traits) return 0;
+    let salary = SALARIES[selectedPosition] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
+    let modifier = 0;
+
+    let expensiveTraits: any[] = [];
+
+    filterConflicts(
+      Object.entries(filteredData.traits).sort(([aKey, aValue]: any, [bKey, bValue]: any) => bValue.salary_modifier - aValue.salary_modifier),
+      expensiveTraits
+    );
+
+    const t1 = expensiveTraits[0][1].salary_modifier;
+    const t2 = expensiveTraits[1][1].salary_modifier;
+    const t3 = expensiveTraits[2][1].salary_modifier;
+    modifier = +t1! + +t2! + +t3!;
+
+    salary *= 1 + modifier;
+
+    if (salary > 5000000) {
+      salary = 25000 * Math.ceil(salary / 25000);
+    } else if (salary > 1000000) {
+      salary = 10000 * Math.ceil(salary / 10000);
+    } else {
+      salary = 5000 * Math.ceil(salary / 5000);
+    }
+
+    return salary;
+  };
+
   const FindMaxLevel = (skill: string, playerData: Player, capBoostsSpent: any): number => {
     if (!filteredData.skills[skill]) return 100;
 
@@ -379,7 +432,7 @@ export default function PlayerBuilder() {
       else newPlayer.trait3 = 'jittery';
     }
 
-    if (getTraitsSalary([newPlayer.trait1, newPlayer.trait2, newPlayer.trait3]) > +maxSalary) {
+    if (getTraitsSalary([newPlayer.trait1, newPlayer.trait2, newPlayer.trait3]) > +maxSalaryInput) {
       newPlayer.trait1 = 'jittery';
       newPlayer.trait2 = 'early_bloomer';
       newPlayer.trait3 = 'workhorse';
@@ -466,7 +519,7 @@ export default function PlayerBuilder() {
 
   const handleMaxSalaryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const num = +event.target.value;
-    if (!Number.isNaN(num)) setMaxSalary(num.toString());
+    if (!Number.isNaN(num)) setMaxSalaryInput(num.toString());
   };
 
   useEffect(() => {
@@ -489,7 +542,12 @@ export default function PlayerBuilder() {
     setSkillMins(getSkillMins(selectedPosition));
     setTraitCombos(getPossibleTraits(filteredData.traits));
     setHeightWeightCombos(getPossibleHeightsWeights(selectedPosition));
+    setMaxSalary(getMaxSalary(selectedPosition));
   }, [filteredData]);
+
+  useEffect(() => {
+    setMaxSalaryInput(maxSalary.toString());
+  }, [maxSalary]);
 
   return (
     <Container maxWidth='xl' sx={{ mb: 2 }}>
@@ -540,7 +598,7 @@ export default function PlayerBuilder() {
           {selectedPosition && player && build && (
             <>
               <Box sx={{ width: 350 }}>
-                <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
+                <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', mb: 1 }}>
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
                     Height: {Math.floor(player.height / 12)}&apos; {player.height % 12}&apos;&apos;
                   </Typography>
@@ -580,52 +638,61 @@ export default function PlayerBuilder() {
           {!isPossibleCombo && skillMins && <Typography sx={{ color: 'red' }}>No possible combinations found to achieve skills</Typography>}
           {selectedPosition && skillMins && player && (
             <>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 0, md: 2 }} sx={{ alignItems: 'baseline', mt: 1 }}>
-                  <TextField
-                    size='small'
-                    fullWidth
-                    label='Max Salary'
-                    helperText={`Min: ${minSalary.toLocaleString()}`}
-                    value={maxSalary}
-                    onChange={handleMaxSalaryChange}
+              <Stack
+                direction={{ xs: 'column', md: 'row' }}
+                spacing={{ xs: 0, md: 2 }}
+                sx={{ alignItems: { xs: 'center', sm: 'baseline' }, justifyContent: 'flex-end', mt: 1, width: { xs: '350px', sm: '100%' } }}
+              >
+                <TextField
+                  size='small'
+                  label='Max Salary'
+                  helperText={`${minSalary.toLocaleString()} - ${maxSalary.toLocaleString()}`}
+                  value={maxSalaryInput}
+                  onChange={handleMaxSalaryChange}
+                  slotProps={{
+                    formHelperText: { sx: { textAlign: 'center' } },
+                  }}
+                  sx={{
+                    minWidth: { xs: '350px', sm: '150px' },
+                    '& .MuiInputBase-input': {
+                      fontSize: '14px',
+                    },
+                  }}
+                />
+                <FormGroup sx={{ flexDirection: 'row', flexWrap: 'nowrap' }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isSuperstar && !isProdigy}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIsSuperstar(event.target.checked)}
+                        disabled={isProdigy}
+                      />
+                    }
+                    label={<Typography variant='caption'>Allow Superstar</Typography>}
+                    sx={{ whiteSpace: 'nowrap' }}
                   />
-                  <FormGroup sx={{ flexDirection: 'row', flexWrap: 'nowrap' }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={isSuperstar && !isProdigy}
-                          onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIsSuperstar(event.target.checked)}
-                          disabled={isProdigy}
-                        />
-                      }
-                      label={<Typography variant='caption'>Allow Superstar</Typography>}
-                      sx={{ whiteSpace: 'nowrap' }}
-                    />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={isProdigy && !isSuperstar}
-                          onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIsProdigy(event.target.checked)}
-                          disabled={isSuperstar}
-                        />
-                      }
-                      label={<Typography variant='caption'>Allow Prodigy</Typography>}
-                      sx={{ whiteSpace: 'nowrap' }}
-                    />
-                  </FormGroup>
-                  <Button
-                    variant='contained'
-                    size='small'
-                    fullWidth
-                    onClick={() => handleOptimizeClick()}
-                    disabled={isOptimizing || +maxSalary < minSalary}
-                    sx={{ minWidth: '100px' }}
-                  >
-                    Optimize
-                  </Button>
-                </Stack>
-              </Box>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isProdigy && !isSuperstar}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIsProdigy(event.target.checked)}
+                        disabled={isSuperstar}
+                      />
+                    }
+                    label={<Typography variant='caption'>Allow Prodigy</Typography>}
+                    sx={{ whiteSpace: 'nowrap' }}
+                  />
+                </FormGroup>
+                <Button
+                  variant='contained'
+                  size='small'
+                  onClick={() => handleOptimizeClick()}
+                  disabled={isOptimizing || +maxSalaryInput < minSalary}
+                  sx={{ minWidth: { xs: '350px', sm: '150px' } }}
+                >
+                  Optimize
+                </Button>
+              </Stack>
               <Grid container rowGap={{ xs: 0.5 }} columnSpacing={2}>
                 {groupOrder[selectedPosition].map((group) => (
                   <Fragment key={group}>
