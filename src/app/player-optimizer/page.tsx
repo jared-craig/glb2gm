@@ -384,69 +384,69 @@ export default function PlayerBuilder() {
       newPlayer.trait3 = 'workhorse';
     }
 
-    setOptimizeBuffer(10);
-    newPlayer = await buildPlayer('at', newPlayer);
     setOptimizeBuffer(13);
-    setOptimizeProgress(10);
-    newPlayer = await buildPlayer('tr', newPlayer);
+    newPlayer = await buildPlayer('at', newPlayer);
     setOptimizeBuffer(15);
     setOptimizeProgress(13);
-    newPlayer = await buildPlayer('hw', newPlayer);
-    setOptimizeBuffer(25);
+    newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeBuffer(17);
     setOptimizeProgress(15);
-
-    newPlayer = await buildPlayer('at', newPlayer);
-    setOptimizeBuffer(27);
-    setOptimizeProgress(25);
     newPlayer = await buildPlayer('hw', newPlayer);
     setOptimizeBuffer(30);
-    setOptimizeProgress(27);
-    newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeProgress(17);
+
+    newPlayer = await buildPlayer('at', newPlayer);
     setOptimizeBuffer(32);
     setOptimizeProgress(30);
-
     newPlayer = await buildPlayer('hw', newPlayer);
-    setOptimizeBuffer(42);
+    setOptimizeBuffer(34);
     setOptimizeProgress(32);
-    newPlayer = await buildPlayer('at', newPlayer);
-    setOptimizeBuffer(45);
-    setOptimizeProgress(42);
     newPlayer = await buildPlayer('tr', newPlayer);
-    setOptimizeBuffer(47);
-    setOptimizeProgress(45);
+    setOptimizeBuffer(36);
+    setOptimizeProgress(34);
 
     newPlayer = await buildPlayer('hw', newPlayer);
-    setOptimizeBuffer(50);
-    setOptimizeProgress(47);
-    newPlayer = await buildPlayer('tr', newPlayer);
-    setOptimizeBuffer(60);
-    setOptimizeProgress(50);
+    setOptimizeBuffer(49);
+    setOptimizeProgress(36);
     newPlayer = await buildPlayer('at', newPlayer);
-    setOptimizeBuffer(63);
-    setOptimizeProgress(60);
-
+    setOptimizeBuffer(51);
+    setOptimizeProgress(49);
     newPlayer = await buildPlayer('tr', newPlayer);
-    setOptimizeBuffer(65);
-    setOptimizeProgress(63);
+    setOptimizeBuffer(53);
+    setOptimizeProgress(51);
+
     newPlayer = await buildPlayer('hw', newPlayer);
-    setOptimizeBuffer(75);
-    setOptimizeProgress(65);
+    setOptimizeBuffer(55);
+    setOptimizeProgress(53);
+    newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeBuffer(68);
+    setOptimizeProgress(55);
     newPlayer = await buildPlayer('at', newPlayer);
-    setOptimizeBuffer(78);
-    setOptimizeProgress(75);
+    setOptimizeBuffer(70);
+    setOptimizeProgress(68);
 
     newPlayer = await buildPlayer('tr', newPlayer);
-    setOptimizeBuffer(95);
-    setOptimizeProgress(78);
+    setOptimizeBuffer(72);
+    setOptimizeProgress(70);
+    newPlayer = await buildPlayer('hw', newPlayer);
+    setOptimizeBuffer(84);
+    setOptimizeProgress(72);
+    newPlayer = await buildPlayer('at', newPlayer);
+    setOptimizeBuffer(86);
+    setOptimizeProgress(84);
+
+    newPlayer = await buildPlayer('tr', newPlayer);
+    setOptimizeBuffer(98);
+    setOptimizeProgress(86);
     newPlayer = await buildPlayer('at', newPlayer);
     setOptimizeBuffer(100);
-    setOptimizeProgress(95);
+    setOptimizeProgress(98);
     newPlayer = await buildPlayer('hw', newPlayer);
     setOptimizeProgress(100);
 
     setIsOptimizing(false);
     setOptimizeProgress(0);
-    setOptimizeBuffer(10);
+    setOptimizeBuffer(13);
   };
 
   const handleSkillMinChange = (key: string, event: React.ChangeEvent<HTMLInputElement>) => {
