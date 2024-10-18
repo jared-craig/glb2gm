@@ -1,7 +1,6 @@
 import { Player } from '@/app/players/player';
 import { PlayerBuilderData } from '@/app/player-optimizer/page';
 import { NextRequest } from 'next/server';
-import { SALARIES } from '@/app/players/salaries';
 
 const CalcCostSP = (filteredData: any, skill: string, playerData: Player, mod: number, level: number) => {
   const skillData = filteredData.skills[skill];
@@ -85,29 +84,6 @@ const FindMaxLevel = (filteredData: any, data: any, skill: string, playerData: P
   return maxlevel;
 };
 
-const getSalary = (traits: any, player: any): number => {
-  if (!player.trait1 || !player.trait2 || !player.trait3) return 0;
-  let salary = SALARIES[player.position] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
-  let modifier = 0;
-
-  const t1 = traits[player.trait1].salary_modifier;
-  const t2 = traits[player.trait2].salary_modifier;
-  const t3 = traits[player.trait3].salary_modifier;
-  modifier = +t1! + +t2! + +t3!;
-
-  salary *= 1 + modifier;
-
-  if (salary > 5000000) {
-    salary = 25000 * Math.ceil(salary / 25000);
-  } else if (salary > 1000000) {
-    salary = 10000 * Math.ceil(salary / 10000);
-  } else {
-    salary = 5000 * Math.ceil(salary / 5000);
-  }
-
-  return salary;
-};
-
 interface PostRequestProps {
   position: string;
   attCombos: any;
@@ -116,12 +92,11 @@ interface PostRequestProps {
   data: PlayerBuilderData;
   filteredData: PlayerBuilderData;
   skillMins: { [key: string]: number };
-  maxSalary: number;
 }
 
 export async function POST(request: NextRequest) {
   const reqData: any = await request.json();
-  const { position, attCombos, traitCombos, heightWeightCombos, data, filteredData, skillMins, maxSalary }: PostRequestProps = reqData;
+  const { position, attCombos, traitCombos, heightWeightCombos, data, filteredData, skillMins }: PostRequestProps = reqData;
 
   let best: any = { sp: Number.NEGATIVE_INFINITY, cbr: Number.NEGATIVE_INFINITY };
   let bestFailing: any = { sp: Number.NEGATIVE_INFINITY, cbr: Number.NEGATIVE_INFINITY };
@@ -195,7 +170,8 @@ export async function POST(request: NextRequest) {
         if (combo.sp === best.sp && combo.cbr > best.cbr && canAchieveBuild) best = combo;
         else if (combo.sp > best.sp && canAchieveBuild) best = combo;
 
-        if (skillPoints >= bestFailing.sp && capBoosts >= bestFailing.cbr && !canAchieveBuild) bestFailing = combo;
+        if (combo.cbr === bestFailing.cbr && combo.sp > bestFailing.sp && !canAchieveBuild) bestFailing = combo;
+        else if (combo.cbr >= bestFailing.cbr && !canAchieveBuild) bestFailing = combo;
       }
     }
   }

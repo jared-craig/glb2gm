@@ -102,7 +102,9 @@ export default function PlayerBuilder() {
 
     const newSkills = Object.fromEntries(skillsEntries);
 
-    const traitsEntries = Object.entries(data.traits).filter(([key, value]) => !(value as any).position_exclusions.includes(selectedPosition));
+    const traitsEntries = Object.entries(data.traits).filter(
+      ([key, value]) => !(value as any).position_exclusions.includes(selectedPosition) && Object.keys((value as any).skill_modifiers).length > 0
+    );
 
     const newTraits = Object.fromEntries(traitsEntries);
 
@@ -178,7 +180,6 @@ export default function PlayerBuilder() {
       data,
       filteredData,
       skillMins,
-      maxSalary,
     };
     const res = await fetch('/api/player-optimizer', {
       method: 'POST',
@@ -368,17 +369,17 @@ export default function PlayerBuilder() {
 
     if (!isSuperstar && newPlayer.trait1.includes('superstar')) {
       if (isProdigy) newPlayer.trait1 = 'prodigy';
-      else newPlayer.trait1 = 'scholar';
+      else newPlayer.trait1 = 'jittery';
     } else if (!isSuperstar && newPlayer.trait2.includes('superstar')) {
       if (isProdigy) newPlayer.trait2 = 'prodigy';
-      else newPlayer.trait2 = 'scholar';
+      else newPlayer.trait2 = 'jittery';
     } else if (!isSuperstar && newPlayer.trait3.includes('superstar')) {
       if (isProdigy) newPlayer.trait3 = 'prodigy';
-      else newPlayer.trait3 = 'scholar';
+      else newPlayer.trait3 = 'jittery';
     }
 
     if (getTraitsSalary([newPlayer.trait1, newPlayer.trait2, newPlayer.trait3]) > +maxSalary) {
-      newPlayer.trait1 = 'scholar';
+      newPlayer.trait1 = 'jittery';
       newPlayer.trait2 = 'early_bloomer';
       newPlayer.trait3 = 'workhorse';
     }
@@ -566,7 +567,7 @@ export default function PlayerBuilder() {
               </Box>
             </>
           )}
-          {!isPossibleCombo && skillMins && <Typography sx={{ color: 'red' }}>No possible combinations to achieve skills</Typography>}
+          {!isPossibleCombo && skillMins && <Typography sx={{ color: 'red' }}>No possible combinations found to achieve skills</Typography>}
           {selectedPosition && skillMins && player && (
             <>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
