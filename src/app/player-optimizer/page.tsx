@@ -523,6 +523,14 @@ export default function PlayerBuilder() {
                       <MenuItem value={'DT'}>DT</MenuItem>
                       <MenuItem value={'DE'}>DE</MenuItem>
                       <MenuItem value={'LB'}>LB</MenuItem>
+                      <MenuItem value={'CB'}>CB</MenuItem>
+                      <MenuItem value={'SS'}>SS</MenuItem>
+                      <MenuItem value={'FS'}>FS</MenuItem>
+                      <MenuItem value={'C'}>C</MenuItem>
+                      <MenuItem value={'G'}>G</MenuItem>
+                      <MenuItem value={'OT'}>OT</MenuItem>
+                      <MenuItem value={'K'}>K</MenuItem>
+                      <MenuItem value={'P'}>P</MenuItem>
                     </Select>
                   </FormControl>
                 </Stack>
