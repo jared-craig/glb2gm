@@ -103,7 +103,8 @@ export default function PlayerBuilder() {
     const newSkills = Object.fromEntries(skillsEntries);
 
     const traitsEntries = Object.entries(data.traits).filter(
-      ([key, value]) => !(value as any).position_exclusions.includes(selectedPosition) && Object.keys((value as any).skill_modifiers).length > 0
+      ([key, value]) =>
+        !(value as any).position_exclusions.includes(selectedPosition) && (Object.keys((value as any).skill_modifiers).length > 0 || key === 'natural')
     );
 
     const newTraits = Object.fromEntries(traitsEntries);
@@ -520,6 +521,7 @@ export default function PlayerBuilder() {
                       <MenuItem value={'TE'}>TE</MenuItem>
                       <MenuItem value={'WR'}>WR</MenuItem>
                       <MenuItem value={'DT'}>DT</MenuItem>
+                      <MenuItem value={'DE'}>DE</MenuItem>
                       <MenuItem value={'LB'}>LB</MenuItem>
                     </Select>
                   </FormControl>
