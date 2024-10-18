@@ -693,7 +693,7 @@ export default function PlayerBuilder() {
                   Optimize
                 </Button>
               </Stack>
-              <Grid container rowGap={{ xs: 0.5 }} columnSpacing={2}>
+              <Grid container columnSpacing={2}>
                 {groupOrder[selectedPosition].map((group) => (
                   <Fragment key={group}>
                     <Grid size={{ xs: 12 }} sx={{ mt: 1 }}>
