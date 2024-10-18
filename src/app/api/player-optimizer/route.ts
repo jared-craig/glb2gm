@@ -84,6 +84,17 @@ const FindMaxLevel = (filteredData: any, data: any, skill: string, playerData: P
   return maxlevel;
 };
 
+const isBuild1Better = (build1: any, build2: any): boolean => {
+  if (build1.cbr === build2.cbr && build1.sp > build2.sp) return true;
+  else if (build1.sp <= build2.sp && build1.cbr <= build2.cbr) return false;
+  else if (build1.sp > build2.sp && build1.cbr > build2.cbr) return true;
+  else {
+    const build1Value = build1.sp - Math.abs(build1.cbr) * 5000;
+    const build2Value = build2.sp - Math.abs(build2.cbr) * 5000;
+    return build1Value > build2Value;
+  }
+};
+
 interface PostRequestProps {
   position: string;
   attCombos: any;
@@ -167,11 +178,10 @@ export async function POST(request: NextRequest) {
 
         const combo = { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild };
 
-        if (combo.sp === best.sp && combo.cbr > best.cbr && canAchieveBuild) best = combo;
-        else if (combo.sp > best.sp && canAchieveBuild) best = combo;
+        if (canAchieveBuild && combo.sp === best.sp && combo.cbr > best.cbr) best = combo;
+        else if (canAchieveBuild && combo.sp > best.sp) best = combo;
 
-        if (combo.cbr === bestFailing.cbr && combo.sp > bestFailing.sp && !canAchieveBuild) bestFailing = combo;
-        else if (combo.cbr >= bestFailing.cbr && !canAchieveBuild) bestFailing = combo;
+        if (!canAchieveBuild && isBuild1Better(combo, bestFailing)) bestFailing = combo;
       }
     }
   }
