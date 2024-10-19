@@ -832,7 +832,6 @@ export default function TeamBuilder() {
 
   useEffect(() => {
     calculateCap();
-    console.log(players);
   }, [players]);
 
   useEffect(() => {
