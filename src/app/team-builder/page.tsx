@@ -208,7 +208,7 @@ export default function TeamBuilder() {
     const handleClick = () => {
       setDataGridLoading(true);
       const id = generateGuid();
-      const lastOrderIndex = Math.max(...players.map((x) => x.order_index));
+      const lastOrderIndex = players.length > 0 ? Math.max(...players.map((x) => x.order_index)) : 0;
       setPlayers((oldRows: any) => [
         ...oldRows,
         { id, player_name: '', position: '', trait1: '', trait2: '', trait3: '', contract: '', salary: 0, is_new: true, order_index: lastOrderIndex + 1 },
@@ -528,7 +528,7 @@ export default function TeamBuilder() {
                 <ArrowCircleUpIcon />
               ) : params.value === 'Medium' ? (
                 <RemoveCircleOutlineIcon sx={{ opacity: 0.67 }} />
-              ) : params.value === 'Medium' ? (
+              ) : params.value === 'Low' ? (
                 <ArrowCircleDownIcon sx={{ opacity: 0.33 }} />
               ) : (
                 params.value
@@ -702,8 +702,10 @@ export default function TeamBuilder() {
                 <ArrowCircleUpIcon />
               ) : params.value === 'Medium' ? (
                 <RemoveCircleOutlineIcon sx={{ opacity: 0.67 }} />
-              ) : (
+              ) : params.value === 'Low' ? (
                 <ArrowCircleDownIcon sx={{ opacity: 0.33 }} />
+              ) : (
+                params.value
               )}
             </Box>
           ),
@@ -830,6 +832,7 @@ export default function TeamBuilder() {
 
   useEffect(() => {
     calculateCap();
+    console.log(players);
   }, [players]);
 
   useEffect(() => {
