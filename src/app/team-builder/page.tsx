@@ -242,16 +242,11 @@ export default function TeamBuilder() {
       <GridToolbarContainer>
         <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', alignItems: 'center', p: 0.5 }}>
           <Stack>
-            <Stack>
-              <Typography variant='body1' sx={{ color: 'yellow', px: 1 }}>
-                BETA - Please report any bugs to MadKingCraig
+            {!user && (
+              <Typography variant='body2' sx={{ color: 'red', px: 1 }}>
+                Please login before starting to save progress
               </Typography>
-              {!user && (
-                <Typography variant='body2' sx={{ color: 'red', px: 1 }}>
-                  Please login before starting to save progress
-                </Typography>
-              )}
-            </Stack>
+            )}
             <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
               <Button variant='contained' size='small' onClick={handleSaveTeamClick} disabled={!user?.email || players.length <= 0}>
                 Save New Team
