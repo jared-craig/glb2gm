@@ -844,14 +844,14 @@ export default function TeamBuilder() {
   if (fetching) return <LinearProgress sx={{ borderRadius: 2 }} />;
 
   return (
-    <Container maxWidth='xl'>
+    <Container maxWidth='xl' sx={{ mb: 2 }}>
       {traits && (
         <DataGridPro
+          hideFooter
           rows={players}
           columns={playerColumns}
           loading={dataGridLoading}
           density='compact'
-          autoHeight
           disableColumnMenu
           disableRowSelectionOnClick
           rowReordering
