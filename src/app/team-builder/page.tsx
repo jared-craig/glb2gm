@@ -302,6 +302,9 @@ export default function TeamBuilder() {
               {players.filter((x) => x.position === 'OT').length}/5 OT
             </Typography>
           </Stack>
+          <Typography variant='body2' sx={{ color: players.length < 36 || players.length > 48 ? 'red' : '' }}>
+            {players.length}/48 Total
+          </Typography>
           <Stack direction='row' spacing={1}>
             <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'DT').length > 5 ? 'red' : '' }}>
               {players.filter((x) => x.position === 'DT').length}/5 DT
@@ -788,10 +791,10 @@ export default function TeamBuilder() {
   };
 
   const getSalary = (player: any): number => {
-    if (!traits || !player.position || !player.contract || !player.trait1 || !player.trait2 || !player.trait3) return 0;
+    if (!traits || !player.position) return 0;
     let salary = SALARIES[player.position] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
     let modifier = 0;
-    let contractModifier = 0;
+    let contractModifier = 1;
     switch (player.contract) {
       case 'Low':
         contractModifier = 0.875;
@@ -804,9 +807,9 @@ export default function TeamBuilder() {
         break;
     }
 
-    const t1 = traits.find((x) => x.trait_key === player.trait1)?.salary_modifier;
-    const t2 = traits.find((x) => x.trait_key === player.trait2)?.salary_modifier;
-    const t3 = traits.find((x) => x.trait_key === player.trait3)?.salary_modifier;
+    const t1 = traits.find((x) => x.trait_key === player.trait1)?.salary_modifier ?? 0;
+    const t2 = traits.find((x) => x.trait_key === player.trait2)?.salary_modifier ?? 0;
+    const t3 = traits.find((x) => x.trait_key === player.trait3)?.salary_modifier ?? 0;
     modifier = +t1! + +t2! + +t3!;
 
     salary *= 1 + modifier;
