@@ -5,14 +5,6 @@ import { Container, LinearProgress, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Link from 'next/link';
 import { PlayerData } from '@/app/players/playerData';
-import { PlayerPassingData } from '@/app/stats/passing/playerPassingData';
-import { PlayerReceivingData } from '@/app/stats/receiving/playerReceivingData';
-import { PlayerRushingData } from '@/app/stats/rushing/playerRushingData';
-import { PlayerBlockingData } from '@/app/stats/blocking/playerBlockingData';
-import { PlayerDefensiveData } from '@/app/stats/defensive/playerDefensiveData';
-import { PlayerKickingData } from '@/app/stats/kicking/playerKickingData';
-import { PlayerPuntingData } from '@/app/stats/punting/playerPuntingData';
-import { PlayerReturningData } from '@/app/stats/returning/playerReturningData';
 
 const combinePlayerData = (...objects: any): any => {
   return objects.reduce((acc: any, obj: any) => {
@@ -23,12 +15,12 @@ const combinePlayerData = (...objects: any): any => {
 };
 
 const THRESHOLDS = {
-  PASS_ATTEMPTS: 10.0,
-  CARRIES: 10.0,
-  RECEPTIONS: 1.0,
+  PASS_ATTEMPTS: 5.0,
+  CARRIES: 5.0,
+  RECEPTIONS: 0.5,
   BLOCKER_PLAYS: 25.0,
-  FG_ATTEMPTS: 1.0,
-  PUNTS: 1.0,
+  FG_ATTEMPTS: 0.5,
+  PUNTS: 0.5,
   RETURNS: 1.0,
 };
 
