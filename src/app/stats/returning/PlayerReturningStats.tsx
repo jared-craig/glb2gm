@@ -179,12 +179,11 @@ export default function PlayerReturningStats() {
       ];
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <DataGridPro
         rows={rows ?? []}
         columns={columns}
         loading={rows.length <= 0 && !fetched}
-        autoHeight
         sortingOrder={['desc', 'asc']}
         pagination
         pageSizeOptions={[12, 24, 50, 100]}
