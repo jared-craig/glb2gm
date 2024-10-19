@@ -113,23 +113,10 @@ export default function PlayerBuilder() {
     setFilteredData({ skills: newSkills, traits: newTraits });
   };
 
-  const buildPlayer = async (optimize: string, updatedPlayer: Player): Promise<Player> => {
-    if (!filteredData.skills || !player || !skillMins || !attCombos || !traitCombos || !heightWeightCombos)
-      return {
-        position: selectedPosition,
-        trait1: '',
-        trait2: '',
-        trait3: '',
-        height: 0,
-        weight: 0,
-        strength: 0,
-        speed: 0,
-        agility: 0,
-        stamina: 0,
-        awareness: 0,
-        confidence: 0,
-      };
-
+  const buildPlayer = async (
+    optimize: string,
+    updatedPlayer: Player
+  ): Promise<{ newPlayer: any; build: any; isPossibleCombo: any; remSkillPoints: any; remCapBoosts: any; capBoostsSpent: any }> => {
     let hw: any[] = [];
     let at: any[] = [];
     let tr: any[] = [];
@@ -192,20 +179,14 @@ export default function PlayerBuilder() {
       },
       body: JSON.stringify(reqBody),
     });
-    let newPlayer = {
-      position: selectedPosition,
-      trait1: '',
-      trait2: '',
-      trait3: '',
-      height: 0,
-      weight: 0,
-      strength: 0,
-      speed: 0,
-      agility: 0,
-      stamina: 0,
-      awareness: 0,
-      confidence: 0,
-    };
+
+    let newPlayer: any;
+    let build: any;
+    let isPossibleCombo: any;
+    let remSkillPoints: any;
+    let remCapBoosts: any;
+    let capBoostsSpent: any;
+
     if (!res.ok || res.status === 500) {
       console.error('failed to optimize player');
     } else {
@@ -225,12 +206,11 @@ export default function PlayerBuilder() {
           awareness: result.best.awareness,
           confidence: result.best.confidence,
         };
-        setBuild(result.best.build);
-        setPlayer(newPlayer);
-        setIsPossibleCombo(true);
-        setRemSkillPoints(result.best.sp);
-        setRemCapBoosts(result.best.cbr);
-        setCapBoostsSpent(result.best.cbs);
+        build = result.best.build;
+        isPossibleCombo = true;
+        remSkillPoints = result.best.sp;
+        remCapBoosts = result.best.cbr;
+        capBoostsSpent = result.best.cbs;
       } else {
         newPlayer = {
           position: selectedPosition,
@@ -246,16 +226,15 @@ export default function PlayerBuilder() {
           awareness: result.bestFailing.awareness,
           confidence: result.bestFailing.confidence,
         };
-        setBuild(result.bestFailing.build);
-        setPlayer(newPlayer);
-        setIsPossibleCombo(false);
-        setRemSkillPoints(result.bestFailing.sp);
-        setRemCapBoosts(result.bestFailing.cbr);
-        setCapBoostsSpent(result.bestFailing.cbs);
+        build = result.bestFailing.build;
+        isPossibleCombo = false;
+        remSkillPoints = result.bestFailing.sp;
+        remCapBoosts = result.bestFailing.cbr;
+        capBoostsSpent = result.bestFailing.cbs;
       }
     }
 
-    return newPlayer;
+    return { newPlayer, build, isPossibleCombo, remSkillPoints, remCapBoosts, capBoostsSpent };
   };
 
   const getSalary = (player: any): number => {
@@ -439,64 +418,71 @@ export default function PlayerBuilder() {
     }
 
     setOptimizeBuffer(13);
-    newPlayer = await buildPlayer('at', newPlayer);
+    let buildResult = await buildPlayer('at', newPlayer);
     setOptimizeBuffer(15);
     setOptimizeProgress(13);
-    newPlayer = await buildPlayer('tr', newPlayer);
+    buildResult = await buildPlayer('tr', buildResult.newPlayer);
     setOptimizeBuffer(17);
     setOptimizeProgress(15);
-    newPlayer = await buildPlayer('hw', newPlayer);
+    buildResult = await buildPlayer('hw', buildResult.newPlayer);
     setOptimizeBuffer(30);
     setOptimizeProgress(17);
 
-    newPlayer = await buildPlayer('at', newPlayer);
+    buildResult = await buildPlayer('at', buildResult.newPlayer);
     setOptimizeBuffer(32);
     setOptimizeProgress(30);
-    newPlayer = await buildPlayer('hw', newPlayer);
+    buildResult = await buildPlayer('hw', buildResult.newPlayer);
     setOptimizeBuffer(34);
     setOptimizeProgress(32);
-    newPlayer = await buildPlayer('tr', newPlayer);
+    buildResult = await buildPlayer('tr', buildResult.newPlayer);
     setOptimizeBuffer(36);
     setOptimizeProgress(34);
 
-    newPlayer = await buildPlayer('hw', newPlayer);
+    buildResult = await buildPlayer('hw', buildResult.newPlayer);
     setOptimizeBuffer(49);
     setOptimizeProgress(36);
-    newPlayer = await buildPlayer('at', newPlayer);
+    buildResult = await buildPlayer('at', buildResult.newPlayer);
     setOptimizeBuffer(51);
     setOptimizeProgress(49);
-    newPlayer = await buildPlayer('tr', newPlayer);
+    buildResult = await buildPlayer('tr', buildResult.newPlayer);
     setOptimizeBuffer(53);
     setOptimizeProgress(51);
 
-    newPlayer = await buildPlayer('hw', newPlayer);
+    buildResult = await buildPlayer('hw', buildResult.newPlayer);
     setOptimizeBuffer(55);
     setOptimizeProgress(53);
-    newPlayer = await buildPlayer('tr', newPlayer);
+    buildResult = await buildPlayer('tr', buildResult.newPlayer);
     setOptimizeBuffer(68);
     setOptimizeProgress(55);
-    newPlayer = await buildPlayer('at', newPlayer);
+    buildResult = await buildPlayer('at', buildResult.newPlayer);
     setOptimizeBuffer(70);
     setOptimizeProgress(68);
 
-    newPlayer = await buildPlayer('tr', newPlayer);
+    buildResult = await buildPlayer('tr', buildResult.newPlayer);
     setOptimizeBuffer(72);
     setOptimizeProgress(70);
-    newPlayer = await buildPlayer('hw', newPlayer);
+    buildResult = await buildPlayer('hw', buildResult.newPlayer);
     setOptimizeBuffer(84);
     setOptimizeProgress(72);
-    newPlayer = await buildPlayer('at', newPlayer);
+    buildResult = await buildPlayer('at', buildResult.newPlayer);
     setOptimizeBuffer(86);
     setOptimizeProgress(84);
 
-    newPlayer = await buildPlayer('tr', newPlayer);
+    buildResult = await buildPlayer('tr', buildResult.newPlayer);
     setOptimizeBuffer(98);
     setOptimizeProgress(86);
-    newPlayer = await buildPlayer('at', newPlayer);
+    buildResult = await buildPlayer('at', buildResult.newPlayer);
     setOptimizeBuffer(100);
     setOptimizeProgress(98);
-    newPlayer = await buildPlayer('hw', newPlayer);
+    buildResult = await buildPlayer('hw', buildResult.newPlayer);
     setOptimizeProgress(100);
+
+    setBuild(buildResult.build);
+    setPlayer(buildResult.newPlayer);
+    setIsPossibleCombo(buildResult.isPossibleCombo);
+    setRemSkillPoints(buildResult.remSkillPoints);
+    setRemCapBoosts(buildResult.remCapBoosts);
+    setCapBoostsSpent(buildResult.capBoostsSpent);
 
     setIsOptimizing(false);
     setOptimizeProgress(0);
