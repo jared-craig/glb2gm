@@ -861,7 +861,7 @@ export default function TeamBuilder() {
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
-          getRowHeight={({ densityFactor }) => (!desktop ? 'auto' : 40 * densityFactor)}
+          getRowHeight={({ densityFactor }) => 40 * densityFactor}
           getRowClassName={(params) =>
             params.row.position === '' || params.row.trait1 === '' || params.row.trait2 === '' || params.row.trait3 === '' || params.row.contract === ''
               ? 'invalid-row'
