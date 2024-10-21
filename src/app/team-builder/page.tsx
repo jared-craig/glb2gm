@@ -240,8 +240,8 @@ export default function TeamBuilder() {
 
     return (
       <GridToolbarContainer>
-        <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', alignItems: 'center', p: 0.5 }}>
-          <Stack>
+        <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ width: '100%', justifyContent: 'space-between', alignItems: 'center', p: 0.5 }}>
+          <Stack sx={{ mb: { xs: 1, sm: 0 } }}>
             {!user && (
               <Typography variant='body2' sx={{ color: 'red', px: 1 }}>
                 Please login before starting to save progress
@@ -249,16 +249,16 @@ export default function TeamBuilder() {
             )}
             <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
               <Button variant='contained' size='small' onClick={handleSaveTeamClick} disabled={!user?.email || players.length <= 0}>
-                Save New Team
+                Save New
               </Button>
               <Button variant='contained' size='small' onClick={handleLoadTeamClick} disabled={!user?.email || !teamOptions || teamOptions.length <= 0}>
-                Load Team
+                Load
               </Button>
               <Button variant='contained' size='small' onClick={handleUpdateTeamClick} disabled={!user?.email || players.length <= 0 || !team}>
-                Update Team
+                Update
               </Button>
               <Button variant='contained' size='small' color='warning' onClick={handleDeleteTeamClick} disabled={!user?.email || !team}>
-                Delete Team
+                Delete
               </Button>
               <Typography>{team?.team_name ?? ''}</Typography>
             </Stack>
@@ -266,7 +266,7 @@ export default function TeamBuilder() {
           <Stack direction='row' spacing={2} sx={{ alignItems: 'center' }}>
             <Typography sx={{ color: capRemaining < 0 ? 'red' : '' }}>Cap Space: {capRemaining.toLocaleString()}</Typography>
             <Button color='secondary' startIcon={<AddIcon />} onClick={handleClick} disabled={players.length >= 48}>
-              Add Player
+              Add
             </Button>
           </Stack>
         </Stack>
