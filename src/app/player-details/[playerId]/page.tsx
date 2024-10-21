@@ -117,9 +117,9 @@ export default function TeamDetails({ params }: { params: { playerId: string } }
       case 'passing_interceptions':
         return [...tierData.passing].sort((a, b) => +b.interceptions - +a.interceptions);
       case 'passing_sacks':
-        return [...tierData.passing].sort((a, b) => +b.sacks - +a.sacks);
+        return [...tierData.passing].sort((a, b) => +b.sacks / +b.attempts - +a.sacks / +a.attempts);
       case 'passing_hurries':
-        return [...tierData.passing].sort((a, b) => +b.hurries - +a.hurries);
+        return [...tierData.passing].sort((a, b) => +b.hurries / +b.attempts - +a.hurries / +a.attempts);
       case 'rushing_yards':
         return [...tierData.rushing].sort((a, b) => +b.yards - +a.yards);
       case 'rushing_yards_per_carry':
@@ -227,11 +227,11 @@ export default function TeamDetails({ params }: { params: { playerId: string } }
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Sacks: {playerData.passing.sacks}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('passing_sacks')} Most )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('passing_sacks')} Most per attempt )</Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Hurries: {playerData.passing.hurries}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('passing_hurries')} Most )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('passing_hurries')} Most per attempt )</Typography>
               </Stack>
             </Grid>
           )}
