@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface UpdateTeamDialogProps {
   value: string;
@@ -8,11 +8,11 @@ interface UpdateTeamDialogProps {
 }
 
 export default function SaveTeamDialog(props: UpdateTeamDialogProps) {
-  const { value: valueProp, open, onClose } = props;
-  const [value, setValue] = useState(valueProp);
+  const { value, open, onClose } = props;
+  const [teamValue, setTeamValue] = useState('');
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue((event.target as HTMLInputElement).value);
+    setTeamValue((event.target as HTMLInputElement).value);
   };
 
   const handleCancel = () => {
@@ -20,14 +20,18 @@ export default function SaveTeamDialog(props: UpdateTeamDialogProps) {
   };
 
   const handleOk = () => {
-    onClose(value);
+    onClose(teamValue);
   };
+
+  useEffect(() => {
+    setTeamValue(value);
+  }, [value]);
 
   return (
     <Dialog sx={{ '& .MuiDialog-paper': { width: '80%', maxHeight: 435 } }} maxWidth='xs' open={open}>
       <DialogTitle>Update Team</DialogTitle>
       <DialogContent>
-        <TextField autoFocus required label='Team Name' fullWidth size='small' sx={{ my: 2 }} value={value} onChange={handleChange} />
+        <TextField autoFocus required label='Team Name' fullWidth size='small' sx={{ my: 2 }} value={teamValue} onChange={handleChange} />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCancel}>Cancel</Button>

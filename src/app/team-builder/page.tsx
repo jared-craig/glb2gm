@@ -138,7 +138,6 @@ export default function TeamBuilder() {
         await fetchTeams();
       }, 500);
     }
-    setTeamNameUpdateInput('');
   };
 
   const deleteTeam = async () => {
@@ -835,6 +834,10 @@ export default function TeamBuilder() {
   useEffect(() => {
     fetchTeams();
   }, [user]);
+
+  useEffect(() => {
+    if (team?.team_name) setTeamNameUpdateInput(team.team_name);
+  }, [team?.team_name]);
 
   if (fetching) return <LinearProgress sx={{ borderRadius: 2 }} />;
 
