@@ -456,7 +456,6 @@ export default function PlayerBuilder() {
 
   useEffect(() => {
     if (!filteredData.traits) return;
-    console.log(filteredData.traits);
     setRemTrait1Options(
       Object.fromEntries(
         Object.entries(filteredData.traits).filter(
