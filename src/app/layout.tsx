@@ -47,11 +47,6 @@ export default function RootLayout({
                 >
                   {children}
                 </Box>
-                <Typography variant='caption' sx={{ position: 'fixed', bottom: '20px', right: '20px' }}>
-                  <Link href={'https://www.patreon.com/MadKingCraig'} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
-                    Support Me Through <strong>Patreon</strong>
-                  </Link>
-                </Typography>
               </Suspense>
             </ThemeProvider>
           </AppRouterCacheProvider>

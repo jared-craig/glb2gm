@@ -506,10 +506,10 @@ export default function PlayerBuilder() {
       <Grid container sx={{ mb: 1 }}>
         {data.skills && data.traits && (
           <>
-            <Grid size={3}>
+            <Grid size={{ xs: 12, lg: 3 }}>
               <Box width={350} mt={1}>
                 <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
-                  <FormControl fullWidth sx={{ minWidth: 150, mr: 4 }} size='small'>
+                  <FormControl fullWidth sx={{ minWidth: 150, mr: { xs: 0, lg: 4 } }} size='small'>
                     <InputLabel id='position-select-label'>Position</InputLabel>
                     <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
                       <MenuItem value={'QB'}>QB</MenuItem>
@@ -542,7 +542,7 @@ export default function PlayerBuilder() {
                         />
                       </Grid>
                       <Grid size={3}>
-                        <Typography variant='body2'>{`${Math.floor(heightInput / 12)}' ${heightInput % 12}''`}</Typography>
+                        <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{`${Math.floor(heightInput / 12)}' ${heightInput % 12}''`}</Typography>
                       </Grid>
                       <Grid size={3}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Weight:</Typography>
@@ -560,10 +560,10 @@ export default function PlayerBuilder() {
                         />
                       </Grid>
                       <Grid size={3}>
-                        <Typography variant='body2'>{`${weightInput} lbs.`}</Typography>
+                        <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{`${weightInput} lbs.`}</Typography>
                       </Grid>
                     </Grid>
-                    <Grid container spacing={1} sx={{ mb: 2, mr: 4 }}>
+                    <Grid container spacing={1} sx={{ mb: 2, mr: { xs: 0, lg: 4 } }}>
                       <Grid size={12}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Attribute Points: {remAttributes}</Typography>
                       </Grid>
@@ -760,7 +760,7 @@ export default function PlayerBuilder() {
                         </Fab>
                       </Grid>
                     </Grid>
-                    <Grid container spacing={1} sx={{ mr: 4, mb: 1, alignItems: 'center' }}>
+                    <Grid container spacing={1} sx={{ mr: { xs: 0, lg: 4 }, mb: 1, alignItems: 'center' }}>
                       <Grid size={4}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 1:</Typography>
                       </Grid>
@@ -816,17 +816,17 @@ export default function PlayerBuilder() {
               filteredData.skills &&
               filteredData.traits &&
               Object.keys(skillDistribution).length > 0 && (
-                <Grid container size={9} spacing={1} sx={{ alignItems: 'center' }}>
+                <Grid container size={{ xs: 12, lg: 9 }} spacing={1} sx={{ alignItems: 'center' }}>
                   <Grid size={6} sx={{ mt: 1 }}>
-                    <Typography>Skill Points: {remSkillPoints}</Typography>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Skill Points: {remSkillPoints}</Typography>
                   </Grid>
                   <Grid size={6} sx={{ mt: 1 }}>
-                    <Typography>Cap Boosts: {remCapBoosts}</Typography>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Cap Boosts: {remCapBoosts}</Typography>
                   </Grid>
                   {groupOrder[selectedPosition].map((group) => (
                     <Fragment key={group}>
                       <Grid size={12}>
-                        <Typography>
+                        <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
                           <strong>{group}</strong>
                         </Typography>
                         <Divider sx={{ my: 1 }} />
@@ -845,10 +845,10 @@ export default function PlayerBuilder() {
                         })
                         .map(([key, value]) => (
                           <Fragment key={key}>
-                            <Grid size={2}>
+                            <Grid size={{ xs: 8, lg: 2 }}>
                               <Typography sx={{ typography: { xs: 'caption', lg: 'body2' } }}>{SKILL_LOOKUP[key]}</Typography>
                             </Grid>
-                            <Grid size={1} sx={{ height: '24px', textAlign: 'center' }}>
+                            <Grid size={{ xs: 4, lg: 1.5 }} sx={{ height: '24px', textAlign: 'center' }}>
                               <Fab
                                 variant='extended'
                                 size='small'
@@ -876,7 +876,7 @@ export default function PlayerBuilder() {
                                 <AddIcon />
                               </Fab>
                             </Grid>
-                            <Grid size={3} sx={{ px: 1 }}>
+                            <Grid size={{ xs: 12, lg: 2.5 }} sx={{ px: { xs: 0, lg: 1 }, mb: { xs: 1, lg: 0 } }}>
                               <SkillBar
                                 skillLevel={skillDistribution[key].currentLevel}
                                 maxSkillLevel={skillDistribution[key].currentMaxLevel}

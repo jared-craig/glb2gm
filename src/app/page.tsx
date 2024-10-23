@@ -91,6 +91,11 @@ export default function Home() {
       <Typography variant='caption' sx={{ position: 'fixed', bottom: '50px', right: '20px' }}>
         Developed by <strong>MadKingCraig</strong>
       </Typography>
+      <Typography variant='caption' sx={{ position: 'fixed', bottom: '20px', right: '20px' }}>
+        <Link href={'https://www.patreon.com/MadKingCraig'} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+          Support Me Through <strong>Patreon</strong>
+        </Link>
+      </Typography>
     </Container>
   );
 }
