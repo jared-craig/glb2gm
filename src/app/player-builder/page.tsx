@@ -194,7 +194,9 @@ export default function PlayerBuilder() {
   const [awareness, setAwareness] = useState<number>(5);
   const [confidence, setConfidence] = useState<number>(5);
   const [remAttributes, setRemAttributes] = useState<number>(5);
-  const [remTraitOptions, setRemTraitOptions] = useState({});
+  const [remTrait1Options, setRemTrait1Options] = useState({});
+  const [remTrait2Options, setRemTrait2Options] = useState({});
+  const [remTrait3Options, setRemTrait3Options] = useState({});
   const [trait1, setTrait1] = useState('');
   const [trait2, setTrait2] = useState('');
   const [trait3, setTrait3] = useState('');
@@ -332,7 +334,9 @@ export default function PlayerBuilder() {
     const newTraits = Object.fromEntries(traitsEntries);
 
     setFilteredData({ skills: newSkills, traits: newTraits });
-    setRemTraitOptions(newTraits);
+    setRemTrait1Options(newTraits);
+    setRemTrait2Options(newTraits);
+    setRemTrait3Options(newTraits);
   };
 
   const handlePositionChange = (event: SelectChangeEvent) => {
@@ -452,7 +456,28 @@ export default function PlayerBuilder() {
 
   useEffect(() => {
     if (!filteredData.traits) return;
-    setRemTraitOptions(filteredData.traits.filter);
+    console.log(filteredData.traits);
+    setRemTrait1Options(
+      Object.fromEntries(
+        Object.entries(filteredData.traits).filter(
+          ([key, value]) => key !== trait2 && key !== trait3 && !(value as any).conflicts.includes(trait2) && !(value as any).conflicts.includes(trait3)
+        )
+      )
+    );
+    setRemTrait2Options(
+      Object.fromEntries(
+        Object.entries(filteredData.traits).filter(
+          ([key, value]) => key !== trait1 && key !== trait3 && !(value as any).conflicts.includes(trait1) && !(value as any).conflicts.includes(trait3)
+        )
+      )
+    );
+    setRemTrait3Options(
+      Object.fromEntries(
+        Object.entries(filteredData.traits).filter(
+          ([key, value]) => key !== trait1 && key !== trait2 && !(value as any).conflicts.includes(trait1) && !(value as any).conflicts.includes(trait2)
+        )
+      )
+    );
   }, [trait1, trait2, trait3]);
 
   useEffect(() => {
@@ -484,7 +509,7 @@ export default function PlayerBuilder() {
             <Grid size={3}>
               <Box width={350} mt={1}>
                 <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
-                  <FormControl sx={{ minWidth: 150 }} size='small'>
+                  <FormControl fullWidth sx={{ minWidth: 150, mr: 4 }} size='small'>
                     <InputLabel id='position-select-label'>Position</InputLabel>
                     <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
                       <MenuItem value={'QB'}>QB</MenuItem>
@@ -742,13 +767,11 @@ export default function PlayerBuilder() {
                       <Grid size={8}>
                         <FormControl fullWidth>
                           <Select size='small' id='trait-one-select' value={trait1} onChange={handleTrait1Change}>
-                            {Object.entries(filteredData.traits)
-                              .filter(([key, value]) => key !== trait2 || key !== trait3)
-                              .map(([key, value]) => (
-                                <MenuItem key={key} value={key}>
-                                  {(value as any).name}
-                                </MenuItem>
-                              ))}
+                            {Object.entries(remTrait1Options).map(([key, value]) => (
+                              <MenuItem key={key} value={key}>
+                                {(value as any).name}
+                              </MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
                       </Grid>
@@ -758,13 +781,11 @@ export default function PlayerBuilder() {
                       <Grid size={8}>
                         <FormControl fullWidth>
                           <Select size='small' id='trait-one-select' value={trait2} onChange={handleTrait2Change}>
-                            {Object.entries(filteredData.traits)
-                              .filter(([key, value]) => key !== trait1 || key !== trait3)
-                              .map(([key, value]) => (
-                                <MenuItem key={key} value={key}>
-                                  {(value as any).name}
-                                </MenuItem>
-                              ))}
+                            {Object.entries(remTrait2Options).map(([key, value]) => (
+                              <MenuItem key={key} value={key}>
+                                {(value as any).name}
+                              </MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
                       </Grid>
@@ -774,13 +795,11 @@ export default function PlayerBuilder() {
                       <Grid size={8}>
                         <FormControl fullWidth>
                           <Select size='small' id='trait-one-select' value={trait3} onChange={handleTrait3Change}>
-                            {Object.entries(filteredData.traits)
-                              .filter(([key, value]) => key !== trait1 || key !== trait2)
-                              .map(([key, value]) => (
-                                <MenuItem key={key} value={key}>
-                                  {(value as any).name}
-                                </MenuItem>
-                              ))}
+                            {Object.entries(remTrait3Options).map(([key, value]) => (
+                              <MenuItem key={key} value={key}>
+                                {(value as any).name}
+                              </MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
                       </Grid>
