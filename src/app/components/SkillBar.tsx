@@ -1,4 +1,4 @@
-import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
@@ -10,12 +10,19 @@ const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
       backgroundColor: theme.palette.grey[800],
     }),
   },
-  [`& .${linearProgressClasses.bar}`]: {
-    borderRadius: 5,
+  [`&.${linearProgressClasses.bar2Buffer}`]: {
+    borderRadius: 0,
+  },
+  [`& .${linearProgressClasses.bar1Buffer}`]: {
+    borderRadius: 0,
     backgroundColor: '#1a90ff',
     ...theme.applyStyles('dark', {
       backgroundColor: '#308fe8',
     }),
+  },
+  [`& .${linearProgressClasses.dashed}`]: {
+    animation: 'none',
+    background: 'none',
   },
 }));
 
@@ -29,22 +36,31 @@ interface SkillBarProps {
 export default function SkillBar(props: SkillBarProps) {
   const { skillLevel, maxSkillLevel, skillCost, capBoostsSpent } = props;
 
-  const theme = useTheme();
-  const mobile = useMediaQuery(theme.breakpoints.down('lg'));
-
   return (
-    <Box sx={{ position: 'relative', pt: 0.5 }}>
-      <CustomLinearProgress variant='determinate' sx={{ height: mobile ? 18 : 30.75 }} value={skillLevel} />
+    <Box sx={{ position: 'relative' }}>
+      <CustomLinearProgress variant='buffer' sx={{ height: 24 }} value={skillLevel} valueBuffer={maxSkillLevel} />
       <Box
         sx={{
           position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -35%)',
+          top: 0,
+          left: 0,
+          pl: 2,
         }}
       >
-        <Typography variant='body2' sx={{ textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black' }}>
-          {skillLevel} of {maxSkillLevel} {capBoostsSpent && `(${capBoostsSpent})`}
+        <Typography variant='body1' sx={{ textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black' }}>
+          {skillLevel} of {maxSkillLevel} {capBoostsSpent > 0 && `(${capBoostsSpent})`}
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          pr: 2,
+        }}
+      >
+        <Typography variant='body1' sx={{ textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black' }}>
+          {skillCost}
         </Typography>
       </Box>
     </Box>
