@@ -136,7 +136,7 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
     <Stack>
       <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
         <Typography sx={{ typography: { xs: 'body2' } }}>
-          <Link href={`https://glb2.warriorgeneral.com/game/player/${player.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+          <Link href={`/player-details/${player.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
             <strong>{player.position}</strong> {player.player_name}
           </Link>
         </Typography>
