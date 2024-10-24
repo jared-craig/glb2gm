@@ -300,55 +300,57 @@ export default function TopTeam() {
     let pros: (PlayerDefensiveData | undefined)[] = [];
     let vets: (PlayerDefensiveData | undefined)[] = [];
 
-    const rookieDTs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'DT' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const rookieDTs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'DT' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     rookies = rookieDTs.length > 0 ? [...rookies, ...rookieDTs] : [...rookies, ...[undefined, undefined, undefined, undefined]];
-    const rookieDEs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'DE' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const rookieDEs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'DE' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     rookies = rookieDEs.length > 0 ? [...rookies, ...rookieDEs] : [...rookies, ...[undefined, undefined, undefined, undefined]];
-    const rookieLBs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'LB' && x.games_played / gamesPlayed > 0.75).slice(0, 6);
+    const rookieLBs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'LB' && x.games_played / gamesPlayed >= 0.75).slice(0, 6);
     rookies = rookieLBs.length > 0 ? [...rookies, ...rookieLBs] : [...rookies, ...[undefined, undefined, undefined, undefined, undefined, undefined]];
-    const rookieCBs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'CB' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const rookieCBs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'CB' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     rookies = rookieCBs.length > 0 ? [...rookies, ...rookieCBs] : [...rookies, ...[undefined, undefined, undefined, undefined]];
-    const rookieSs = tops.filter((x) => x.tier === 'Rookie' && (x.position === 'SS' || x.position === 'FS') && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const rookieSs = tops
+      .filter((x) => x.tier === 'Rookie' && (x.position === 'SS' || x.position === 'FS') && x.games_played / gamesPlayed >= 0.75)
+      .slice(0, 4);
     rookies = rookieSs.length > 0 ? [...rookies, ...rookieSs] : [...rookies, ...[undefined, undefined, undefined, undefined]];
     setDefenderRookieData(rookies);
 
-    const sophDTs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'DT' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const sophDTs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'DT' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     sophs = sophDTs.length > 0 ? [...sophs, ...sophDTs] : [...sophs, ...[undefined, undefined, undefined, undefined]];
-    const sophDEs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'DE' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const sophDEs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'DE' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     sophs = sophDEs.length > 0 ? [...sophs, ...sophDEs] : [...sophs, ...[undefined, undefined, undefined, undefined]];
-    const sophLBs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'LB' && x.games_played / gamesPlayed > 0.75).slice(0, 6);
+    const sophLBs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'LB' && x.games_played / gamesPlayed >= 0.75).slice(0, 6);
     sophs = sophLBs.length > 0 ? [...sophs, ...sophLBs] : [...sophs, ...[undefined, undefined, undefined, undefined, undefined, undefined]];
-    const sophCBs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'CB' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const sophCBs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'CB' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     sophs = sophCBs.length > 0 ? [...sophs, ...sophCBs] : [...sophs, ...[undefined, undefined, undefined, undefined]];
     const sophSs = tops
-      .filter((x) => x.tier === 'Sophomore' && (x.position === 'SS' || x.position === 'FS') && x.games_played / gamesPlayed > 0.75)
+      .filter((x) => x.tier === 'Sophomore' && (x.position === 'SS' || x.position === 'FS') && x.games_played / gamesPlayed >= 0.75)
       .slice(0, 4);
     sophs = sophSs.length > 0 ? [...sophs, ...sophSs] : [...sophs, ...[undefined, undefined, undefined, undefined]];
     setDefenderSophData(sophs);
 
-    const proDTs = tops.filter((x) => x.tier === 'Professional' && x.position === 'DT' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const proDTs = tops.filter((x) => x.tier === 'Professional' && x.position === 'DT' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     pros = proDTs.length > 0 ? [...pros, ...proDTs] : [...pros, ...[undefined, undefined, undefined, undefined]];
-    const proDEs = tops.filter((x) => x.tier === 'Professional' && x.position === 'DE' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const proDEs = tops.filter((x) => x.tier === 'Professional' && x.position === 'DE' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     pros = proDEs.length > 0 ? [...pros, ...proDEs] : [...pros, ...[undefined, undefined, undefined, undefined]];
-    const proLBs = tops.filter((x) => x.tier === 'Professional' && x.position === 'LB' && x.games_played / gamesPlayed > 0.75).slice(0, 6);
+    const proLBs = tops.filter((x) => x.tier === 'Professional' && x.position === 'LB' && x.games_played / gamesPlayed >= 0.75).slice(0, 6);
     pros = proLBs.length > 0 ? [...pros, ...proLBs] : [...pros, ...[undefined, undefined, undefined, undefined, undefined, undefined]];
-    const proCBs = tops.filter((x) => x.tier === 'Professional' && x.position === 'CB' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const proCBs = tops.filter((x) => x.tier === 'Professional' && x.position === 'CB' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     pros = proCBs.length > 0 ? [...pros, ...proCBs] : [...pros, ...[undefined, undefined, undefined, undefined]];
     const proSs = tops
-      .filter((x) => x.tier === 'Professional' && (x.position === 'SS' || x.position === 'FS') && x.games_played / gamesPlayed > 0.75)
+      .filter((x) => x.tier === 'Professional' && (x.position === 'SS' || x.position === 'FS') && x.games_played / gamesPlayed >= 0.75)
       .slice(0, 4);
     pros = proSs.length > 0 ? [...pros, ...proSs] : [...pros, ...[undefined, undefined, undefined, undefined]];
     setDefenderProData(pros);
 
-    const vetDTs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'DT' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const vetDTs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'DT' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     vets = vetDTs.length > 0 ? [...vets, ...vetDTs] : [...vets, ...[undefined, undefined, undefined, undefined]];
-    const vetDEs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'DE' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const vetDEs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'DE' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     vets = vetDEs.length > 0 ? [...vets, ...vetDEs] : [...vets, ...[undefined, undefined, undefined, undefined]];
-    const vetLBs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'LB' && x.games_played / gamesPlayed > 0.75).slice(0, 6);
+    const vetLBs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'LB' && x.games_played / gamesPlayed >= 0.75).slice(0, 6);
     vets = vetLBs.length > 0 ? [...vets, ...vetLBs] : [...vets, ...[undefined, undefined, undefined, undefined, undefined, undefined]];
-    const vetCBs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'CB' && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const vetCBs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'CB' && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     vets = vetCBs.length > 0 ? [...vets, ...vetCBs] : [...vets, ...[undefined, undefined, undefined, undefined]];
-    const vetSs = tops.filter((x) => x.tier === 'Veteran' && (x.position === 'SS' || x.position === 'FS') && x.games_played / gamesPlayed > 0.75).slice(0, 4);
+    const vetSs = tops.filter((x) => x.tier === 'Veteran' && (x.position === 'SS' || x.position === 'FS') && x.games_played / gamesPlayed >= 0.75).slice(0, 4);
     vets = vetSs.length > 0 ? [...vets, ...vetSs] : [...vets, ...[undefined, undefined, undefined, undefined]];
     setDefenderVetData(vets);
 

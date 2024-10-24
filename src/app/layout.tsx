@@ -3,7 +3,7 @@ import './globals.css';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
-import { Box, CssBaseline, Typography } from '@mui/material';
+import { Box, CssBaseline } from '@mui/material';
 import MuiXLicense from '@/MuiXLicense';
 import HeaderBar from './components/HeaderBar';
 
@@ -11,11 +11,10 @@ import { Analytics } from '@vercel/analytics/react';
 
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { Suspense } from 'react';
-import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'GLB2GM',
-  description: 'GLB2 Statistics and Analysis',
+  description: 'GLB2 Tools, Statistics, and Analysis',
 };
 
 export default function RootLayout({
