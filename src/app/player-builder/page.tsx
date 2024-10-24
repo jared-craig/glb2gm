@@ -427,6 +427,15 @@ export default function PlayerBuilder() {
 
     setHeightInput(positionData[selectedPosition].min_height);
     setWeightInput(positionData[selectedPosition].min_weight);
+    setStrength(5);
+    setSpeed(5);
+    setAgility(5);
+    setStamina(5);
+    setAwareness(5);
+    setConfidence(5);
+    setTrait1('');
+    setTrait2('');
+    setTrait3('');
     filterAndSortSkills();
   }, [selectedPosition]);
 
