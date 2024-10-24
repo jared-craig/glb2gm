@@ -18,10 +18,24 @@ const THRESHOLDS = {
   PASS_ATTEMPTS: 5.0,
   CARRIES: 5.0,
   RECEPTIONS: 0.5,
-  BLOCKER_PLAYS: 25.0,
+  BLOCKER_PLAYS: 20.0,
   FG_ATTEMPTS: 0.5,
   PUNTS: 0.5,
   RETURNS: 1.0,
+};
+
+const getRankColor = (rankString: string, maxRank: number, sort: string) => {
+  if (rankString === 'N/A') return 'inherit';
+  const rankStringNum = rankString.match(/\d+/);
+  if (!rankStringNum) return 'inherit';
+  const rank = +rankStringNum[0];
+  const normalizedRank = (maxRank - rank) / (maxRank - 1);
+
+  const red = Math.round(sort === 'asc' ? 255 * (1 - normalizedRank) : 255 * normalizedRank);
+  const green = Math.round(sort === 'asc' ? 255 * normalizedRank : 255 * (1 - normalizedRank));
+  const blue = 0;
+
+  return `rgb(${red}, ${green}, ${blue})`;
 };
 
 export default function TeamDetails({ params }: { params: { playerId: string } }) {
@@ -59,6 +73,8 @@ export default function TeamDetails({ params }: { params: { playerId: string } }
     const punting = puntingData.find((x: PlayerData) => x.id === +params.playerId);
     const returning = returningData.find((x: PlayerData) => x.id === +params.playerId);
 
+    const gamesPlayed = Math.max(...passData.map((x: PlayerData) => x.games_played));
+
     const currentPlayerData = combinePlayerData(
       { passing: passing },
       { rushing: rushing },
@@ -71,13 +87,19 @@ export default function TeamDetails({ params }: { params: { playerId: string } }
     );
     const tierPlayerData = combinePlayerData(
       { passing: passData.filter((x: any) => x.tier === passing?.tier && x.attempts >= THRESHOLDS.PASS_ATTEMPTS * +x.games_played) },
-      { rushing: rushData.filter((x: any) => x.tier === rushing?.tier && x.rushes >= THRESHOLDS.CARRIES * +x.games_played) },
-      { receiving: receivingData.filter((x: any) => x.tier === receiving?.tier && x.receptions >= THRESHOLDS.RECEPTIONS * +x.games_played) },
-      { blocking: blockingData.filter((x: any) => x.tier === blocking?.tier && x.plays >= THRESHOLDS.BLOCKER_PLAYS * +x.games_played) },
-      { defensive: defensiveData.filter((x: any) => x.tier === defensive?.tier) },
-      { kicking: kickingData.filter((x: any) => x.tier === kicking?.tier) },
-      { punting: puntingData.filter((x: any) => x.tier === punting?.tier) },
-      { returning: returningData.filter((x: any) => x.tier === returning?.tier) }
+      {
+        rushing: rushData.filter((x: any) => x.tier === rushing?.tier && x.rushes >= THRESHOLDS.CARRIES * +x.games_played && x.position === rushing?.position),
+      },
+      {
+        receiving: receivingData.filter(
+          (x: any) => x.tier === receiving?.tier && x.receptions >= THRESHOLDS.RECEPTIONS * +x.games_played && x.position === receiving?.position
+        ),
+      },
+      { blocking: blockingData.filter((x: any) => x.tier === blocking?.tier && x.plays >= THRESHOLDS.BLOCKER_PLAYS * gamesPlayed) },
+      { defensive: defensiveData.filter((x: any) => x.tier === defensive?.tier && x.games_played / gamesPlayed >= 0.75 && x.position === defensive?.position) },
+      { kicking: kickingData.filter((x: any) => x.tier === kicking?.tier && x.fg_attempts >= THRESHOLDS.FG_ATTEMPTS * +x.games_played) },
+      { punting: puntingData.filter((x: any) => x.tier === punting?.tier && x.punts >= THRESHOLDS.PUNTS * +x.games_played) },
+      { returning: returningData.filter((x: any) => x.tier === returning?.tier && x.prs + x.krs >= THRESHOLDS.RETURNS * +x.games_played) }
     );
 
     setPlayerData(currentPlayerData);
@@ -110,12 +132,18 @@ export default function TeamDetails({ params }: { params: { playerId: string } }
         return [...tierData.passing].sort((a, b) => +b.yards - +a.yards);
       case 'passing_yards_per_attempt':
         return [...tierData.passing].sort((a, b) => +b.yards / +b.attempts - +a.completion_percentage / +a.attempts);
+      case 'passing_attempts':
+        return [...tierData.passing].sort((a, b) => +b.attempts - +a.attempts);
+      case 'passing_completions':
+        return [...tierData.passing].sort((a, b) => +b.completions - +a.completions);
       case 'passing_completion_percentage':
         return [...tierData.passing].sort((a, b) => +b.completion_percentage - +a.completion_percentage);
       case 'passing_touchdowns':
         return [...tierData.passing].sort((a, b) => +b.touchdowns - +a.touchdowns);
       case 'passing_interceptions':
         return [...tierData.passing].sort((a, b) => +b.interceptions - +a.interceptions);
+      case 'passing_touchdowns_to_interceptions':
+        return [...tierData.passing].sort((a, b) => +b.touchdowns / +b.interceptions - +a.touchdowns / +a.interceptions);
       case 'passing_sacks':
         return [...tierData.passing].sort((a, b) => +b.sacks / +b.attempts - +a.sacks / +a.attempts);
       case 'passing_hurries':
@@ -154,6 +182,46 @@ export default function TeamDetails({ params }: { params: { playerId: string } }
         return [...tierData.receiving].sort((a, b) => +b.fumbles / +b.receptions - +a.fumbles / +a.receptions);
       case 'receiving_fumbles_lost':
         return [...tierData.receiving].sort((a, b) => +b.fumbles_lost / +b.receptions - +a.fumbles_lost / +a.receptions);
+      case 'defensive_tackles':
+        return [...tierData.defensive].sort((a, b) => +b.tackles - +a.tackles);
+      case 'defensive_missed_tackles':
+        return [...tierData.defensive].sort((a, b) => +b.missed_tackles - +a.missed_tackles);
+      case 'defensive_sticks':
+        return [...tierData.defensive].sort((a, b) => +b.sticks - +a.sticks);
+      case 'defensive_sacks':
+        return [...tierData.defensive].sort((a, b) => +b.sacks - +a.sacks);
+      case 'defensive_interceptions':
+        return [...tierData.defensive].sort((a, b) => +b.interceptions - +a.interceptions);
+      case 'blocking_pancakes':
+        return [...tierData.blocking].sort((a, b) => +b.pancakes - +a.pancakes);
+      case 'blocking_reverse_pancaked':
+        return [...tierData.blocking].sort((a, b) => +b.reverse_pancaked - +a.reverse_pancaked);
+      case 'blocking_hurries_allowed':
+        return [...tierData.blocking].sort((a, b) => +b.hurries_allowed - +a.hurries_allowed);
+      case 'blocking_sacks_allowed':
+        return [...tierData.blocking].sort((a, b) => +b.sacks_allowed - +a.sacks_allowed);
+      case 'kicking_fg_attempts':
+        return [...tierData.kicking].sort((a, b) => +b.fg_attempts - +a.fg_attempts);
+      case 'kicking_fg_made':
+        return [...tierData.kicking].sort((a, b) => +b.fg_made - +a.fg_made);
+      case 'kicking_50_attempts':
+        return [...tierData.kicking].sort((a, b) => +b.fifty_plus_attempts - +a.fifty_plus_attempts);
+      case 'kicking_50_made':
+        return [...tierData.kicking].sort((a, b) => +b.fifty_plus_made - +a.fifty_plus_made);
+      case 'kicking_touchbacks':
+        return [...tierData.kicking].sort((a, b) => +b.touchbacks - +a.touchbacks);
+      case 'kicking_kickoffs':
+        return [...tierData.kicking].sort((a, b) => +b.kickoffs - +a.kickoffs);
+      case 'kicking_touchback_ratio':
+        return [...tierData.kicking].sort((a, b) => +b.touchbacks / +b.kickoffs - +a.touchbacks / +a.kickoffs);
+      case 'punting_punts':
+        return [...tierData.punting].sort((a, b) => +b.punts - +a.punts);
+      case 'punting_average':
+        return [...tierData.punting].sort((a, b) => +b.average - +a.average);
+      case 'punting_hangtime':
+        return [...tierData.punting].sort((a, b) => +b.hangtime - +a.hangtime);
+      case 'punting_inside_twenty':
+        return [...tierData.punting].sort((a, b) => +b.inside_twenty - +a.inside_twenty);
       case 'returning_kr_yards':
         return [...tierData.returning].sort((a, b) => +b.kr_yards - +a.kr_yards);
       case 'returning_kr_yards_per_return':
@@ -176,7 +244,13 @@ export default function TeamDetails({ params }: { params: { playerId: string } }
   const getTierRank = (stat: string): string => {
     if (!genericPlayerData || !tierData) return 'N/A';
     const sortedTier = sortTierData(stat);
-    return sortedTier ? formatWithOrdinal(sortedTier.map((x) => x.id).indexOf(genericPlayerData.id) + 1) : 'N/A';
+    if (sortedTier) {
+      const rank = sortedTier.map((x) => x.id).indexOf(genericPlayerData.id);
+      if (rank === -1) return 'N/A';
+      return formatWithOrdinal(sortedTier.map((x) => x.id).indexOf(genericPlayerData.id) + 1);
+    } else {
+      return 'N/A';
+    }
   };
 
   useEffect(() => {
@@ -205,34 +279,100 @@ export default function TeamDetails({ params }: { params: { playerId: string } }
               <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>Passing</Typography>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Yards: {playerData.passing.yards}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('passing_yards')} )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('passing_yards'), tierData.passing.length, 'asc') }}
+                >
+                  ( {getTierRank('passing_yards')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                   Yards Per Attempt: {(+playerData.passing.yards / +playerData.passing.attempts).toFixed(2)}
                 </Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('passing_yards_per_attempt')} )</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('passing_yards_per_attempt'), tierData.passing.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('passing_yards_per_attempt')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Attempts: {playerData.passing.attempts}</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2', color: getRankColor(getTierRank('passing_attempts'), tierData.passing.length, 'asc') } }}
+                >
+                  ( {getTierRank('passing_attempts')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Completions: {playerData.passing.completions}</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('passing_completions'), tierData.passing.length, 'asc') }}
+                >
+                  ( {getTierRank('passing_completions')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Completion %: {playerData.passing.completion_percentage}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('passing_completion_percentage')} )</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('passing_completion_percentage'), tierData.passing.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('passing_completion_percentage')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Touchdowns: {playerData.passing.touchdowns}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('passing_touchdowns')} )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('passing_touchdowns'), tierData.passing.length, 'asc') }}
+                >
+                  ( {getTierRank('passing_touchdowns')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Interceptions: {playerData.passing.interceptions}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('passing_interceptions')} Most )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('passing_interceptions'), tierData.passing.length, 'desc') }}
+                >
+                  ( {getTierRank('passing_interceptions')} most)
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
+                  TD/Int Ratio: {(playerData.passing.touchdowns / playerData.passing.interceptions).toFixed(1)}
+                </Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('passing_touchdowns_to_interceptions'), tierData.passing.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('passing_touchdowns_to_interceptions')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Sacks: {playerData.passing.sacks}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('passing_sacks')} Most per attempt )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('passing_sacks'), tierData.passing.length, 'desc') }}
+                >
+                  ( {getTierRank('passing_sacks')} most per attempt )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Hurries: {playerData.passing.hurries}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('passing_hurries')} Most per attempt )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('passing_hurries'), tierData.passing.length, 'desc') }}
+                >
+                  ( {getTierRank('passing_hurries')} most per attempt )
+                </Typography>
               </Stack>
+              <Typography variant='caption'>
+                * ( out of {tierData.passing.length} eligible {genericPlayerData.tier} {genericPlayerData.position}s )
+              </Typography>
             </Grid>
           )}
           {playerData.rushing && playerData.rushing.rushes >= THRESHOLDS.CARRIES * genericPlayerData.games_played && (
@@ -240,38 +380,77 @@ export default function TeamDetails({ params }: { params: { playerId: string } }
               <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>Rushing</Typography>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Yards: {playerData.rushing.yards}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('rushing_yards')} )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2', color: getRankColor(getTierRank('rushing_yards'), tierData.rushing.length, 'asc') } }}
+                >
+                  ( {getTierRank('rushing_yards')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                   Yards Per Carry: {(+playerData.rushing.yards / +playerData.rushing.rushes).toFixed(2)}
                 </Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('rushing_yards_per_carry')} )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2', color: getRankColor(getTierRank('rushing_yards'), tierData.rushing.length, 'asc') } }}
+                >
+                  ( {getTierRank('rushing_yards_per_carry')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Touchdowns: {playerData.rushing.touchdowns}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('rushing_touchdowns')} )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2', color: getRankColor(getTierRank('rushing_touchdowns'), tierData.rushing.length, 'asc') } }}
+                >
+                  ( {getTierRank('rushing_touchdowns')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Broken Tackles: {playerData.rushing.broken_tackles}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('rushing_broken_tackles')} per carry )</Typography>{' '}
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2', color: getRankColor(getTierRank('rushing_broken_tackles'), tierData.rushing.length, 'asc') } }}
+                >
+                  ( {getTierRank('rushing_broken_tackles')} per carry )
+                </Typography>{' '}
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Yards After Contact: {playerData.rushing.yards_after_contact}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('rushing_yards_after_contact')} )</Typography>{' '}
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2', color: getRankColor(getTierRank('rushing_yards_after_contact'), tierData.rushing.length, 'asc') },
+                  }}
+                >
+                  ( {getTierRank('rushing_yards_after_contact')} )
+                </Typography>{' '}
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Tackles For Loss: {playerData.rushing.tackles_for_loss}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('rushing_tackles_for_loss')} per carry )</Typography>{' '}
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2', color: getRankColor(getTierRank('rushing_tackles_for_loss'), tierData.rushing.length, 'desc') },
+                  }}
+                >
+                  ( {getTierRank('rushing_tackles_for_loss')} per carry )
+                </Typography>{' '}
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Fumbles: {playerData.rushing.fumbles}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('rushing_fumbles')} per carry )</Typography>{' '}
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2', color: getRankColor(getTierRank('rushing_fumbles'), tierData.rushing.length, 'desc') } }}
+                >
+                  ( {getTierRank('rushing_fumbles')} per carry )
+                </Typography>{' '}
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Fumbles Lost: {playerData.rushing.fumbles_lost}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('rushing_fumbles_lost')} per carry )</Typography>{' '}
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2', color: getRankColor(getTierRank('rushing_fumbles_lost'), tierData.rushing.length, 'desc') } }}
+                >
+                  ( {getTierRank('rushing_fumbles_lost')} per carry )
+                </Typography>{' '}
               </Stack>
+              <Typography variant='caption'>
+                * ( out of {tierData.rushing.length} eligible {genericPlayerData.tier} {genericPlayerData.position}s )
+              </Typography>
             </Grid>
           )}
           {playerData.receiving && playerData.receiving.receptions >= THRESHOLDS.RECEPTIONS * genericPlayerData.games_played && (
@@ -281,47 +460,354 @@ export default function TeamDetails({ params }: { params: { playerId: string } }
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Yards: {playerData.receiving.yards}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('receiving_yards')} )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('receiving_yards'), tierData.receiving.length, 'asc') }}
+                >
+                  ( {getTierRank('receiving_yards')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                   Yards Per Reception: {(+playerData.receiving.yards / +playerData.receiving.receptions).toFixed(2)}
                 </Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('receiving_yards_per_reception')} )</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('receiving_yards_per_reception'), tierData.receiving.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('receiving_yards_per_reception')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Touchdowns: {playerData.receiving.touchdowns}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('receiving_touchdowns')} )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('receiving_touchdowns'), tierData.receiving.length, 'asc') }}
+                >
+                  ( {getTierRank('receiving_touchdowns')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Yards After Catch: {playerData.receiving.yards_after_catch}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('receiving_yards_after_catch')} per reception )</Typography>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
+                  Yards After Catch: {(+playerData.receiving.yards_after_catch / +playerData.receiving.receptions).toFixed(2)}
+                </Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('receiving_yards_after_catch'), tierData.receiving.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('receiving_yards_after_catch')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Targets: {playerData.receiving.targets}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('receiving_targets')} )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('receiving_targets'), tierData.receiving.length, 'asc') }}
+                >
+                  ( {getTierRank('receiving_targets')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Receptions: {playerData.receiving.receptions}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('receiving_receptions')} )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('receiving_receptions'), tierData.receiving.length, 'asc') }}
+                >
+                  ( {getTierRank('receiving_receptions')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Drops: {playerData.receiving.drops}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('receiving_drops')} per reception )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('receiving_drops'), tierData.receiving.length, 'desc') }}
+                >
+                  ( {getTierRank('receiving_drops')} per reception )
+                </Typography>
               </Stack>
               {!playerData.rushing && (
                 <>
                   <Stack direction='row' spacing={1}>
                     <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Fumbles: {playerData.receiving.fumbles}</Typography>
-                    <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('receiving_fumbles')} per reception )</Typography>
+                    <Typography
+                      sx={{
+                        typography: { xs: 'body2', sm: 'body2' },
+                        color: getRankColor(getTierRank('receiving_fumbles'), tierData.receiving.length, 'desc'),
+                      }}
+                    >
+                      ( {getTierRank('receiving_fumbles')} per reception )
+                    </Typography>
                   </Stack>
 
                   <Stack direction='row' spacing={1}>
                     <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Fumbles Lost: {playerData.receiving.fumbles_lost}</Typography>
-                    <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('receiving_fumbles_lost')} per reception )</Typography>
+                    <Typography
+                      sx={{
+                        typography: { xs: 'body2', sm: 'body2' },
+                        color: getRankColor(getTierRank('receiving_fumbles_lost'), tierData.receiving.length, 'desc'),
+                      }}
+                    >
+                      ( {getTierRank('receiving_fumbles_lost')} per reception )
+                    </Typography>
                   </Stack>
                 </>
               )}
+              <Typography variant='caption'>
+                * ( out of {tierData.receiving.length} eligible {genericPlayerData.tier} {genericPlayerData.position}s )
+              </Typography>
+            </Grid>
+          )}
+          {playerData.defensive && (
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>Defensive</Typography>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Tackles: {playerData.defensive.tackles}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('defensive_tackles'), tierData.defensive.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('defensive_tackles')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Missed Tackles: {playerData.defensive.missed_tackles}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('defensive_missed_tackles'), tierData.defensive.length, 'desc'),
+                  }}
+                >
+                  ( {getTierRank('defensive_missed_tackles')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Sticks: {playerData.defensive.sticks}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('defensive_sticks'), tierData.defensive.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('defensive_sticks')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Sacks: {playerData.defensive.sacks}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('defensive_sacks'), tierData.defensive.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('defensive_sacks')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Interceptions: {playerData.defensive.interceptions}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('defensive_interceptions'), tierData.defensive.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('defensive_interceptions')} )
+                </Typography>
+              </Stack>
+              <Typography variant='caption'>
+                * ( out of {tierData.defensive.length} eligible {genericPlayerData.tier} {genericPlayerData.position}s )
+              </Typography>
+            </Grid>
+          )}
+          {playerData.blocking && (
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>Blocking</Typography>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Pancakes: {playerData.blocking.pancakes}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('blocking_pancakes'), tierData.blocking.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('blocking_pancakes')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Rev Cakes: {playerData.blocking.reverse_pancaked}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('blocking_reverse_pancaked'), tierData.blocking.length, 'desc'),
+                  }}
+                >
+                  ( {getTierRank('blocking_reverse_pancaked')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Hurries Allowed: {playerData.blocking.hurries_allowed}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('blocking_hurries_allowed'), tierData.blocking.length, 'desc'),
+                  }}
+                >
+                  ( {getTierRank('blocking_hurries_allowed')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Sacks Allowed: {playerData.blocking.sacks_allowed}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('blocking_sacks_allowed'), tierData.blocking.length, 'desc'),
+                  }}
+                >
+                  ( {getTierRank('blocking_sacks_allowed')} )
+                </Typography>
+              </Stack>
+              <Typography variant='caption'>
+                * ( out of {tierData.blocking.length} eligible {genericPlayerData.tier}s )
+              </Typography>
+            </Grid>
+          )}
+          {playerData.kicking && (
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>Kicking</Typography>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>FG Made: {playerData.kicking.fg_made}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('kicking_fg_made'), tierData.kicking.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('kicking_fg_made')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>FG Attempts: {playerData.kicking.fg_attempts}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('kicking_fg_attempts'), tierData.kicking.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('kicking_fg_attempts')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>50+ Made: {playerData.kicking.fifty_plus_made}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('kicking_50_made'), tierData.kicking.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('kicking_50_made')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>50+ Attempts: {playerData.kicking.fifty_plus_attempts}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('kicking_50_attempts'), tierData.kicking.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('kicking_50_attempts')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Touchbacks: {playerData.kicking.touchbacks}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('kicking_touchbacks'), tierData.kicking.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('kicking_touchbacks')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Kickoffs: {playerData.kicking.kickoffs}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('kicking_kickoffs'), tierData.kicking.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('kicking_kickoffs')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
+                  Touchback %: {((playerData.kicking.touchbacks / playerData.kicking.kickoffs) * 100.0).toFixed(2)}
+                </Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('kicking_touchback_ratio'), tierData.kicking.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('kicking_touchback_ratio')} )
+                </Typography>
+              </Stack>
+              <Typography variant='caption'>
+                * ( out of {tierData.kicking.length} eligible {genericPlayerData.tier} {genericPlayerData.position}s )
+              </Typography>
+            </Grid>
+          )}
+          {playerData.punting && (
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>Punting</Typography>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Punts: {playerData.punting.punts}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('punting_punts'), tierData.punting.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('punting_punts')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Punt Average: {playerData.punting.average}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('punting_average'), tierData.punting.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('punting_average')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Hangtime: {playerData.punting.hangtime}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('punting_hangtime'), tierData.punting.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('punting_hangtime')} )
+                </Typography>
+              </Stack>
+              <Stack direction='row' spacing={1}>
+                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>Inside Twenty: {playerData.punting.inside_twenty}</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('punting_inside_twenty'), tierData.punting.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('punting_inside_twenty')})
+                </Typography>
+              </Stack>
+              <Typography variant='caption'>
+                * ( out of {tierData.punting.length} eligible {genericPlayerData.tier} {genericPlayerData.position}s )
+              </Typography>
             </Grid>
           )}
           {playerData.returning && (
@@ -329,43 +815,86 @@ export default function TeamDetails({ params }: { params: { playerId: string } }
               <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>Returning</Typography>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>KR Yards: {playerData.returning.kr_yards}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('returning_kr_yards')} )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('returning_kr_yards'), tierData.returning.length, 'asc') }}
+                >
+                  ( {getTierRank('returning_kr_yards')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                   KR Yards Per Return: {(+playerData.returning.kr_yards / +playerData.returning.krs).toFixed(2)}
                 </Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('returning_kr_yards_per_return')} )</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('returning_kr_yards_per_return'), tierData.returning.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('returning_kr_yards_per_return')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>KR Touchdowns: {playerData.returning.kr_touchdowns}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('returning_kr_touchdowns')} )</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('returning_kr_touchdowns'), tierData.returning.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('returning_kr_touchdowns')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>PR Yards: {playerData.returning.pr_yards}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('returning_pr_yards')} )</Typography>
+                <Typography
+                  sx={{ typography: { xs: 'body2', sm: 'body2' }, color: getRankColor(getTierRank('returning_pr_yards'), tierData.returning.length, 'asc') }}
+                >
+                  ( {getTierRank('returning_pr_yards')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                   PR Yards Per Return: {(+playerData.returning.pr_yards / +playerData.returning.prs).toFixed(2)}
                 </Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('returning_pr_yards_per_return')} )</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('returning_pr_yards_per_return'), tierData.returning.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('returning_pr_yards_per_return')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>PR Touchdowns: {playerData.returning.pr_touchdowns}</Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('returning_pr_touchdowns')} )</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('returning_pr_touchdowns'), tierData.returning.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('returning_pr_touchdowns')} )
+                </Typography>
               </Stack>
               <Stack direction='row' spacing={1}>
                 <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                   Total Touchdowns: {+playerData.returning.kr_touchdowns + +playerData.returning.pr_touchdowns}
                 </Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>( {getTierRank('returning_total_touchdowns')} )</Typography>
+                <Typography
+                  sx={{
+                    typography: { xs: 'body2', sm: 'body2' },
+                    color: getRankColor(getTierRank('returning_total_touchdowns'), tierData.returning.length, 'asc'),
+                  }}
+                >
+                  ( {getTierRank('returning_total_touchdowns')} )
+                </Typography>
               </Stack>
+              <Typography variant='caption'>
+                * ( out of {tierData.returning.length} eligible {genericPlayerData.tier} KRs/PRs )
+              </Typography>
             </Grid>
           )}
-          <Grid size={12}>
-            <Typography variant='caption'>* ( Tier Rank of Eligible Players )</Typography>
-          </Grid>
         </Grid>
       )}
     </Container>
