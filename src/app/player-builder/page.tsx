@@ -287,7 +287,7 @@ export default function PlayerBuilder() {
     cost += filteredData.skills[skill].weight * weightInput;
 
     for (const trait of [trait1, trait2, trait3]) {
-      if (skill in filteredData.traits[trait].skill_modifiers) {
+      if (filteredData.traits[trait] && skill in filteredData.traits[trait].skill_modifiers) {
         cost *= 1 + (filteredData.traits[trait].skill_modifiers[skill].cost || 0);
       }
     }
@@ -855,7 +855,7 @@ export default function PlayerBuilder() {
                                 aria-label='subtract'
                                 sx={{ height: '24px', mr: 1 }}
                                 onClick={() => handleSkillChange(key, -1)}
-                                disabled={skillDistribution[key].currentLevel <= skillDistribution[key].baseLevel}
+                                disabled={(skillDistribution[key]?.currentLevel ?? 0) <= (skillDistribution[key]?.baseLevel ?? 0)}
                               >
                                 <RemoveIcon />
                               </Fab>
@@ -867,9 +867,9 @@ export default function PlayerBuilder() {
                                 sx={{ height: '24px' }}
                                 onClick={() => handleSkillChange(key, 1)}
                                 disabled={
-                                  (skillDistribution[key].currentLevel >= skillDistribution[key].maxLevel && remCapBoosts <= 0) ||
-                                  skillDistribution[key].currentLevel >= 100 ||
-                                  remSkillPoints < CalcCostSP(key, 1, skillDistribution[key].currentLevel)
+                                  ((skillDistribution[key]?.currentLevel ?? 0) >= (skillDistribution[key]?.maxLevel ?? 0) && remCapBoosts <= 0) ||
+                                  (skillDistribution[key]?.currentLevel ?? 0) >= 100 ||
+                                  remSkillPoints < CalcCostSP(key, 1, skillDistribution[key]?.currentLevel ?? 0)
                                 }
                               >
                                 <AddIcon />
@@ -877,10 +877,10 @@ export default function PlayerBuilder() {
                             </Grid>
                             <Grid size={{ xs: 12, lg: 2.5 }} sx={{ px: { xs: 0, lg: 1 }, mb: { xs: 1, lg: 0 } }}>
                               <SkillBar
-                                skillLevel={skillDistribution[key].currentLevel}
-                                maxSkillLevel={skillDistribution[key].currentMaxLevel}
-                                skillCost={CalcCostSP(key, 1, skillDistribution[key].currentLevel)}
-                                capBoostsSpent={skillDistribution[key].capBoostsSpent}
+                                skillLevel={skillDistribution[key]?.currentLevel ?? 0}
+                                maxSkillLevel={skillDistribution[key]?.currentMaxLevel ?? 0}
+                                skillCost={CalcCostSP(key, 1, skillDistribution[key]?.currentLevel ?? 0)}
+                                capBoostsSpent={skillDistribution[key]?.capBoostsSpent ?? 0}
                               />
                             </Grid>
                           </Fragment>
