@@ -522,9 +522,20 @@ export default function PlayerBuilder() {
                     <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
                       <MenuItem value={'QB'}>QB</MenuItem>
                       <MenuItem value={'HB'}>HB</MenuItem>
+                      <MenuItem value={'FB'}>FB</MenuItem>
                       <MenuItem value={'TE'}>TE</MenuItem>
                       <MenuItem value={'WR'}>WR</MenuItem>
+                      <MenuItem value={'DT'}>DT</MenuItem>
                       <MenuItem value={'DE'}>DE</MenuItem>
+                      <MenuItem value={'LB'}>LB</MenuItem>
+                      <MenuItem value={'CB'}>CB</MenuItem>
+                      <MenuItem value={'SS'}>SS</MenuItem>
+                      <MenuItem value={'FS'}>FS</MenuItem>
+                      <MenuItem value={'C'}>C</MenuItem>
+                      <MenuItem value={'G'}>G</MenuItem>
+                      <MenuItem value={'OT'}>OT</MenuItem>
+                      <MenuItem value={'K'}>K</MenuItem>
+                      <MenuItem value={'P'}>P</MenuItem>
                     </Select>
                   </FormControl>
                 </Stack>
@@ -872,11 +883,11 @@ export default function PlayerBuilder() {
                                 variant='extended'
                                 size='small'
                                 color='primary'
-                                aria-label='subtract'
+                                aria-label='add'
                                 sx={{ height: '24px' }}
                                 onClick={() => handleSkillChange(key, 1)}
                                 disabled={
-                                  ((skillDistribution[key]?.currentLevel ?? 0) >= (skillDistribution[key]?.maxLevel ?? 0) && remCapBoosts <= 0) ||
+                                  ((skillDistribution[key]?.currentLevel ?? 0) >= (skillDistribution[key]?.currentMaxLevel ?? 0) && remCapBoosts <= 0) ||
                                   (skillDistribution[key]?.currentLevel ?? 0) >= 100 ||
                                   remSkillPoints < CalcCostSP(key, 1, skillDistribution[key]?.currentLevel ?? 0)
                                 }

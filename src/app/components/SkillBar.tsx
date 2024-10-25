@@ -2,30 +2,6 @@ import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
-const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  borderRadius: 5,
-  [`&.${linearProgressClasses.colorPrimary}`]: {
-    backgroundColor: theme.palette.grey[200],
-    ...theme.applyStyles('dark', {
-      backgroundColor: theme.palette.grey[800],
-    }),
-  },
-  [`&.${linearProgressClasses.bar2Buffer}`]: {
-    borderRadius: 0,
-  },
-  [`& .${linearProgressClasses.bar1Buffer}`]: {
-    borderRadius: 0,
-    backgroundColor: '#1a90ff',
-    ...theme.applyStyles('dark', {
-      backgroundColor: '#308fe8',
-    }),
-  },
-  [`& .${linearProgressClasses.dashed}`]: {
-    animation: 'none',
-    background: 'none',
-  },
-}));
-
 interface SkillBarProps {
   skillLevel: number;
   maxSkillLevel: number;
@@ -33,8 +9,30 @@ interface SkillBarProps {
   capBoostsSpent: number;
 }
 
+const getSkillLevelColor = (level: number) => {
+  return `rgba(0, ${50 - level / 2}, ${55 + level * 2}, ${25 + level / 2}%)`;
+};
+
 export default function SkillBar(props: SkillBarProps) {
   const { skillLevel, maxSkillLevel, skillCost, capBoostsSpent } = props;
+
+  const CustomLinearProgress = styled(LinearProgress)(({ theme }) => ({
+    borderRadius: 5,
+    [`&.${linearProgressClasses.colorPrimary}`]: {
+      backgroundColor: theme.palette.grey[900],
+    },
+    [`&.${linearProgressClasses.bar2Buffer}`]: {
+      borderRadius: 0,
+    },
+    [`& .${linearProgressClasses.bar1Buffer}`]: {
+      borderRadius: 0,
+      backgroundColor: getSkillLevelColor(skillLevel),
+    },
+    [`& .${linearProgressClasses.dashed}`]: {
+      animation: 'none',
+      background: 'none',
+    },
+  }));
 
   return (
     <Box sx={{ position: 'relative' }}>
