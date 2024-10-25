@@ -144,17 +144,13 @@ export async function POST(request: NextRequest) {
           suggestedBuild[key] = FindBaseLevel(filteredData, key, player);
         }
 
-        let canAchieveBuild = true;
-
-        for (const [skKey, skValue] of Object.entries(skillMins).filter(([key, value]: any) => value > FindBaseLevel(filteredData, key, player))) {
+        for (const [skKey, skValue] of Object.entries(skillMins).filter(([key, value]: any) => value > suggestedBuild[key])) {
           const levelsNeeded = skValue - suggestedBuild[skKey];
 
           let neededSp = 0;
           for (let i = 1; i <= levelsNeeded; i++) {
             neededSp += CalcCostSP(filteredData, skKey, player, i, suggestedBuild[skKey]);
           }
-
-          if (skillPoints - neededSp < 0) canAchieveBuild = false;
 
           skillPoints -= neededSp;
 
@@ -164,8 +160,6 @@ export async function POST(request: NextRequest) {
 
           if (suggestedBuild[skKey] >= maxLevel) {
             const attDiff = suggestedBuild[skKey] - maxLevel;
-
-            if (capBoosts < attDiff / 5.0) canAchieveBuild = false;
 
             capBoosts -= Math.ceil(attDiff / 5.0);
             if (capBoostsSpent?.hasOwnProperty(skKey)) {
@@ -177,6 +171,8 @@ export async function POST(request: NextRequest) {
         }
 
         const combo = { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild };
+
+        const canAchieveBuild = skillPoints < 0 || capBoosts < 0;
 
         if (canAchieveBuild && combo.sp === best.sp && combo.cbr > best.cbr) best = combo;
         else if (canAchieveBuild && combo.sp > best.sp) best = combo;
