@@ -537,9 +537,6 @@ export default function PlayerBuilder() {
 
   return (
     <Container maxWidth='xl' sx={{ mb: 2 }}>
-      <Box sx={{ textAlign: 'center' }}>
-        <Typography sx={{ typography: { xs: 'body1', lg: 'h6' } }}>Player Optimizer is a work in progress...</Typography>
-      </Box>
       {isOptimizing ? (
         <LinearProgressWithLabel variant='buffer' value={optimizeProgress} valueBuffer={optimizeBuffer} />
       ) : (
