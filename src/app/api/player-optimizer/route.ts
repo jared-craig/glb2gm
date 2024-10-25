@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
 
         const combo = { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild };
 
-        const canAchieveBuild = skillPoints < 0 || capBoosts < 0;
+        const canAchieveBuild = skillPoints >= 0 && capBoosts >= 0;
 
         if (canAchieveBuild && combo.sp === best.sp && combo.cbr > best.cbr) best = combo;
         else if (canAchieveBuild && combo.sp > best.sp) best = combo;
