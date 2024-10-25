@@ -6,24 +6,36 @@ const CalcCostSP = (filteredData: any, skill: string, playerData: Player, mod: n
   const skillData = filteredData.skills[skill];
   if (!skillData) return Number.MAX_SAFE_INTEGER;
   level += mod;
-  const base_price =
-    typeof skillData.position_base_price[playerData.position] !== 'undefined' ? skillData.position_base_price[playerData.position] : skillData.base_price;
 
-  let cost = base_price * skillData.position_multiplier[playerData.position];
+  const basePrice = skillData.position_base_price?.[playerData.position] ?? skillData.base_price;
+  const positionMultiplier = skillData.position_multiplier[playerData.position];
+  const attributes = skillData.attributes;
+  const { strength, agility, awareness, speed, stamina, confidence, height, weight } = playerData;
+
+  let cost = basePrice * positionMultiplier;
   const exponent = typeof skillData.exponent !== 'undefined' ? skillData.exponent : 1.3;
-  cost += skillData.attributes.strength * playerData.strength;
-  cost += skillData.attributes.agility * playerData.agility;
-  cost += skillData.attributes.awareness * playerData.awareness;
-  cost += skillData.attributes.speed * playerData.speed;
-  cost += skillData.attributes.stamina * playerData.stamina;
-  cost += skillData.attributes.confidence * playerData.confidence;
-  cost += skillData.height * (playerData.height - 66);
-  cost += skillData.weight * playerData.weight;
+  cost += attributes.strength * strength;
+  cost += attributes.agility * agility;
+  cost += attributes.awareness * awareness;
+  cost += attributes.speed * speed;
+  cost += attributes.stamina * stamina;
+  cost += attributes.confidence * confidence;
+  cost += skillData.height * (height - 66);
+  cost += skillData.weight * weight;
 
-  for (const trait of [playerData.trait1, playerData.trait2, playerData.trait3]) {
-    if (skill in filteredData.traits[trait].skill_modifiers) {
-      cost *= 1 + (filteredData.traits[trait].skill_modifiers[skill].cost || 0);
-    }
+  let skillModifiers = filteredData.traits[playerData.trait1].skill_modifiers;
+  if (skill in skillModifiers) {
+    cost *= 1 + (skillModifiers[skill].cost || 0);
+  }
+
+  skillModifiers = filteredData.traits[playerData.trait2].skill_modifiers;
+  if (skill in skillModifiers) {
+    cost *= 1 + (skillModifiers[skill].cost || 0);
+  }
+
+  skillModifiers = filteredData.traits[playerData.trait3].skill_modifiers;
+  if (skill in skillModifiers) {
+    cost *= 1 + (skillModifiers[skill].cost || 0);
   }
 
   cost = Math.round(cost * (Math.pow(level, exponent) / 59.0));

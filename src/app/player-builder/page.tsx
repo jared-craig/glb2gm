@@ -1,12 +1,16 @@
 'use client';
 
-import { Box, Container, Divider, Fab, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Stack, Typography } from '@mui/material';
+import { Box, Container, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Fragment, useEffect, useState } from 'react';
 import { SKILL_LOOKUP } from '../players/lookups';
 import SkillBar from '../components/SkillBar';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 
 interface PlayerBuilderData {
   skills: any;
@@ -262,27 +266,29 @@ export default function PlayerBuilder() {
   };
 
   const CalcCostSP = (skill: string, mod: number, level: number) => {
-    if (!filteredData.skills[skill]) return Math.max();
+    if (!filteredData.skills[skill]) return Number.MAX_SAFE_INTEGER;
     level += mod;
-    const base_price =
-      typeof filteredData.skills[skill].position_base_price[selectedPosition] !== 'undefined'
-        ? filteredData.skills[skill].position_base_price[selectedPosition]
-        : filteredData.skills[skill].base_price;
 
-    let cost = base_price * filteredData.skills[skill].position_multiplier[selectedPosition];
-    const exponent = typeof filteredData.skills[skill].exponent !== 'undefined' ? filteredData.skills[skill].exponent : 1.3;
-    cost += filteredData.skills[skill].attributes.strength * strength;
-    cost += filteredData.skills[skill].attributes.agility * agility;
-    cost += filteredData.skills[skill].attributes.awareness * awareness;
-    cost += filteredData.skills[skill].attributes.speed * speed;
-    cost += filteredData.skills[skill].attributes.stamina * stamina;
-    cost += filteredData.skills[skill].attributes.confidence * confidence;
-    cost += filteredData.skills[skill].height * (heightInput - 66);
-    cost += filteredData.skills[skill].weight * weightInput;
+    const skillData = filteredData.skills[skill];
+    const basePrice = skillData.position_base_price?.[selectedPosition] ?? skillData.base_price;
+    const positionMultiplier = skillData.position_multiplier[selectedPosition];
+    const attributes = skillData.attributes;
+
+    let cost = basePrice * positionMultiplier;
+    const exponent = typeof skillData.exponent !== 'undefined' ? skillData.exponent : 1.3;
+    cost += attributes.strength * strength;
+    cost += attributes.agility * agility;
+    cost += attributes.awareness * awareness;
+    cost += attributes.speed * speed;
+    cost += attributes.stamina * stamina;
+    cost += attributes.confidence * confidence;
+    cost += skillData.height * (heightInput - 66);
+    cost += skillData.weight * weightInput;
 
     for (const trait of [trait1, trait2, trait3]) {
-      if (filteredData.traits[trait] && skill in filteredData.traits[trait].skill_modifiers) {
-        cost *= 1 + (filteredData.traits[trait].skill_modifiers[skill].cost || 0);
+      const traitData = filteredData.traits[trait];
+      if (traitData && skill in traitData.skill_modifiers) {
+        cost *= 1 + (traitData.skill_modifiers[skill].cost || 0);
       }
     }
 
@@ -373,42 +379,39 @@ export default function PlayerBuilder() {
 
   const handleSkillChange = (skill: string, change: number) => {
     if (change > 0) {
-      if (skillDistribution[skill].currentLevel < skillDistribution[skill].currentMaxLevel) {
-        setRemSkillPoints((prev) => prev - CalcCostSP(skill, 1, skillDistribution[skill].currentLevel));
-        setSkillDistribution((prev) => ({ ...prev, [skill]: { ...prev[skill], currentLevel: prev[skill].currentLevel + change } }));
-      } else if (remCapBoosts > 0 && skillDistribution[skill].currentLevel < 100) {
-        setRemSkillPoints((prev) => prev - CalcCostSP(skill, 1, skillDistribution[skill].currentLevel));
-        setSkillDistribution((prev) => ({
-          ...prev,
-          [skill]: {
-            ...prev[skill],
-            currentLevel: prev[skill].currentLevel + change,
-            currentMaxLevel: prev[skill].currentMaxLevel + 5.0,
-            capBoostsSpent: prev[skill].capBoostsSpent++,
-          },
-        }));
-        setRemCapBoosts((prev) => prev - 1);
+      let sd = skillDistribution[skill];
+      let rsp = remSkillPoints;
+      let rcb = remCapBoosts;
+      for (let i = 0; i < change; i++) {
+        if (sd.currentLevel < sd.currentMaxLevel) {
+          rsp -= CalcCostSP(skill, 1, sd.currentLevel);
+          sd = { ...sd, currentLevel: sd.currentLevel + 1 };
+        } else if (remCapBoosts > 0 && skillDistribution[skill].currentLevel < 100) {
+          rsp -= CalcCostSP(skill, 1, sd.currentLevel);
+          sd = { ...sd, currentLevel: sd.currentLevel + 1, currentMaxLevel: sd.currentMaxLevel + 5.0, capBoostsSpent: sd.capBoostsSpent + 1 };
+          rcb -= 1;
+        }
       }
+      setRemSkillPoints(rsp);
+      setSkillDistribution((prev) => ({ ...prev, [skill]: sd }));
+      setRemCapBoosts(rcb);
     } else {
-      if (
-        skillDistribution[skill].capBoostsSpent > 0 &&
-        skillDistribution[skill].currentLevel === skillDistribution[skill].maxLevel + (5.0 * skillDistribution[skill].capBoostsSpent - 5.0) + 1.0
-      ) {
-        setRemSkillPoints((prev) => prev + CalcCostSP(skill, 1, skillDistribution[skill].currentLevel - 1));
-        setSkillDistribution((prev) => ({
-          ...prev,
-          [skill]: {
-            ...prev[skill],
-            currentLevel: prev[skill].currentLevel + change,
-            currentMaxLevel: prev[skill].currentMaxLevel - 5.0,
-            capBoostsSpent: prev[skill].capBoostsSpent--,
-          },
-        }));
-        setRemCapBoosts((prev) => prev + 1);
-      } else {
-        setRemSkillPoints((prev) => prev + CalcCostSP(skill, 1, skillDistribution[skill].currentLevel - 1));
-        setSkillDistribution((prev) => ({ ...prev, [skill]: { ...prev[skill], currentLevel: prev[skill].currentLevel + change } }));
+      let sd = skillDistribution[skill];
+      let rsp = remSkillPoints;
+      let rcb = remCapBoosts;
+      for (let i = change; i < 0; i++) {
+        if (sd.capBoostsSpent > 0 && sd.currentLevel === sd.maxLevel + (5.0 * sd.capBoostsSpent - 5.0) + 1.0) {
+          rsp += CalcCostSP(skill, 1, sd.currentLevel - 1);
+          sd = { ...sd, currentLevel: sd.currentLevel - 1, currentMaxLevel: sd.currentMaxLevel - 5.0, capBoostsSpent: sd.capBoostsSpent - 1 };
+          rcb += 1;
+        } else if (sd.currentLevel > sd.baseLevel) {
+          rsp += CalcCostSP(skill, 1, sd.currentLevel - 1);
+          sd = { ...sd, currentLevel: sd.currentLevel - 1 };
+        }
       }
+      setRemSkillPoints(rsp);
+      setSkillDistribution((prev) => ({ ...prev, [skill]: sd }));
+      setRemCapBoosts(rcb);
     }
   };
 
@@ -439,22 +442,9 @@ export default function PlayerBuilder() {
     for (const sk of Object.keys(filteredData.skills)) {
       const baseLevel = FindBaseLevel(sk);
       const maxLevel = FindMaxLevel(sk);
-      skillDist[sk] = {};
-      skillDist[sk].baseLevel = baseLevel;
-      skillDist[sk].currentLevel = baseLevel;
-      skillDist[sk].maxLevel = maxLevel;
-      skillDist[sk].currentMaxLevel = maxLevel;
-      skillDist[sk].capBoostsSpent = 0;
+      skillDist[sk] = { baseLevel: baseLevel, currentLevel: baseLevel, maxLevel: maxLevel, currentMaxLevel: maxLevel, capBoostsSpent: 0 };
     }
-
     setSkillDistribution(skillDist);
-    setRemSkillPoints(
-      trait1.includes('superstar') || trait2.includes('superstar') || trait3.includes('superstar')
-        ? 220000
-        : trait1.includes('prodigy') || trait2.includes('prodigy') || trait3.includes('prodigy')
-          ? 216000
-          : 210000
-    );
   }, [filteredData, remAttributes, heightInput, weightInput, trait1, trait2, trait3]);
 
   useEffect(() => {
@@ -479,6 +469,13 @@ export default function PlayerBuilder() {
           ([key, value]) => key !== trait1 && key !== trait2 && !(value as any).conflicts.includes(trait1) && !(value as any).conflicts.includes(trait2)
         )
       )
+    );
+    setRemSkillPoints(
+      trait1.includes('superstar') || trait2.includes('superstar') || trait3.includes('superstar')
+        ? 220000
+        : trait1.includes('prodigy') || trait2.includes('prodigy') || trait3.includes('prodigy')
+          ? 216000
+          : 210000
     );
   }, [trait1, trait2, trait3]);
 
@@ -550,7 +547,6 @@ export default function PlayerBuilder() {
                           max={positionData[selectedPosition].max_height}
                           value={heightInput}
                           onChange={(e, value) => setHeightInput(typeof value === 'number' ? value : value[0])}
-                          size='small'
                           sx={{ width: '150px' }}
                         />
                       </Grid>
@@ -568,7 +564,6 @@ export default function PlayerBuilder() {
                           max={weightInputMax}
                           value={weightInput}
                           onChange={(e, value) => setWeightInput(typeof value === 'number' ? value : value[0])}
-                          size='small'
                           sx={{ width: '150px' }}
                         />
                       </Grid>
@@ -576,7 +571,7 @@ export default function PlayerBuilder() {
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{`${weightInput} lbs.`}</Typography>
                       </Grid>
                     </Grid>
-                    <Grid container spacing={1} sx={{ mb: 2, mr: { xs: 0, lg: 4 } }}>
+                    <Grid container spacing={1} sx={{ mb: 2, mr: { xs: 0, lg: 4 }, alignItems: 'center' }}>
                       <Grid size={12}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Attribute Points: {remAttributes}</Typography>
                       </Grid>
@@ -584,193 +579,145 @@ export default function PlayerBuilder() {
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Strength:</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
+                        <IconButton
                           size='small'
                           color='warning'
                           aria-label='subtract'
-                          sx={{ height: '24px' }}
                           onClick={() => handleAttributeChange('strength', -1)}
                           disabled={strength <= 1}
                         >
                           <RemoveIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
                         <Typography>{strength}</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
+                        <IconButton
                           size='small'
                           color='primary'
                           aria-label='add'
-                          sx={{ height: '24px' }}
                           onClick={() => handleAttributeChange('strength', 1)}
                           disabled={strength >= 10}
                         >
                           <AddIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                       <Grid size={6}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Speed:</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
-                          size='small'
-                          color='warning'
-                          aria-label='subtract'
-                          sx={{ height: '24px' }}
-                          onClick={() => handleAttributeChange('speed', -1)}
-                          disabled={speed <= 1}
-                        >
+                        <IconButton size='small' color='warning' aria-label='subtract' onClick={() => handleAttributeChange('speed', -1)} disabled={speed <= 1}>
                           <RemoveIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
                         <Typography>{speed}</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
-                          size='small'
-                          color='primary'
-                          aria-label='add'
-                          sx={{ height: '24px' }}
-                          onClick={() => handleAttributeChange('speed', 1)}
-                          disabled={speed >= 10}
-                        >
+                        <IconButton size='small' color='primary' aria-label='add' onClick={() => handleAttributeChange('speed', 1)} disabled={speed >= 10}>
                           <AddIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                       <Grid size={6}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Agility:</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
+                        <IconButton
                           size='small'
                           color='warning'
                           aria-label='subtract'
-                          sx={{ height: '24px' }}
                           onClick={() => handleAttributeChange('agility', -1)}
                           disabled={agility <= 1}
                         >
                           <RemoveIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
                         <Typography>{agility}</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
-                          size='small'
-                          color='primary'
-                          aria-label='add'
-                          sx={{ height: '24px' }}
-                          onClick={() => handleAttributeChange('agility', 1)}
-                          disabled={agility >= 10}
-                        >
+                        <IconButton size='small' color='primary' aria-label='add' onClick={() => handleAttributeChange('agility', 1)} disabled={agility >= 10}>
                           <AddIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                       <Grid size={6}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Stamina:</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
+                        <IconButton
                           size='small'
                           color='warning'
                           aria-label='subtract'
-                          sx={{ height: '24px' }}
                           onClick={() => handleAttributeChange('stamina', -1)}
                           disabled={stamina <= 1}
                         >
                           <RemoveIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
                         <Typography>{stamina}</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
-                          size='small'
-                          color='primary'
-                          aria-label='add'
-                          sx={{ height: '24px' }}
-                          onClick={() => handleAttributeChange('stamina', 1)}
-                          disabled={stamina >= 10}
-                        >
+                        <IconButton size='small' color='primary' aria-label='add' onClick={() => handleAttributeChange('stamina', 1)} disabled={stamina >= 10}>
                           <AddIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                       <Grid size={6}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Awareness:</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
+                        <IconButton
                           size='small'
                           color='warning'
                           aria-label='subtract'
-                          sx={{ height: '24px' }}
                           onClick={() => handleAttributeChange('awareness', -1)}
                           disabled={awareness <= 1}
                         >
                           <RemoveIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
                         <Typography>{awareness}</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
+                        <IconButton
                           size='small'
                           color='primary'
                           aria-label='add'
-                          sx={{ height: '24px' }}
                           onClick={() => handleAttributeChange('awareness', 1)}
                           disabled={awareness >= 10}
                         >
                           <AddIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                       <Grid size={6}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Confidence:</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
+                        <IconButton
                           size='small'
                           color='warning'
                           aria-label='subtract'
-                          sx={{ height: '24px' }}
                           onClick={() => handleAttributeChange('confidence', -1)}
                           disabled={confidence <= 1}
                         >
                           <RemoveIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
                         <Typography>{confidence}</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <Fab
-                          variant='extended'
+                        <IconButton
                           size='small'
                           color='primary'
                           aria-label='add'
-                          sx={{ height: '24px' }}
                           onClick={() => handleAttributeChange('confidence', 1)}
                           disabled={confidence >= 10}
                         >
                           <AddIcon />
-                        </Fab>
+                        </IconButton>
                       </Grid>
                     </Grid>
                     <Grid container spacing={1} sx={{ mr: { xs: 0, lg: 4 }, mb: 1, alignItems: 'center' }}>
@@ -851,27 +798,35 @@ export default function PlayerBuilder() {
                       })
                       .map(([key, value]) => (
                         <Fragment key={key}>
-                          <Grid size={{ xs: 8, md: 2 }}>
+                          <Grid size={{ xs: 8, lg: 2 }}>
                             <Typography sx={{ typography: { xs: 'caption', lg: 'body2' } }}>{SKILL_LOOKUP[key]}</Typography>
                           </Grid>
-                          <Grid size={{ xs: 4, md: 1.5 }} sx={{ height: '24px', textAlign: 'center' }}>
-                            <Fab
-                              variant='extended'
+                          <Grid size={{ xs: 4, lg: 2 }} sx={{ height: '24px', textAlign: 'center' }}>
+                            <IconButton
                               size='small'
                               color='warning'
-                              aria-label='subtract'
-                              sx={{ height: '24px', mr: 1 }}
+                              aria-label='subtract five'
+                              sx={{ p: 0 }}
+                              onClick={() => handleSkillChange(key, -5)}
+                              disabled={(skillDistribution[key]?.currentLevel ?? 0) <= (skillDistribution[key]?.baseLevel ?? 0)}
+                            >
+                              <KeyboardDoubleArrowLeftIcon />
+                            </IconButton>
+                            <IconButton
+                              size='small'
+                              color='warning'
+                              aria-label='subtract one'
+                              sx={{ p: 0, mx: 1 }}
                               onClick={() => handleSkillChange(key, -1)}
                               disabled={(skillDistribution[key]?.currentLevel ?? 0) <= (skillDistribution[key]?.baseLevel ?? 0)}
                             >
-                              <RemoveIcon />
-                            </Fab>
-                            <Fab
-                              variant='extended'
+                              <KeyboardArrowLeftIcon />
+                            </IconButton>
+                            <IconButton
                               size='small'
                               color='primary'
-                              aria-label='add'
-                              sx={{ height: '24px' }}
+                              aria-label='add one'
+                              sx={{ p: 0, mx: 1 }}
                               onClick={() => handleSkillChange(key, 1)}
                               disabled={
                                 ((skillDistribution[key]?.currentLevel ?? 0) >= (skillDistribution[key]?.currentMaxLevel ?? 0) && remCapBoosts <= 0) ||
@@ -879,10 +834,24 @@ export default function PlayerBuilder() {
                                 remSkillPoints < CalcCostSP(key, 1, skillDistribution[key]?.currentLevel ?? 0)
                               }
                             >
-                              <AddIcon />
-                            </Fab>
+                              <KeyboardArrowRightIcon />
+                            </IconButton>
+                            <IconButton
+                              size='small'
+                              color='primary'
+                              aria-label='add five'
+                              sx={{ p: 0 }}
+                              onClick={() => handleSkillChange(key, 5)}
+                              disabled={
+                                ((skillDistribution[key]?.currentLevel ?? 0) >= (skillDistribution[key]?.currentMaxLevel ?? 0) && remCapBoosts <= 0) ||
+                                (skillDistribution[key]?.currentLevel ?? 0) >= 100 ||
+                                remSkillPoints < CalcCostSP(key, 1, skillDistribution[key]?.currentLevel ?? 0)
+                              }
+                            >
+                              <KeyboardDoubleArrowRightIcon />
+                            </IconButton>
                           </Grid>
-                          <Grid size={{ xs: 12, md: 2.5 }} sx={{ px: { xs: 0, md: 1 }, mb: { xs: 1, md: 0 } }}>
+                          <Grid size={{ xs: 12, lg: 2 }} sx={{ px: { xs: 0, lg: 1 }, mb: { xs: 1, lg: 0 } }}>
                             <SkillBar
                               skillLevel={skillDistribution[key]?.currentLevel ?? 0}
                               maxSkillLevel={skillDistribution[key]?.currentMaxLevel ?? 0}
