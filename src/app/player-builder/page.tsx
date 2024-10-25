@@ -227,7 +227,7 @@ export default function PlayerBuilder() {
     return level;
   };
 
-  const FindMaxLevel = (skill: string, capBoostsSpent: any): number => {
+  const FindMaxLevel = (skill: string): number => {
     if (!filteredData.skills[skill]) return 100;
 
     var maxlevel = 33;
@@ -238,14 +238,10 @@ export default function PlayerBuilder() {
     maxlevel -= Math.pow(stamina, 1.3) * (filteredData.skills[skill].attributes.stamina || 0);
     maxlevel -= Math.pow(confidence, 1.3) * (filteredData.skills[skill].attributes.confidence || 0);
 
-    if (skill in data.traits[trait1].skill_modifiers) {
-      maxlevel += data.traits[trait1].skill_modifiers[skill].max || 0;
-    }
-    if (skill in data.traits[trait2].skill_modifiers) {
-      maxlevel += data.traits[trait2].skill_modifiers[skill].max || 0;
-    }
-    if (skill in data.traits[trait3].skill_modifiers) {
-      maxlevel += data.traits[trait3].skill_modifiers[skill].max || 0;
+    for (const trait of [trait1, trait2, trait3]) {
+      if (trait in data.traits && skill in data.traits[trait].skill_modifiers) {
+        maxlevel += data.traits[trait].skill_modifiers[skill].max || 0;
+      }
     }
 
     maxlevel += (100 - filteredData.skills[skill].position_multiplier[selectedPosition]) * 0.4;
@@ -255,8 +251,6 @@ export default function PlayerBuilder() {
     if (maxlevel < 25) {
       maxlevel = 25;
     }
-
-    // maxlevel += capBoostsSpent[skill] * 5.0;
 
     maxlevel = Math.round(maxlevel);
 
@@ -440,11 +434,11 @@ export default function PlayerBuilder() {
   }, [selectedPosition]);
 
   useEffect(() => {
-    if (!filteredData.skills || trait1.length <= 0 || trait2.length <= 0 || trait3.length <= 0) return;
+    if (!filteredData.skills || !filteredData.traits) return;
     const skillDist: any = {};
     for (const sk of Object.keys(filteredData.skills)) {
       const baseLevel = FindBaseLevel(sk);
-      const maxLevel = FindMaxLevel(sk, 0);
+      const maxLevel = FindMaxLevel(sk);
       skillDist[sk] = {};
       skillDist[sk].baseLevel = baseLevel;
       skillDist[sk].currentLevel = baseLevel;
@@ -514,7 +508,7 @@ export default function PlayerBuilder() {
       <Grid container sx={{ mb: 1 }}>
         {data.skills && data.traits && (
           <>
-            <Grid size={{ xs: 12, lg: 3 }}>
+            <Grid size={{ xs: 12, xl: 3 }}>
               <Box width={350} mt={1}>
                 <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
                   <FormControl fullWidth sx={{ minWidth: 150, mr: { xs: 0, lg: 4 } }} size='small'>
@@ -827,88 +821,81 @@ export default function PlayerBuilder() {
                 </>
               )}
             </Grid>
-            {selectedPosition &&
-              remAttributes === 0 &&
-              trait1.length > 0 &&
-              trait2.length > 0 &&
-              trait3.length > 0 &&
-              filteredData.skills &&
-              filteredData.traits &&
-              Object.keys(skillDistribution).length > 0 && (
-                <Grid container size={{ xs: 12, lg: 9 }} spacing={1} sx={{ alignItems: 'center' }}>
-                  <Grid size={6} sx={{ mt: 1 }}>
-                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Skill Points: {remSkillPoints}</Typography>
-                  </Grid>
-                  <Grid size={6} sx={{ mt: 1 }}>
-                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Cap Boosts: {remCapBoosts}</Typography>
-                  </Grid>
-                  {groupOrder[selectedPosition].map((group) => (
-                    <Fragment key={group}>
-                      <Grid size={12}>
-                        <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
-                          <strong>{group}</strong>
-                        </Typography>
-                        <Divider sx={{ my: 1 }} />
-                      </Grid>
-                      {Object.entries(data.skills)
-                        .filter(([key, value]) => (value as any).group === group && (value as any).positions.includes(selectedPosition))
-                        .sort((a: any, b: any) => {
-                          const groupIndexA = groupOrder[selectedPosition].indexOf(a[1].group);
-                          const groupIndexB = groupOrder[selectedPosition].indexOf(b[1].group);
-
-                          if (groupIndexA !== groupIndexB) {
-                            return groupIndexA - groupIndexB;
-                          } else {
-                            return a[1].priority - b[1].priority;
-                          }
-                        })
-                        .map(([key, value]) => (
-                          <Fragment key={key}>
-                            <Grid size={{ xs: 8, lg: 2 }}>
-                              <Typography sx={{ typography: { xs: 'caption', lg: 'body2' } }}>{SKILL_LOOKUP[key]}</Typography>
-                            </Grid>
-                            <Grid size={{ xs: 4, lg: 1.5 }} sx={{ height: '24px', textAlign: 'center' }}>
-                              <Fab
-                                variant='extended'
-                                size='small'
-                                color='warning'
-                                aria-label='subtract'
-                                sx={{ height: '24px', mr: 1 }}
-                                onClick={() => handleSkillChange(key, -1)}
-                                disabled={(skillDistribution[key]?.currentLevel ?? 0) <= (skillDistribution[key]?.baseLevel ?? 0)}
-                              >
-                                <RemoveIcon />
-                              </Fab>
-                              <Fab
-                                variant='extended'
-                                size='small'
-                                color='primary'
-                                aria-label='add'
-                                sx={{ height: '24px' }}
-                                onClick={() => handleSkillChange(key, 1)}
-                                disabled={
-                                  ((skillDistribution[key]?.currentLevel ?? 0) >= (skillDistribution[key]?.currentMaxLevel ?? 0) && remCapBoosts <= 0) ||
-                                  (skillDistribution[key]?.currentLevel ?? 0) >= 100 ||
-                                  remSkillPoints < CalcCostSP(key, 1, skillDistribution[key]?.currentLevel ?? 0)
-                                }
-                              >
-                                <AddIcon />
-                              </Fab>
-                            </Grid>
-                            <Grid size={{ xs: 12, lg: 2.5 }} sx={{ px: { xs: 0, lg: 1 }, mb: { xs: 1, lg: 0 } }}>
-                              <SkillBar
-                                skillLevel={skillDistribution[key]?.currentLevel ?? 0}
-                                maxSkillLevel={skillDistribution[key]?.currentMaxLevel ?? 0}
-                                skillCost={CalcCostSP(key, 1, skillDistribution[key]?.currentLevel ?? 0)}
-                                capBoostsSpent={skillDistribution[key]?.capBoostsSpent ?? 0}
-                              />
-                            </Grid>
-                          </Fragment>
-                        ))}
-                    </Fragment>
-                  ))}
+            {selectedPosition && filteredData.skills && filteredData.traits && Object.keys(skillDistribution).length > 0 && (
+              <Grid container size={{ xs: 12, xl: 9 }} spacing={1} sx={{ alignItems: 'center' }}>
+                <Grid size={6} sx={{ mt: 1 }}>
+                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Skill Points: {remSkillPoints}</Typography>
                 </Grid>
-              )}
+                <Grid size={6} sx={{ mt: 1 }}>
+                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Cap Boosts: {remCapBoosts}</Typography>
+                </Grid>
+                {groupOrder[selectedPosition].map((group) => (
+                  <Fragment key={group}>
+                    <Grid size={12}>
+                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
+                        <strong>{group}</strong>
+                      </Typography>
+                      <Divider sx={{ my: 1 }} />
+                    </Grid>
+                    {Object.entries(data.skills)
+                      .filter(([key, value]) => (value as any).group === group && (value as any).positions.includes(selectedPosition))
+                      .sort((a: any, b: any) => {
+                        const groupIndexA = groupOrder[selectedPosition].indexOf(a[1].group);
+                        const groupIndexB = groupOrder[selectedPosition].indexOf(b[1].group);
+
+                        if (groupIndexA !== groupIndexB) {
+                          return groupIndexA - groupIndexB;
+                        } else {
+                          return a[1].priority - b[1].priority;
+                        }
+                      })
+                      .map(([key, value]) => (
+                        <Fragment key={key}>
+                          <Grid size={{ xs: 8, md: 2 }}>
+                            <Typography sx={{ typography: { xs: 'caption', lg: 'body2' } }}>{SKILL_LOOKUP[key]}</Typography>
+                          </Grid>
+                          <Grid size={{ xs: 4, md: 1.5 }} sx={{ height: '24px', textAlign: 'center' }}>
+                            <Fab
+                              variant='extended'
+                              size='small'
+                              color='warning'
+                              aria-label='subtract'
+                              sx={{ height: '24px', mr: 1 }}
+                              onClick={() => handleSkillChange(key, -1)}
+                              disabled={(skillDistribution[key]?.currentLevel ?? 0) <= (skillDistribution[key]?.baseLevel ?? 0)}
+                            >
+                              <RemoveIcon />
+                            </Fab>
+                            <Fab
+                              variant='extended'
+                              size='small'
+                              color='primary'
+                              aria-label='add'
+                              sx={{ height: '24px' }}
+                              onClick={() => handleSkillChange(key, 1)}
+                              disabled={
+                                ((skillDistribution[key]?.currentLevel ?? 0) >= (skillDistribution[key]?.currentMaxLevel ?? 0) && remCapBoosts <= 0) ||
+                                (skillDistribution[key]?.currentLevel ?? 0) >= 100 ||
+                                remSkillPoints < CalcCostSP(key, 1, skillDistribution[key]?.currentLevel ?? 0)
+                              }
+                            >
+                              <AddIcon />
+                            </Fab>
+                          </Grid>
+                          <Grid size={{ xs: 12, md: 2.5 }} sx={{ px: { xs: 0, md: 1 }, mb: { xs: 1, md: 0 } }}>
+                            <SkillBar
+                              skillLevel={skillDistribution[key]?.currentLevel ?? 0}
+                              maxSkillLevel={skillDistribution[key]?.currentMaxLevel ?? 0}
+                              skillCost={CalcCostSP(key, 1, skillDistribution[key]?.currentLevel ?? 0)}
+                              capBoostsSpent={skillDistribution[key]?.capBoostsSpent ?? 0}
+                            />
+                          </Grid>
+                        </Fragment>
+                      ))}
+                  </Fragment>
+                ))}
+              </Grid>
+            )}
           </>
         )}
       </Grid>
