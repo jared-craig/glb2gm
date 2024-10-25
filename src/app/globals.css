@@ -39,3 +39,15 @@
 .valid-row {
   align-items: center;
 }
+
+@keyframes pulse-dashed {
+  0% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
