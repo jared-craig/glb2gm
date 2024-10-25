@@ -3,7 +3,7 @@ import { LinearProgressProps, Box, LinearProgress, Typography, linearProgressCla
 const CustomLinearProgressWithLabel = styled(LinearProgress)(() => ({
   borderRadius: 5,
   [`& .${linearProgressClasses.dashed}`]: {
-    animation: 'pulse-dashed 5s ease-in-out infinite',
+    animation: 'pulse-dashed 3s ease-in-out infinite',
   },
 }));
 
