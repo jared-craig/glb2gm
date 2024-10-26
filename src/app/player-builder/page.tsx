@@ -816,7 +816,7 @@ export default function PlayerBuilder() {
                               size='small'
                               color='warning'
                               aria-label='subtract one'
-                              sx={{ p: 0, mx: 1 }}
+                              sx={{ p: 0, mx: 0.5 }}
                               onClick={() => handleSkillChange(key, -1)}
                               disabled={(skillDistribution[key]?.currentLevel ?? 0) <= (skillDistribution[key]?.baseLevel ?? 0)}
                             >
@@ -826,7 +826,7 @@ export default function PlayerBuilder() {
                               size='small'
                               color='primary'
                               aria-label='add one'
-                              sx={{ p: 0, mx: 1 }}
+                              sx={{ p: 0, mx: 0.5 }}
                               onClick={() => handleSkillChange(key, 1)}
                               disabled={
                                 ((skillDistribution[key]?.currentLevel ?? 0) >= (skillDistribution[key]?.currentMaxLevel ?? 0) && remCapBoosts <= 0) ||
