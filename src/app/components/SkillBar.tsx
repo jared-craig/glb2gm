@@ -10,7 +10,7 @@ interface SkillBarProps {
 }
 
 const getSkillLevelColor = (level: number) => {
-  return `rgba(0, ${50 - level / 2}, ${55 + level * 2}, ${25 + level / 2}%)`;
+  return `rgba(0, ${level / 2}, ${level * 2.5}, ${40 + level / 2}%)`;
 };
 
 export default function SkillBar(props: SkillBarProps) {
