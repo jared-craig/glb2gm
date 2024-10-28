@@ -383,11 +383,13 @@ export default function PlayerBuilder() {
       let rsp = remSkillPoints;
       let rcb = remCapBoosts;
       for (let i = 0; i < change; i++) {
-        if (sd.currentLevel < sd.currentMaxLevel) {
-          rsp -= CalcCostSP(skill, 1, sd.currentLevel);
+        const cost = CalcCostSP(skill, 1, sd.currentLevel);
+        if (rsp - cost < 0) break;
+        if (sd.currentLevel < sd.currentMaxLevel && sd.currentLevel < 100) {
+          rsp -= cost;
           sd = { ...sd, currentLevel: sd.currentLevel + 1 };
-        } else if (remCapBoosts > 0 && skillDistribution[skill].currentLevel < 100) {
-          rsp -= CalcCostSP(skill, 1, sd.currentLevel);
+        } else if (rcb > 0 && sd.currentLevel < 100) {
+          rsp -= cost;
           sd = { ...sd, currentLevel: sd.currentLevel + 1, currentMaxLevel: sd.currentMaxLevel + 5.0, capBoostsSpent: sd.capBoostsSpent + 1 };
           rcb -= 1;
         }
@@ -400,12 +402,13 @@ export default function PlayerBuilder() {
       let rsp = remSkillPoints;
       let rcb = remCapBoosts;
       for (let i = change; i < 0; i++) {
+        const cost = CalcCostSP(skill, 1, sd.currentLevel - 1);
         if (sd.capBoostsSpent > 0 && sd.currentLevel === sd.maxLevel + (5.0 * sd.capBoostsSpent - 5.0) + 1.0) {
-          rsp += CalcCostSP(skill, 1, sd.currentLevel - 1);
+          rsp += cost;
           sd = { ...sd, currentLevel: sd.currentLevel - 1, currentMaxLevel: sd.currentMaxLevel - 5.0, capBoostsSpent: sd.capBoostsSpent - 1 };
           rcb += 1;
         } else if (sd.currentLevel > sd.baseLevel) {
-          rsp += CalcCostSP(skill, 1, sd.currentLevel - 1);
+          rsp += cost;
           sd = { ...sd, currentLevel: sd.currentLevel - 1 };
         }
       }
@@ -445,6 +448,14 @@ export default function PlayerBuilder() {
       skillDist[sk] = { baseLevel: baseLevel, currentLevel: baseLevel, maxLevel: maxLevel, currentMaxLevel: maxLevel, capBoostsSpent: 0 };
     }
     setSkillDistribution(skillDist);
+    setRemCapBoosts(7);
+    setRemSkillPoints(
+      trait1.includes('superstar') || trait2.includes('superstar') || trait3.includes('superstar')
+        ? 220000
+        : trait1.includes('prodigy') || trait2.includes('prodigy') || trait3.includes('prodigy')
+          ? 216000
+          : 210000
+    );
   }, [filteredData, remAttributes, heightInput, weightInput, trait1, trait2, trait3]);
 
   useEffect(() => {
@@ -469,13 +480,6 @@ export default function PlayerBuilder() {
           ([key, value]) => key !== trait1 && key !== trait2 && !(value as any).conflicts.includes(trait1) && !(value as any).conflicts.includes(trait2)
         )
       )
-    );
-    setRemSkillPoints(
-      trait1.includes('superstar') || trait2.includes('superstar') || trait3.includes('superstar')
-        ? 220000
-        : trait1.includes('prodigy') || trait2.includes('prodigy') || trait3.includes('prodigy')
-          ? 216000
-          : 210000
     );
   }, [trait1, trait2, trait3]);
 
