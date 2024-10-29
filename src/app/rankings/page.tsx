@@ -79,9 +79,8 @@ export default function PlayerPassingStats() {
     const topTeamLosses = teamOneTopTeamLosses.length + teamTwoTopTeamLosses.length;
     const badTeamLosses = teamOneBadTeamLosses.length + teamTwoBadTeamLosses.length;
 
-    // const pointDif =
-    //   teamOneWins.reduce((acc, cur) => acc + (cur.team_one_points - cur.team_two_points), 0) +
-    //   teamTwoWins.reduce((acc, cur) => acc + (cur.team_two_points - cur.team_one_points), 0);
+    const pointDiff = teamData.offensive_points - teamData.defensive_points;
+    const yardDiff = teamData.offensive_total_yards - teamData.defensive_total_yards;
 
     let bonusFactor = 0.0;
     if (tier === 'All Tiers') {
@@ -100,7 +99,12 @@ export default function PlayerPassingStats() {
           break;
       }
     }
-    let bonus = bonusFactor * topTeamWins + (bonusFactor / 10.0) * topTeamLosses - (bonusFactor / 2.0) * badTeamLosses;
+    let bonus =
+      bonusFactor * topTeamWins +
+      (bonusFactor / 10.0) * topTeamLosses -
+      (bonusFactor / 2.0) * badTeamLosses +
+      Math.round(pointDiff / 100.0) +
+      Math.round(yardDiff / 1000.0);
 
     return bonus;
   };

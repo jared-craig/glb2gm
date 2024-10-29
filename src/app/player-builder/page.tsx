@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Container, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Stack, Typography } from '@mui/material';
+import { Box, Container, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Fragment, useEffect, useState } from 'react';
 import { SKILL_LOOKUP } from '../players/lookups';
@@ -340,7 +340,7 @@ export default function PlayerBuilder() {
   };
 
   const handlePositionChange = (event: SelectChangeEvent) => {
-    setSelectedPosition(event.target.value as string);
+    setSelectedPosition(event.target.value);
   };
 
   const handleAttributeChange = (att: string, change: number) => {
@@ -436,11 +436,13 @@ export default function PlayerBuilder() {
     setTrait1('');
     setTrait2('');
     setTrait3('');
+
     filterAndSortSkills();
   }, [selectedPosition]);
 
   useEffect(() => {
     if (!filteredData.skills || !filteredData.traits) return;
+
     const skillDist: any = {};
     for (const sk of Object.keys(filteredData.skills)) {
       const baseLevel = FindBaseLevel(sk);
@@ -510,30 +512,28 @@ export default function PlayerBuilder() {
         {data.skills && data.traits && (
           <>
             <Grid size={{ xs: 12, xl: 3 }}>
-              <Box width={350} mt={1}>
-                <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
-                  <FormControl fullWidth sx={{ minWidth: 150, mr: { xs: 0, lg: 4 } }} size='small'>
-                    <InputLabel id='position-select-label'>Position</InputLabel>
-                    <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
-                      <MenuItem value={'QB'}>QB</MenuItem>
-                      <MenuItem value={'HB'}>HB</MenuItem>
-                      <MenuItem value={'FB'}>FB</MenuItem>
-                      <MenuItem value={'TE'}>TE</MenuItem>
-                      <MenuItem value={'WR'}>WR</MenuItem>
-                      <MenuItem value={'DT'}>DT</MenuItem>
-                      <MenuItem value={'DE'}>DE</MenuItem>
-                      <MenuItem value={'LB'}>LB</MenuItem>
-                      <MenuItem value={'CB'}>CB</MenuItem>
-                      <MenuItem value={'SS'}>SS</MenuItem>
-                      <MenuItem value={'FS'}>FS</MenuItem>
-                      <MenuItem value={'C'}>C</MenuItem>
-                      <MenuItem value={'G'}>G</MenuItem>
-                      <MenuItem value={'OT'}>OT</MenuItem>
-                      <MenuItem value={'K'}>K</MenuItem>
-                      <MenuItem value={'P'}>P</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Stack>
+              <Box width={350} my={1}>
+                <FormControl fullWidth sx={{ minWidth: 150, mr: { xs: 0, lg: 4 } }} size='small'>
+                  <InputLabel id='position-select-label'>Position</InputLabel>
+                  <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
+                    <MenuItem value={'QB'}>QB</MenuItem>
+                    <MenuItem value={'HB'}>HB</MenuItem>
+                    <MenuItem value={'FB'}>FB</MenuItem>
+                    <MenuItem value={'TE'}>TE</MenuItem>
+                    <MenuItem value={'WR'}>WR</MenuItem>
+                    <MenuItem value={'DT'}>DT</MenuItem>
+                    <MenuItem value={'DE'}>DE</MenuItem>
+                    <MenuItem value={'LB'}>LB</MenuItem>
+                    <MenuItem value={'CB'}>CB</MenuItem>
+                    <MenuItem value={'SS'}>SS</MenuItem>
+                    <MenuItem value={'FS'}>FS</MenuItem>
+                    <MenuItem value={'C'}>C</MenuItem>
+                    <MenuItem value={'G'}>G</MenuItem>
+                    <MenuItem value={'OT'}>OT</MenuItem>
+                    <MenuItem value={'K'}>K</MenuItem>
+                    <MenuItem value={'P'}>P</MenuItem>
+                  </Select>
+                </FormControl>
               </Box>
 
               {selectedPosition && filteredData.traits && (

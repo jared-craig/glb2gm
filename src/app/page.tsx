@@ -3,12 +3,11 @@
 import { Container, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
 import ForumIcon from '@mui/icons-material/Forum';
-import PaidIcon from '@mui/icons-material/Paid';
 
 export default function Home() {
   return (
     <Container maxWidth='xl'>
-      <Stack spacing={1}>
+      <Stack spacing={0.5}>
         <Typography variant='body1'>
           App is currently in <i>development</i>
         </Typography>
@@ -20,6 +19,9 @@ export default function Home() {
               <ListItemText
                 primary='All Stars'
                 secondary='1st and 2nd team All Stars according to the GM Rating system.'
+                primaryTypographyProps={{
+                  fontSize: 14,
+                }}
                 secondaryTypographyProps={{
                   fontSize: 12,
                 }}
@@ -29,6 +31,9 @@ export default function Home() {
               <ListItemText
                 primary='Player Builder'
                 secondary='Build your dream player from scratch.'
+                primaryTypographyProps={{
+                  fontSize: 14,
+                }}
                 secondaryTypographyProps={{
                   fontSize: 12,
                 }}
@@ -38,6 +43,21 @@ export default function Home() {
               <ListItemText
                 primary='Player Optimizer'
                 secondary='Optimize height/weight, attributes, and traits for a build.'
+                primaryTypographyProps={{
+                  fontSize: 14,
+                }}
+                secondaryTypographyProps={{
+                  fontSize: 12,
+                }}
+              />
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemText
+                primary='Player Templates'
+                secondary='Looking for inspiration or are you a new player?'
+                primaryTypographyProps={{
+                  fontSize: 14,
+                }}
                 secondaryTypographyProps={{
                   fontSize: 12,
                 }}
@@ -47,6 +67,9 @@ export default function Home() {
               <ListItemText
                 primary='Player Statistics'
                 secondary="By tier and category. Filter and sort to your heart's content."
+                primaryTypographyProps={{
+                  fontSize: 14,
+                }}
                 secondaryTypographyProps={{
                   fontSize: 12,
                 }}
@@ -56,6 +79,9 @@ export default function Home() {
               <ListItemText
                 primary='Team Rankings'
                 secondary='See how your team is stacking up against the competition.'
+                primaryTypographyProps={{
+                  fontSize: 14,
+                }}
                 secondaryTypographyProps={{
                   fontSize: 12,
                 }}
@@ -65,6 +91,9 @@ export default function Home() {
               <ListItemText
                 primary='Matchup'
                 secondary='Compare your team to another.'
+                primaryTypographyProps={{
+                  fontSize: 14,
+                }}
                 secondaryTypographyProps={{
                   fontSize: 12,
                 }}
@@ -74,6 +103,9 @@ export default function Home() {
               <ListItemText
                 primary='Team Builder'
                 secondary='Construct the team of your dreams.'
+                primaryTypographyProps={{
+                  fontSize: 14,
+                }}
                 secondaryTypographyProps={{
                   fontSize: 12,
                 }}
@@ -81,9 +113,9 @@ export default function Home() {
             </ListItem>
           </List>
         </Stack>
-        <Typography variant='body1'>
+        <Typography variant='body2'>
           Join the GLB2 Academy Discord{' '}
-          <Link href='https://discord.gg/3dNcAhxmrx' target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+          <Link href='https://discord.gg/3dNcAhxmrx' target='_blank' style={{ color: 'inherit', textDecoration: 'inherit', padding: 0 }}>
             <ForumIcon />
           </Link>
         </Typography>
