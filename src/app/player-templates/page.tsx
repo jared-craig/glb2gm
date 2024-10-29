@@ -123,7 +123,9 @@ export default function PlayerTemplates() {
                     </Grid>
                   ))}
                 </Grid>
-                <Divider />
+                <Grid size={12}>
+                  <Divider />
+                </Grid>
               </Fragment>
             ))}
         </Grid>

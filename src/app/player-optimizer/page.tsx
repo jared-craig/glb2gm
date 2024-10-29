@@ -27,6 +27,7 @@ import { getPossibleAttributes, getPossibleHeightsWeights, getPossibleTraits } f
 import { SALARIES } from '../players/salaries';
 import { getBasePlayers } from '../players/basePlayers';
 import LinearProgressWithLabel from '../components/LinearProgressWithLabel';
+import Link from 'next/link';
 
 export interface PlayerBuilderData {
   skills: any;
@@ -538,7 +539,17 @@ export default function PlayerBuilder() {
   return (
     <Container maxWidth='xl' sx={{ mb: 2 }}>
       {isOptimizing ? (
-        <LinearProgressWithLabel variant='buffer' value={optimizeProgress} valueBuffer={optimizeBuffer} />
+        <>
+          <Stack sx={{ alignItems: 'center' }}>
+            <Typography variant='caption'>Thanks for using GLB2GM!</Typography>
+            <Typography variant='caption'>
+              <Link href={'https://www.patreon.com/MadKingCraig'} target='_blank' style={{ color: 'inherit' }}>
+                Consider supporting me through Patreon
+              </Link>
+            </Typography>
+          </Stack>
+          <LinearProgressWithLabel variant='buffer' value={optimizeProgress} valueBuffer={optimizeBuffer} />
+        </>
       ) : (
         <>
           <Grid container rowGap={1} sx={{ mb: 2 }}>
