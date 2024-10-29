@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { Button, Skeleton } from '@mui/material';
 
-const pages = ['All Stars', 'Player Builder', 'Player Optimizer', 'Player Stats', 'Team Rankings', 'Matchup', 'Team Builder'];
+const pages = ['All Stars', 'Player Builder', 'Player Optimizer', 'Player Templates', 'Player Stats', 'Team Rankings', 'Matchup', 'Team Builder'];
 
 function HeaderBar() {
   const router = useRouter();
@@ -44,6 +44,9 @@ function HeaderBar() {
         break;
       case 'Player Optimizer':
         router.push('/player-optimizer');
+        break;
+      case 'Player Templates':
+        router.push('/player-templates');
         break;
       case 'Player Stats':
         router.push('/stats');
