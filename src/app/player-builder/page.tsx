@@ -539,12 +539,13 @@ export default function PlayerBuilder() {
               {selectedPosition && filteredData.traits && (
                 <>
                   <Box sx={{ width: 350, mb: 2 }}>
-                    <Grid container spacing={1} sx={{ mb: 1 }}>
+                    <Grid container spacing={1} sx={{ alignItems: 'center', mb: 1 }}>
                       <Grid size={3}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Height:</Typography>
                       </Grid>
                       <Grid size={6}>
                         <Slider
+                          size='small'
                           step={1}
                           marks
                           min={positionData[selectedPosition].min_height}
@@ -562,6 +563,7 @@ export default function PlayerBuilder() {
                       </Grid>
                       <Grid size={6}>
                         <Slider
+                          size='small'
                           step={positionData[selectedPosition].height_weight_modifier}
                           marks
                           min={weightInputMin}
