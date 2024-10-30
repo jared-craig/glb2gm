@@ -3,7 +3,7 @@
 import { Box, Container, Divider, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Fragment, useEffect, useState } from 'react';
-import { SKILL_LOOKUP, TRAIT_LOOKUP } from '../players/lookups';
+import { ABILITY_LOOKUP, ABILITY_MEDAL_LOOKUP, SKILL_LOOKUP, TRAIT_LOOKUP } from '../players/lookups';
 import { getTemplates, Template } from './templates';
 import { SALARIES } from '../players/salaries';
 
@@ -83,45 +83,56 @@ export default function PlayerTemplates() {
             templates.map((temp) => (
               <Fragment key={temp.templateName}>
                 <Grid size={12}>
-                  <Typography sx={{ typography: { xs: 'body1', xl: 'h6' } }}>{temp.templateName}</Typography>
+                  <Typography sx={{ typography: { xs: 'body1' } }}>{temp.templateName}</Typography>
                 </Grid>
                 <Grid size={{ xs: 12, xl: 3 }}>
                   <Box width={350}>
                     <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>
                         Height: {Math.floor(temp.height / 12)}&apos; {temp.height % 12}&apos;&apos;
                       </Typography>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>Weight: {temp.weight} lbs.</Typography>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Weight: {temp.weight} lbs.</Typography>
                     </Stack>
                     <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>Strength: {temp.strength}</Typography>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>Speed: {temp.speed}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Strength: {temp.strength}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Speed: {temp.speed}</Typography>
                     </Stack>
                     <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>Agility: {temp.agility}</Typography>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>Stamina: {temp.stamina}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Agility: {temp.agility}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Stamina: {temp.stamina}</Typography>
                     </Stack>
                     <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>Awareness: {temp.awareness}</Typography>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>Confidence: {temp.confidence}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Awareness: {temp.awareness}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Confidence: {temp.confidence}</Typography>
                     </Stack>
                     <Stack sx={{ mb: 1 }}>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>Trait 1: {TRAIT_LOOKUP[temp.trait1]}</Typography>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>Trait 2: {TRAIT_LOOKUP[temp.trait2]}</Typography>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>Trait 3: {TRAIT_LOOKUP[temp.trait3]}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Trait 1: {TRAIT_LOOKUP[temp.trait1]}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Trait 2: {TRAIT_LOOKUP[temp.trait2]}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Trait 3: {TRAIT_LOOKUP[temp.trait3]}</Typography>
                     </Stack>
                     <Stack sx={{ mb: 1 }}>
-                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Medium Salary: {getSalary(temp).toLocaleString()}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Medium Salary: {getSalary(temp).toLocaleString()}</Typography>
                     </Stack>
+                    <Grid container sx={{ mb: 1 }}>
+                      {Object.entries(temp.abilities).map(([key, value]) => (
+                        <Grid size={6}>
+                          <Typography color={ABILITY_MEDAL_LOOKUP[value].color} sx={{ typography: { xs: 'body2' } }}>
+                            {ABILITY_LOOKUP[key]}
+                          </Typography>
+                        </Grid>
+                      ))}
+                    </Grid>
                   </Box>
                 </Grid>
-                <Grid container size={{ xs: 12, xl: 9 }} columnSpacing={4} sx={{ mb: 1 }}>
-                  {Object.entries(temp.skills).map(([key, value]) => (
-                    <Grid key={key} size={{ xs: 8, sm: 4, lg: 3 }} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Typography sx={{ typography: { xs: 'body2' } }}>{SKILL_LOOKUP[key]}</Typography>
-                      <Typography sx={{ typography: { xs: 'body2', xl: 'body1' } }}>{value <= 0 ? '-' : value}</Typography>
-                    </Grid>
-                  ))}
+                <Grid container size={{ xs: 12, xl: 9 }} rowSpacing={1} columnSpacing={4} sx={{ alignContent: 'flex-start', mb: 1 }}>
+                  {Object.entries(temp.skills)
+                    .filter(([key, value]) => value > 0)
+                    .map(([key, value]) => (
+                      <Grid key={key} size={{ xs: 6, sm: 4, lg: 3 }} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Typography sx={{ typography: { xs: 'body2' } }}>{SKILL_LOOKUP[key]}</Typography>
+                        <Typography sx={{ typography: { xs: 'body2' } }}>{value}</Typography>
+                      </Grid>
+                    ))}
                 </Grid>
                 <Grid size={12}>
                   <Divider />
