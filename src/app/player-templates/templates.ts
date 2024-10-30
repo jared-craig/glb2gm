@@ -13,6 +13,7 @@ export interface Template {
   trait2: string;
   trait3: string;
   skills: { [key: string]: number };
+  abilities: { [key: string]: number };
 }
 
 export const getTemplates = (position: string): Template[] => {
@@ -55,6 +56,9 @@ export const getTemplates = (position: string): Template[] => {
         intimidation: 0.0,
         leadership: 80.0,
       },
+      abilities: {
+        thread_the_needle: 3,
+      },
     },
     // HB
     {
@@ -73,7 +77,7 @@ export const getTemplates = (position: string): Template[] => {
       trait3: 'unpredictable',
       skills: {
         carry_grip: 60.0,
-        carry_power: 100.0,
+        carry_power: 95.0,
         carry_elusiveness: 80.0,
         carry_awareness: 80.0,
         return_awareness: 0.0,
@@ -92,7 +96,7 @@ export const getTemplates = (position: string): Template[] => {
         run_block_awareness: 0.0,
         lead_block_awareness: 0.0,
         block_consistency: 0.0,
-        balance: 80.0,
+        balance: 100.0,
         footwork: 50.0,
         quickness: 40.0,
         sprinting: 40.0,
@@ -101,8 +105,13 @@ export const getTemplates = (position: string): Template[] => {
         conditioning: 100.0,
         toughness: 60.0,
         snap_reaction: 0.0,
-        heart: 30.0,
-        intimidation: 40.0,
+        heart: 37.0,
+        intimidation: 0.0,
+      },
+      abilities: {
+        goal_line_back: 3,
+        mr_reliable: 3,
+        stiff_arm: 3,
       },
     },
     {
@@ -151,6 +160,12 @@ export const getTemplates = (position: string): Template[] => {
         snap_reaction: 0.0,
         heart: 30.0,
         intimidation: 0.0,
+      },
+      abilities: {
+        stiff_arm: 3,
+        spin: 3,
+        home_town_hero: 2,
+        road_warrior: 2,
       },
     },
   ];
