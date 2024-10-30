@@ -1,8 +1,21 @@
 'use client';
 
-import { Box, Container, Divider, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Container,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Stack,
+  Switch,
+  Typography,
+} from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { Fragment, useEffect, useState } from 'react';
+import { ChangeEvent, Fragment, useEffect, useState } from 'react';
 import { ABILITY_LOOKUP, ABILITY_MEDAL_LOOKUP, SKILL_LOOKUP, TRAIT_LOOKUP } from '../players/lookups';
 import { getTemplates, Template } from './templates';
 import { SALARIES } from '../players/salaries';
@@ -11,10 +24,15 @@ export default function PlayerTemplates() {
   const [allTraits, setAllTraits] = useState<any>();
   const [selectedPosition, setSelectedPosition] = useState<string>('');
   const [templates, setTemplates] = useState<Template[]>();
+  const [endGamesChecked, setEndGamesChecked] = useState<Record<string, boolean>>({});
 
   const handlePositionChange = (event: SelectChangeEvent) => {
     setSelectedPosition(event.target.value);
     setTemplates(getTemplates(event.target.value));
+  };
+
+  const handleEndGameSwitchChange = (templateName: string) => (event: ChangeEvent<HTMLInputElement>) => {
+    setEndGamesChecked((prev) => ({ ...prev, [templateName]: event.target.checked }));
   };
 
   const fetchData = async () => {
@@ -83,7 +101,18 @@ export default function PlayerTemplates() {
             templates.map((temp) => (
               <Fragment key={temp.templateName}>
                 <Grid size={12}>
-                  <Typography sx={{ typography: { xs: 'body1' } }}>{temp.templateName}</Typography>
+                  <Box width={350}>
+                    <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
+                      <Typography sx={{ typography: { xs: 'body1' } }}>{temp.templateName}</Typography>
+                      <FormControlLabel
+                        control={
+                          <Switch checked={endGamesChecked[temp.templateName] ?? true} onChange={handleEndGameSwitchChange(temp.templateName)} size='small' />
+                        }
+                        label='End Build'
+                        sx={{ mr: 0 }}
+                      />
+                    </Stack>
+                  </Box>
                 </Grid>
                 <Grid size={{ xs: 12, xl: 3 }}>
                   <Box width={350}>
@@ -114,25 +143,43 @@ export default function PlayerTemplates() {
                       <Typography sx={{ typography: { xs: 'body2' } }}>Medium Salary: {getSalary(temp).toLocaleString()}</Typography>
                     </Stack>
                     <Grid container sx={{ mb: 1 }}>
-                      {Object.entries(temp.abilities).map(([key, value]) => (
-                        <Grid size={6}>
-                          <Typography color={ABILITY_MEDAL_LOOKUP[value].color} sx={{ typography: { xs: 'body2' } }}>
-                            {ABILITY_LOOKUP[key]}
-                          </Typography>
-                        </Grid>
+                      {Object.entries(temp.abilities).map(([build, buildValue]) => (
+                        <Fragment key={build}>
+                          {Object.entries(buildValue)
+                            .filter(() => (temp.templateName in endGamesChecked && !endGamesChecked[temp.templateName] ? build === 'start' : build === 'end'))
+                            .map(([ability, abilityValue]) => (
+                              <Grid key={`${build}-${ability}-${abilityValue}`} size={6}>
+                                <Typography color={ABILITY_MEDAL_LOOKUP[abilityValue].color} sx={{ typography: { xs: 'body2' } }}>
+                                  {ABILITY_LOOKUP[ability]}
+                                </Typography>
+                              </Grid>
+                            ))}
+                        </Fragment>
                       ))}
                     </Grid>
                   </Box>
                 </Grid>
                 <Grid container size={{ xs: 12, xl: 9 }} rowSpacing={1} columnSpacing={4} sx={{ alignContent: 'flex-start', mb: 1 }}>
-                  {Object.entries(temp.skills)
-                    .filter(([key, value]) => value > 0)
-                    .map(([key, value]) => (
-                      <Grid key={key} size={{ xs: 6, sm: 4, lg: 3 }} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Typography sx={{ typography: { xs: 'body2' } }}>{SKILL_LOOKUP[key]}</Typography>
-                        <Typography sx={{ typography: { xs: 'body2' } }}>{value}</Typography>
-                      </Grid>
-                    ))}
+                  {Object.entries(temp.skills).map(([build, buildValue]) => (
+                    <Fragment key={build}>
+                      {Object.entries(buildValue)
+                        .filter(
+                          ([skill, skillValue]) =>
+                            (temp.templateName in endGamesChecked && !endGamesChecked[temp.templateName] ? build === 'start' : build === 'end') &&
+                            skillValue > 0
+                        )
+                        .map(([skill, skillValue]) => (
+                          <Grid
+                            key={`${build}-${skill}-${skillValue}`}
+                            size={{ xs: 6, sm: 4, lg: 3 }}
+                            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                          >
+                            <Typography sx={{ typography: { xs: 'body2' } }}>{SKILL_LOOKUP[skill]}</Typography>
+                            <Typography sx={{ typography: { xs: 'body2' } }}>{skillValue}</Typography>
+                          </Grid>
+                        ))}
+                    </Fragment>
+                  ))}
                 </Grid>
                 <Grid size={12}>
                   <Divider />
