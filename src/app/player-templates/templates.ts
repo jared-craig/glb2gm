@@ -230,7 +230,12 @@ export const getTemplates = (position: string): Template[] => {
       },
       abilities: {
         start: {},
-        end: {},
+        end: {
+          thread_the_needle: 3,
+          quick_hitter: 3,
+          quick_read: 2,
+          sideline_bomb: 2,
+        },
       },
     },
     {
@@ -673,9 +678,9 @@ export const getTemplates = (position: string): Template[] => {
           stiff_arm: 3,
         },
         end: {
-          goal_line_back: 3,
-          mr_reliable: 3,
           stiff_arm: 3,
+          mr_reliable: 3,
+          goal_line_back: 3,
         },
       },
     },
@@ -859,8 +864,8 @@ export const getTemplates = (position: string): Template[] => {
       abilities: {
         start: {},
         end: {
-          hard_cut: 3,
           head_fake: 3,
+          hard_cut: 3,
           prime_time: 3,
         },
       },
@@ -943,8 +948,8 @@ export const getTemplates = (position: string): Template[] => {
       abilities: {
         start: {},
         end: {
-          hard_cut: 3,
           head_fake: 3,
+          hard_cut: 3,
           prime_time: 2,
         },
       },
@@ -1021,9 +1026,9 @@ export const getTemplates = (position: string): Template[] => {
           spin_cycle: 3,
         },
         end: {
-          first_strike: 3,
-          shed_block: 3,
           spin_cycle: 3,
+          shed_block: 3,
+          first_strike: 3,
         },
       },
     },
@@ -1098,9 +1103,9 @@ export const getTemplates = (position: string): Template[] => {
           spin_cycle: 2,
         },
         end: {
+          spin_cycle: 3,
           shed_block: 3,
           showboat: 2,
-          spin_cycle: 3,
         },
       },
     },
@@ -1182,9 +1187,9 @@ export const getTemplates = (position: string): Template[] => {
           spin_cycle: 3,
         },
         end: {
-          first_strike: 3,
-          shed_block: 3,
           spin_cycle: 3,
+          shed_block: 3,
+          first_strike: 3,
         },
       },
     },
@@ -1265,9 +1270,9 @@ export const getTemplates = (position: string): Template[] => {
           spin_cycle: 2,
         },
         end: {
+          spin_cycle: 3,
           shed_block: 3,
           showboat: 2,
-          spin_cycle: 3,
         },
       },
     },
@@ -1351,8 +1356,8 @@ export const getTemplates = (position: string): Template[] => {
       abilities: {
         start: {},
         end: {
-          chase_down: 3,
           monster_hit: 3,
+          chase_down: 3,
           shed_block: 3,
         },
       },
@@ -1436,8 +1441,8 @@ export const getTemplates = (position: string): Template[] => {
       abilities: {
         start: {},
         end: {
-          chase_down: 3,
           monster_hit: 3,
+          chase_down: 3,
           zone_shark: 3,
         },
       },
@@ -1521,8 +1526,8 @@ export const getTemplates = (position: string): Template[] => {
       abilities: {
         start: {},
         end: {
-          chase_down: 3,
           on_an_island: 3,
+          chase_down: 3,
         },
       },
     },
@@ -1605,9 +1610,9 @@ export const getTemplates = (position: string): Template[] => {
       abilities: {
         start: {},
         end: {
-          contain_expert: 2,
-          chase_down: 3,
           zone_shark: 3,
+          chase_down: 3,
+          contain_expert: 2,
         },
       },
     },
@@ -1699,9 +1704,9 @@ export const getTemplates = (position: string): Template[] => {
       abilities: {
         start: {},
         end: {
-          chase_down: 3,
           on_an_island: 3,
           swat_down: 3,
+          chase_down: 3,
         },
       },
     },
@@ -1790,11 +1795,13 @@ export const getTemplates = (position: string): Template[] => {
         },
       },
       abilities: {
-        start: {},
+        start: {
+          eyes_on_the_prize: 3,
+        },
         end: {
-          chase_down: 3,
           eyes_on_the_prize: 3,
           zone_shark: 3,
+          chase_down: 3,
         },
       },
     },
@@ -1883,10 +1890,12 @@ export const getTemplates = (position: string): Template[] => {
         },
       },
       abilities: {
-        start: {},
-        end: {
-          chase_down: 3,
+        start: {
           eyes_on_the_prize: 3,
+        },
+        end: {
+          eyes_on_the_prize: 3,
+          chase_down: 3,
           contain_expert: 2,
         },
       },
@@ -1976,10 +1985,12 @@ export const getTemplates = (position: string): Template[] => {
         },
       },
       abilities: {
-        start: {},
-        end: {
-          chase_down: 3,
+        start: {
           swat_down: 3,
+        },
+        end: {
+          swat_down: 3,
+          chase_down: 3,
           third_down_stopper: 2,
         },
       },
@@ -2066,9 +2077,9 @@ export const getTemplates = (position: string): Template[] => {
       abilities: {
         start: {},
         end: {
-          chase_down: 3,
           on_an_island: 3,
           swat_down: 3,
+          chase_down: 3,
         },
       },
     },
@@ -2153,9 +2164,9 @@ export const getTemplates = (position: string): Template[] => {
       abilities: {
         start: {},
         end: {
-          chase_down: 3,
           monster_hit: 3,
           zone_shark: 3,
+          chase_down: 3,
         },
       },
     },
@@ -2409,10 +2420,12 @@ export const getTemplates = (position: string): Template[] => {
         },
       },
       abilities: {
-        start: {},
-        end: {
-          coverage_commander: 3,
+        start: {
           streaky: 3,
+        },
+        end: {
+          streaky: 3,
+          coverage_commander: 3,
         },
       },
     },
@@ -2476,7 +2489,9 @@ export const getTemplates = (position: string): Template[] => {
         },
       },
       abilities: {
-        start: {},
+        start: {
+          coverage_commander: 3,
+        },
         end: {
           coverage_commander: 3,
           entrapment: 3,
