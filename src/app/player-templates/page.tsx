@@ -106,7 +106,9 @@ export default function PlayerTemplates() {
                     <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
                       <Typography sx={{ typography: { xs: 'body1' }, display: 'flex', alignItems: 'center' }}>
                         {temp.templateName}
-                        {temp.trait1.includes('superstar') && <StarIcon fontSize='small' sx={{ ml: 0.5, color: 'gold' }} />}
+                        {(temp.trait1.includes('superstar') || temp.trait1.includes('prodigy')) && (
+                          <StarIcon fontSize='small' sx={{ ml: 0.5, color: temp.trait1.includes('superstar') ? 'gold' : 'silver' }} />
+                        )}
                       </Typography>
                       <FormControlLabel
                         control={
