@@ -5,7 +5,6 @@ import {
   Container,
   Divider,
   FormControl,
-  FormControlLabel,
   IconButton,
   InputLabel,
   MenuItem,
@@ -26,6 +25,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import { SALARIES } from '../players/salaries';
 
 interface PlayerBuilderData {
   skills: any;
@@ -353,6 +353,29 @@ export default function PlayerBuilder() {
     setRemTrait1Options(newTraits);
     setRemTrait2Options(newTraits);
     setRemTrait3Options(newTraits);
+  };
+
+  const getSalary = (): number => {
+    if (!filteredData) return 0;
+    let salary = SALARIES[selectedPosition] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
+    let modifier = 0;
+
+    const t1 = filteredData.traits[trait1]?.salary_modifier ?? 0;
+    const t2 = filteredData.traits[trait2]?.salary_modifier ?? 0;
+    const t3 = filteredData.traits[trait3]?.salary_modifier ?? 0;
+    modifier = +t1! + +t2! + +t3!;
+
+    salary *= 1 + modifier;
+
+    if (salary > 5000000) {
+      salary = 25000 * Math.ceil(salary / 25000);
+    } else if (salary > 1000000) {
+      salary = 10000 * Math.ceil(salary / 10000);
+    } else {
+      salary = 5000 * Math.ceil(salary / 5000);
+    }
+
+    return salary;
   };
 
   const handlePositionChange = (event: SelectChangeEvent) => {
@@ -812,6 +835,9 @@ export default function PlayerBuilder() {
                             ))}
                           </Select>
                         </FormControl>
+                      </Grid>
+                      <Grid size={12} sx={{ mt: 1 }}>
+                        <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Medium Salary: {getSalary().toLocaleString()}</Typography>
                       </Grid>
                     </Grid>
                   </Box>
