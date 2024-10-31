@@ -142,47 +142,59 @@ export async function POST(request: NextRequest) {
           trait3: traitCombo[2],
         };
 
-        let skillPoints =
-          player.trait1.includes('superstar') || player.trait2.includes('superstar') || player.trait3.includes('superstar')
-            ? 220000
-            : player.trait1.includes('prodigy') || player.trait2.includes('prodigy') || player.trait3.includes('prodigy')
-              ? 216000
-              : 210000;
-        let capBoosts = 7;
-        let capBoostsSpent: { [key: string]: number } = {};
-        let suggestedBuild: { [key: string]: number } = {};
+        let skillPoints = 210000;
 
-        for (const key of Object.keys(filteredData.skills)) {
-          suggestedBuild[key] = FindBaseLevel(filteredData, key, player);
+        for (const trait of [player.trait1, player.trait2, player.trait3]) {
+          if (trait.includes('superstar')) {
+            skillPoints = 220000;
+            break;
+          } else if (trait.includes('prodigy')) {
+            skillPoints = 216000;
+          }
         }
 
-        for (const [skKey, skValue] of Object.entries(skillMins).filter(([key, value]: any) => value > suggestedBuild[key])) {
-          const levelsNeeded = skValue - suggestedBuild[skKey];
+        let capBoosts = 7;
+        let capBoostsSpent: { [key: string]: number } = {};
+        let suggestedBuild: Map<string, number> = new Map();
+
+        for (const key of Object.keys(filteredData.skills)) {
+          suggestedBuild.set(key, FindBaseLevel(filteredData, key, player));
+        }
+
+        const filteredSkillMins = Object.entries(skillMins).filter(([key, value]: any) => value > suggestedBuild.get(key)!);
+
+        for (const [skKey, skValue] of filteredSkillMins) {
+          const levelsNeeded = skValue - suggestedBuild.get(skKey)!;
 
           let neededSp = 0;
           for (let i = 1; i <= levelsNeeded; i++) {
-            neededSp += CalcCostSP(filteredData, skKey, player, i, suggestedBuild[skKey]);
+            neededSp += CalcCostSP(filteredData, skKey, player, i, suggestedBuild.get(skKey)!);
           }
 
           skillPoints -= neededSp;
 
-          suggestedBuild[skKey] += levelsNeeded;
+          suggestedBuild.set(skKey, suggestedBuild.get(skKey)! + levelsNeeded);
 
           const maxLevel = FindMaxLevel(filteredData, data, skKey, player, capBoostsSpent);
 
-          if (suggestedBuild[skKey] >= maxLevel) {
-            const attDiff = suggestedBuild[skKey] - maxLevel;
+          if (suggestedBuild.get(skKey)! >= maxLevel) {
+            const attDiff = suggestedBuild.get(skKey)! - maxLevel;
+            const capsSpent = Math.ceil(attDiff / 5.0);
 
-            capBoosts -= Math.ceil(attDiff / 5.0);
-            if (capBoostsSpent?.hasOwnProperty(skKey)) {
-              capBoostsSpent[skKey] += Math.ceil(attDiff / 5.0);
-            } else {
-              capBoostsSpent[skKey] = Math.ceil(attDiff / 5.0);
-            }
+            capBoosts -= capsSpent;
+            capBoostsSpent[skKey] = (capBoostsSpent[skKey] || 0) + capsSpent;
           }
         }
 
-        const combo = { ...hwCombo, ...attCombo, ...traitCombo, sp: skillPoints, cbr: capBoosts, cbs: capBoostsSpent, build: suggestedBuild };
+        const combo = {
+          ...hwCombo,
+          ...attCombo,
+          ...traitCombo,
+          sp: skillPoints,
+          cbr: capBoosts,
+          cbs: capBoostsSpent,
+          build: Object.fromEntries(suggestedBuild),
+        };
 
         const canAchieveBuild = skillPoints >= 0 && capBoosts >= 0;
 
@@ -194,5 +206,5 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  return Response.json({ best, bestFailing, success: best.sp > Number.NEGATIVE_INFINITY });
+  return Response.json({ best, bestFailing, success: best.sp > Number.MIN_SAFE_INTEGER });
 }
