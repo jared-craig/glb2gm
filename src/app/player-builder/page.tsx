@@ -820,17 +820,17 @@ export default function PlayerBuilder() {
             </Grid>
             {selectedPosition && filteredData.skills && filteredData.traits && Object.keys(skillDistribution).length > 0 && (
               <Grid container size={{ xs: 12, xl: 9 }} spacing={1} sx={{ alignItems: 'center' }}>
-                <Grid size={4} sx={{ mt: 1 }}>
+                <Grid size={{ xs: 12, sm: 4 }} sx={{ mt: 1 }}>
                   <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
                     <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Starter Build</Typography>
                     <Switch checked={isMaxLevelPlayer} onChange={handleMaxLevelSwitchChange} size='small' />
                     <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>End Build</Typography>
                   </Stack>
                 </Grid>
-                <Grid size={4} sx={{ mt: 1 }}>
+                <Grid size={{ xs: 6, sm: 4 }} sx={{ mt: 1 }}>
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Skill Points: {remSkillPoints}</Typography>
                 </Grid>
-                <Grid size={4} sx={{ mt: 1 }}>
+                <Grid size={{ xs: 6, sm: 4 }} sx={{ mt: 1 }}>
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Cap Boosts: {remCapBoosts}</Typography>
                 </Grid>
                 {groupOrder[selectedPosition].map((group) => (
