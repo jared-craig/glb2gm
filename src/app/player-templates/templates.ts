@@ -52,7 +52,7 @@ export const getTemplates = (position: string): Template[] => {
           quickness: 0.0,
           sprinting: 0.0,
           conditioning: 40.0,
-          toughness: 0.0,
+          toughness: 20.0,
           heart: 50.0,
           intimidation: 0.0,
           leadership: 50.0,
