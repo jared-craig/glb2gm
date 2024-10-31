@@ -1,8 +1,23 @@
 'use client';
 
-import { Box, Container, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Slider, Typography } from '@mui/material';
+import {
+  Box,
+  Container,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Slider,
+  Stack,
+  Switch,
+  Typography,
+} from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { Fragment, useEffect, useState } from 'react';
+import { ChangeEvent, Fragment, useEffect, useState } from 'react';
 import { SKILL_LOOKUP } from '../players/lookups';
 import SkillBar from '../components/SkillBar';
 import AddIcon from '@mui/icons-material/Add';
@@ -207,6 +222,7 @@ export default function PlayerBuilder() {
   const [skillDistribution, setSkillDistribution] = useState<{
     [key: string]: { baseLevel: number; currentLevel: number; maxLevel: number; currentMaxLevel: number; capBoostsSpent: number };
   }>({});
+  const [isMaxLevelPlayer, setIsMaxLevelPlayer] = useState(true);
   const [remSkillPoints, setRemSkillPoints] = useState<number>(210000);
   const [remCapBoosts, setRemCapBoosts] = useState<number>(7);
 
@@ -418,6 +434,10 @@ export default function PlayerBuilder() {
     }
   };
 
+  const handleMaxLevelSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setIsMaxLevelPlayer(event.target.checked);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -450,15 +470,21 @@ export default function PlayerBuilder() {
       skillDist[sk] = { baseLevel: baseLevel, currentLevel: baseLevel, maxLevel: maxLevel, currentMaxLevel: maxLevel, capBoostsSpent: 0 };
     }
     setSkillDistribution(skillDist);
-    setRemCapBoosts(7);
+    setRemCapBoosts(isMaxLevelPlayer ? 7 : 4);
     setRemSkillPoints(
       trait1.includes('superstar') || trait2.includes('superstar') || trait3.includes('superstar')
-        ? 220000
+        ? isMaxLevelPlayer
+          ? 220000
+          : 90500
         : trait1.includes('prodigy') || trait2.includes('prodigy') || trait3.includes('prodigy')
-          ? 216000
-          : 210000
+          ? isMaxLevelPlayer
+            ? 216000
+            : 88000
+          : isMaxLevelPlayer
+            ? 210000
+            : 85000
     );
-  }, [filteredData, remAttributes, heightInput, weightInput, trait1, trait2, trait3]);
+  }, [filteredData, remAttributes, heightInput, weightInput, trait1, trait2, trait3, isMaxLevelPlayer]);
 
   useEffect(() => {
     if (!filteredData.traits) return;
@@ -604,7 +630,7 @@ export default function PlayerBuilder() {
                           color='primary'
                           aria-label='add'
                           onClick={() => handleAttributeChange('strength', 1)}
-                          disabled={strength >= 10}
+                          disabled={strength >= 10 || remAttributes <= 0}
                         >
                           <AddIcon />
                         </IconButton>
@@ -794,10 +820,17 @@ export default function PlayerBuilder() {
             </Grid>
             {selectedPosition && filteredData.skills && filteredData.traits && Object.keys(skillDistribution).length > 0 && (
               <Grid container size={{ xs: 12, xl: 9 }} spacing={1} sx={{ alignItems: 'center' }}>
-                <Grid size={6} sx={{ mt: 1 }}>
+                <Grid size={4} sx={{ mt: 1 }}>
+                  <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Starter Build</Typography>
+                    <Switch checked={isMaxLevelPlayer} onChange={handleMaxLevelSwitchChange} size='small' />
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>End Build</Typography>
+                  </Stack>
+                </Grid>
+                <Grid size={4} sx={{ mt: 1 }}>
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Skill Points: {remSkillPoints}</Typography>
                 </Grid>
-                <Grid size={6} sx={{ mt: 1 }}>
+                <Grid size={4} sx={{ mt: 1 }}>
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Cap Boosts: {remCapBoosts}</Typography>
                 </Grid>
                 {groupOrder[selectedPosition].map((group) => (
