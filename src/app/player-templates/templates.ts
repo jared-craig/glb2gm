@@ -2328,7 +2328,7 @@ export const getTemplates = (position: string): Template[] => {
           tackle_power: 0.0,
           tackle_strip: 0.0,
           tackle_grip: 0.0,
-          balance: 30.0,
+          balance: 0.0,
           footwork: 0.0,
           quickness: 0.0,
           sprinting: 0.0,
