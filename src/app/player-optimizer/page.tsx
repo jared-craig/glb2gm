@@ -543,8 +543,9 @@ export default function PlayerBuilder() {
           <Stack sx={{ alignItems: 'center' }}>
             <Typography variant='caption'>Thanks for using GLB2GM!</Typography>
             <Typography variant='caption'>
+              Consider supporting me through{' '}
               <Link href={'https://www.patreon.com/MadKingCraig'} target='_blank' style={{ color: 'inherit' }}>
-                Consider supporting me through Patreon
+                Patreon
               </Link>
             </Typography>
           </Stack>
