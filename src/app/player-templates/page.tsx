@@ -19,6 +19,7 @@ import { ChangeEvent, Fragment, useEffect, useState } from 'react';
 import { ABILITY_LOOKUP, ABILITY_MEDAL_LOOKUP, SKILL_LOOKUP, TRAIT_LOOKUP } from '../players/lookups';
 import { getTemplates, Template } from './templates';
 import { SALARIES } from '../players/salaries';
+import StarIcon from '@mui/icons-material/Star';
 
 export default function PlayerTemplates() {
   const [allTraits, setAllTraits] = useState<any>();
@@ -79,20 +80,20 @@ export default function PlayerTemplates() {
                 <Select labelId='position-select-label' id='position-select' value={selectedPosition} label='Position' onChange={handlePositionChange}>
                   <MenuItem value={'QB'}>QB</MenuItem>
                   <MenuItem value={'HB'}>HB</MenuItem>
-                  {/* <MenuItem value={'FB'}>FB</MenuItem> */}
-                  {/*<MenuItem value={'TE'}>TE</MenuItem> */}
-                  {/*<MenuItem value={'WR'}>WR</MenuItem> */}
-                  {/*<MenuItem value={'DT'}>DT</MenuItem> */}
-                  {/*<MenuItem value={'DE'}>DE</MenuItem> */}
-                  {/*<MenuItem value={'LB'}>LB</MenuItem> */}
-                  {/*<MenuItem value={'CB'}>CB</MenuItem> */}
+                  <MenuItem value={'FB'}>FB</MenuItem>
+                  <MenuItem value={'TE'}>TE</MenuItem>
+                  <MenuItem value={'WR'}>WR</MenuItem>
+                  <MenuItem value={'DT'}>DT</MenuItem>
+                  <MenuItem value={'DE'}>DE</MenuItem>
+                  <MenuItem value={'LB'}>LB</MenuItem>
+                  <MenuItem value={'CB'}>CB</MenuItem>
                   {/*<MenuItem value={'SS'}>SS</MenuItem> */}
-                  {/*<MenuItem value={'FS'}>FS</MenuItem> */}
-                  {/*<MenuItem value={'C'}>C</MenuItem> */}
-                  {/*<MenuItem value={'G'}>G</MenuItem> */}
-                  {/*<MenuItem value={'OT'}>OT</MenuItem> */}
-                  {/*<MenuItem value={'K'}>K</MenuItem> */}
-                  {/*<MenuItem value={'P'}>P</MenuItem> */}
+                  <MenuItem value={'FS'}>FS</MenuItem>
+                  <MenuItem value={'C'}>C</MenuItem>
+                  <MenuItem value={'G'}>G</MenuItem>
+                  <MenuItem value={'OT'}>OT</MenuItem>
+                  <MenuItem value={'K'}>K</MenuItem>
+                  <MenuItem value={'P'}>P</MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -103,7 +104,10 @@ export default function PlayerTemplates() {
                 <Grid size={12}>
                   <Box width={350}>
                     <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-                      <Typography sx={{ typography: { xs: 'body1' } }}>{temp.templateName}</Typography>
+                      <Typography sx={{ typography: { xs: 'body1' }, display: 'flex', alignItems: 'center' }}>
+                        {temp.templateName}
+                        {temp.trait1.includes('superstar') && <StarIcon fontSize='small' sx={{ ml: 0.5, color: 'gold' }} />}
+                      </Typography>
                       <FormControlLabel
                         control={
                           <Switch checked={endGamesChecked[temp.templateName] ?? true} onChange={handleEndGameSwitchChange(temp.templateName)} size='small' />
@@ -135,12 +139,12 @@ export default function PlayerTemplates() {
                       <Typography sx={{ typography: { xs: 'body2' } }}>Confidence: {temp.confidence}</Typography>
                     </Stack>
                     <Stack sx={{ mb: 1 }}>
+                      <Typography sx={{ typography: { xs: 'body2' } }}>Medium Salary: {getSalary(temp).toLocaleString()}</Typography>
+                    </Stack>
+                    <Stack sx={{ mb: 1 }}>
                       <Typography sx={{ typography: { xs: 'body2' } }}>Trait 1: {TRAIT_LOOKUP[temp.trait1]}</Typography>
                       <Typography sx={{ typography: { xs: 'body2' } }}>Trait 2: {TRAIT_LOOKUP[temp.trait2]}</Typography>
                       <Typography sx={{ typography: { xs: 'body2' } }}>Trait 3: {TRAIT_LOOKUP[temp.trait3]}</Typography>
-                    </Stack>
-                    <Stack sx={{ mb: 1 }}>
-                      <Typography sx={{ typography: { xs: 'body2' } }}>Medium Salary: {getSalary(temp).toLocaleString()}</Typography>
                     </Stack>
                     <Grid container sx={{ mb: 1 }}>
                       {Object.entries(temp.abilities).map(([build, buildValue]) => (
@@ -171,7 +175,7 @@ export default function PlayerTemplates() {
                         .map(([skill, skillValue]) => (
                           <Grid
                             key={`${build}-${skill}-${skillValue}`}
-                            size={{ xs: 6, sm: 4, lg: 3 }}
+                            size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 2 }}
                             sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                           >
                             <Typography sx={{ typography: { xs: 'body2' } }}>{SKILL_LOOKUP[skill]}</Typography>

@@ -621,7 +621,13 @@ export default function PlayerBuilder() {
                         <Typography>{speed}</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <IconButton size='small' color='primary' aria-label='add' onClick={() => handleAttributeChange('speed', 1)} disabled={speed >= 10}>
+                        <IconButton
+                          size='small'
+                          color='primary'
+                          aria-label='add'
+                          onClick={() => handleAttributeChange('speed', 1)}
+                          disabled={speed >= 10 || remAttributes <= 0}
+                        >
                           <AddIcon />
                         </IconButton>
                       </Grid>
@@ -643,7 +649,13 @@ export default function PlayerBuilder() {
                         <Typography>{agility}</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <IconButton size='small' color='primary' aria-label='add' onClick={() => handleAttributeChange('agility', 1)} disabled={agility >= 10}>
+                        <IconButton
+                          size='small'
+                          color='primary'
+                          aria-label='add'
+                          onClick={() => handleAttributeChange('agility', 1)}
+                          disabled={agility >= 10 || remAttributes <= 0}
+                        >
                           <AddIcon />
                         </IconButton>
                       </Grid>
@@ -665,7 +677,13 @@ export default function PlayerBuilder() {
                         <Typography>{stamina}</Typography>
                       </Grid>
                       <Grid size={2} sx={{ textAlign: 'center' }}>
-                        <IconButton size='small' color='primary' aria-label='add' onClick={() => handleAttributeChange('stamina', 1)} disabled={stamina >= 10}>
+                        <IconButton
+                          size='small'
+                          color='primary'
+                          aria-label='add'
+                          onClick={() => handleAttributeChange('stamina', 1)}
+                          disabled={stamina >= 10 || remAttributes <= 0}
+                        >
                           <AddIcon />
                         </IconButton>
                       </Grid>
@@ -692,7 +710,7 @@ export default function PlayerBuilder() {
                           color='primary'
                           aria-label='add'
                           onClick={() => handleAttributeChange('awareness', 1)}
-                          disabled={awareness >= 10}
+                          disabled={awareness >= 10 || remAttributes <= 0}
                         >
                           <AddIcon />
                         </IconButton>
@@ -720,7 +738,7 @@ export default function PlayerBuilder() {
                           color='primary'
                           aria-label='add'
                           onClick={() => handleAttributeChange('confidence', 1)}
-                          disabled={confidence >= 10}
+                          disabled={confidence >= 10 || remAttributes <= 0}
                         >
                           <AddIcon />
                         </IconButton>
