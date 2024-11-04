@@ -28,6 +28,7 @@ import { SALARIES } from '../players/salaries';
 import { getBasePlayers } from '../players/basePlayers';
 import LinearProgressWithLabel from '../components/LinearProgressWithLabel';
 import Link from 'next/link';
+import { OptimizedPlayer } from './optimizedPlayer';
 
 export interface PlayerBuilderData {
   skills: any;
@@ -114,10 +115,7 @@ export default function PlayerBuilder() {
     setFilteredData({ skills: newSkills, traits: newTraits });
   };
 
-  const buildPlayer = async (
-    optimize: string,
-    updatedPlayer: Player
-  ): Promise<{ newPlayer: any; build: any; isPossibleCombo: any; remSkillPoints: any; remCapBoosts: any; capBoostsSpent: any }> => {
+  const buildPlayer = async (optimize: string, updatedPlayer: Player): Promise<OptimizedPlayer> => {
     let hw: any[] = [];
     let at: any[] = [];
     let tr: any[] = [];
@@ -181,19 +179,21 @@ export default function PlayerBuilder() {
       body: JSON.stringify(reqBody),
     });
 
-    let newPlayer: any;
-    let build: any;
-    let isPossibleCombo: any;
-    let remSkillPoints: any;
-    let remCapBoosts: any;
-    let capBoostsSpent: any;
+    let optimizedPlayer: OptimizedPlayer = {
+      newPlayer: undefined,
+      build: undefined,
+      isPossibleCombo: undefined,
+      remSkillPoints: undefined,
+      remCapBoosts: undefined,
+      capBoostsSpent: undefined,
+    };
 
     if (!res.ok || res.status === 500) {
       console.error('failed to optimize player');
     } else {
       const result = await res.json();
       if (result.success) {
-        newPlayer = {
+        optimizedPlayer.newPlayer = {
           position: selectedPosition,
           trait1: result.best[0],
           trait2: result.best[1],
@@ -207,13 +207,13 @@ export default function PlayerBuilder() {
           awareness: result.best.awareness,
           confidence: result.best.confidence,
         };
-        build = result.best.build;
-        isPossibleCombo = true;
-        remSkillPoints = result.best.sp;
-        remCapBoosts = result.best.cbr;
-        capBoostsSpent = result.best.cbs;
+        optimizedPlayer.build = result.best.build;
+        optimizedPlayer.isPossibleCombo = true;
+        optimizedPlayer.remSkillPoints = result.best.sp;
+        optimizedPlayer.remCapBoosts = result.best.cbr;
+        optimizedPlayer.capBoostsSpent = result.best.cbs;
       } else {
-        newPlayer = {
+        optimizedPlayer.newPlayer = {
           position: selectedPosition,
           trait1: result.bestFailing[0],
           trait2: result.bestFailing[1],
@@ -227,15 +227,15 @@ export default function PlayerBuilder() {
           awareness: result.bestFailing.awareness,
           confidence: result.bestFailing.confidence,
         };
-        build = result.bestFailing.build;
-        isPossibleCombo = false;
-        remSkillPoints = result.bestFailing.sp;
-        remCapBoosts = result.bestFailing.cbr;
-        capBoostsSpent = result.bestFailing.cbs;
+        optimizedPlayer.build = result.bestFailing.build;
+        optimizedPlayer.isPossibleCombo = false;
+        optimizedPlayer.remSkillPoints = result.bestFailing.sp;
+        optimizedPlayer.remCapBoosts = result.bestFailing.cbr;
+        optimizedPlayer.capBoostsSpent = result.bestFailing.cbs;
       }
     }
 
-    return { newPlayer, build, isPossibleCombo, remSkillPoints, remCapBoosts, capBoostsSpent };
+    return optimizedPlayer;
   };
 
   const getSalary = (player: any): number => {
