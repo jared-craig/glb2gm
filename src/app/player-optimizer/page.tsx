@@ -14,6 +14,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Slider,
   Stack,
   TextField,
   Typography,
@@ -64,6 +65,7 @@ export default function PlayerBuilder() {
   const [capBoostsSpent, setCapBoostsSpent] = useState<{ [key: string]: number }>({});
   const [skillMins, setSkillMins] = useState<{ [key: string]: number }>();
   const [attCombos, setAttCombos] = useState<any>();
+  const [allPossibleTraits, setAllPossibleTraits] = useState<any>();
   const [traitCombos, setTraitCombos] = useState<any>();
   const [heightWeightCombos, setHeightWeightCombos] = useState<any>();
   const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
@@ -76,6 +78,16 @@ export default function PlayerBuilder() {
   const [isSuperstar, setIsSuperstar] = useState(true);
   const [isProdigy, setIsProdigy] = useState(false);
   const [build, setBuild] = useState<any>();
+
+  const [remTrait1Options, setRemTrait1Options] = useState({});
+  const [remTrait2Options, setRemTrait2Options] = useState({});
+  const [remTrait3Options, setRemTrait3Options] = useState({});
+  const [trait1, setTrait1] = useState('');
+  const [trait2, setTrait2] = useState('');
+  const [trait3, setTrait3] = useState('');
+  const [lockTrait1, setLockTrait1] = useState(false);
+  const [lockTrait2, setLockTrait2] = useState(false);
+  const [lockTrait3, setLockTrait3] = useState(false);
 
   const fetchData = async () => {
     setAttCombos(getPossibleAttributes());
@@ -110,9 +122,26 @@ export default function PlayerBuilder() {
         !(value as any).position_exclusions.includes(selectedPosition) && (Object.keys((value as any).skill_modifiers).length > 0 || key === 'natural')
     );
 
+    traitsEntries.sort((a: any, b: any) => {
+      if (a[1].name === 'Superstar') {
+        return -1;
+      } else if (b[1].name === 'Superstar') {
+        return 1;
+      } else if (a[1].name === 'Prodigy') {
+        return -1;
+      } else if (b[1].name === 'Prodigy') {
+        return 1;
+      } else {
+        return a[1].name.localeCompare(b[1].name);
+      }
+    });
+
     const newTraits = Object.fromEntries(traitsEntries);
 
     setFilteredData({ skills: newSkills, traits: newTraits });
+    setRemTrait1Options(newTraits);
+    setRemTrait2Options(newTraits);
+    setRemTrait3Options(newTraits);
   };
 
   const buildPlayer = async (optimize: string, updatedPlayer: Player): Promise<OptimizedPlayer> => {
@@ -238,14 +267,14 @@ export default function PlayerBuilder() {
     return optimizedPlayer;
   };
 
-  const getSalary = (player: any): number => {
-    if (!filteredData.traits || !player.trait1 || !player.trait2 || !player.trait3) return 0;
-    let salary = SALARIES[player.position] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
+  const getSalary = (): number => {
+    if (!filteredData.traits || !trait1 || !trait2 || !trait3) return 0;
+    let salary = SALARIES[selectedPosition] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
     let modifier = 0;
 
-    const t1 = filteredData.traits[player.trait1].salary_modifier;
-    const t2 = filteredData.traits[player.trait2].salary_modifier;
-    const t3 = filteredData.traits[player.trait3].salary_modifier;
+    const t1 = filteredData.traits[trait1]?.salary_modifier || 0;
+    const t2 = filteredData.traits[trait2]?.salary_modifier || 0;
+    const t3 = filteredData.traits[trait3]?.salary_modifier || 0;
     modifier = +t1! + +t2! + +t3!;
 
     salary *= 1 + modifier;
@@ -480,6 +509,9 @@ export default function PlayerBuilder() {
 
     setBuild(buildResult.build);
     setPlayer(buildResult.newPlayer);
+    setTrait1(buildResult.newPlayer.trait1);
+    setTrait2(buildResult.newPlayer.trait2);
+    setTrait3(buildResult.newPlayer.trait3);
     setIsPossibleCombo(buildResult.isPossibleCombo);
     setRemSkillPoints(buildResult.remSkillPoints);
     setRemCapBoosts(buildResult.remCapBoosts);
@@ -509,6 +541,16 @@ export default function PlayerBuilder() {
     if (!Number.isNaN(num)) setMaxSalaryInput(num.toString());
   };
 
+  const handleTrait1Change = (event: SelectChangeEvent) => {
+    setTrait1(event.target.value as string);
+  };
+  const handleTrait2Change = (event: SelectChangeEvent) => {
+    setTrait2(event.target.value as string);
+  };
+  const handleTrait3Change = (event: SelectChangeEvent) => {
+    setTrait3(event.target.value as string);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -519,7 +561,11 @@ export default function PlayerBuilder() {
     setRemCapBoosts(0);
     setBuild(undefined);
     filterAndSortSkills();
-    setPlayer(getBasePlayers(selectedPosition));
+    const basePlayer = getBasePlayers(selectedPosition);
+    setPlayer(basePlayer);
+    setTrait1(basePlayer?.trait1 ?? '');
+    setTrait2(basePlayer?.trait2 ?? '');
+    setTrait3(basePlayer?.trait3 ?? '');
     setMinSalary(getMinSalary(selectedPosition));
   }, [selectedPosition]);
 
@@ -527,7 +573,9 @@ export default function PlayerBuilder() {
     if (!selectedPosition || !filteredData) return;
 
     setSkillMins(getSkillMins(selectedPosition));
-    setTraitCombos(getPossibleTraits(filteredData.traits));
+    const allPossibleTraits = getPossibleTraits(filteredData.traits);
+    setAllPossibleTraits(allPossibleTraits);
+    setTraitCombos(allPossibleTraits);
     setHeightWeightCombos(getPossibleHeightsWeights(selectedPosition));
     setMaxSalary(getMaxSalary(selectedPosition));
   }, [filteredData]);
@@ -535,6 +583,45 @@ export default function PlayerBuilder() {
   useEffect(() => {
     setMaxSalaryInput(maxSalary.toString());
   }, [maxSalary]);
+
+  useEffect(() => {
+    if (!filteredData.traits) return;
+    setRemTrait1Options(
+      Object.fromEntries(
+        Object.entries(filteredData.traits).filter(
+          ([key, value]) => key !== trait2 && key !== trait3 && !(value as any).conflicts.includes(trait2) && !(value as any).conflicts.includes(trait3)
+        )
+      )
+    );
+    setRemTrait2Options(
+      Object.fromEntries(
+        Object.entries(filteredData.traits).filter(
+          ([key, value]) => key !== trait1 && key !== trait3 && !(value as any).conflicts.includes(trait1) && !(value as any).conflicts.includes(trait3)
+        )
+      )
+    );
+    setRemTrait3Options(
+      Object.fromEntries(
+        Object.entries(filteredData.traits).filter(
+          ([key, value]) => key !== trait1 && key !== trait2 && !(value as any).conflicts.includes(trait1) && !(value as any).conflicts.includes(trait2)
+        )
+      )
+    );
+  }, [trait1, trait2, trait3]);
+
+  useEffect(() => {
+    let possibleTraitCombos = allPossibleTraits;
+    if (lockTrait1) {
+      possibleTraitCombos = possibleTraitCombos.filter((x: any) => x.some((y: any) => y === trait1));
+    }
+    if (lockTrait2) {
+      possibleTraitCombos = possibleTraitCombos.filter((x: any) => x.some((y: any) => y === trait2));
+    }
+    if (lockTrait3) {
+      possibleTraitCombos = possibleTraitCombos.filter((x: any) => x.some((y: any) => y === trait3));
+    }
+    setTraitCombos(possibleTraitCombos);
+  }, [lockTrait1, lockTrait2, lockTrait3]);
 
   return (
     <Container maxWidth='xl' sx={{ mb: 2 }}>
@@ -590,43 +677,98 @@ export default function PlayerBuilder() {
               </Box>
             )}
           </Grid>
-          {selectedPosition && player && build && (
+          {selectedPosition && player && (
             <>
               <Box sx={{ width: 350 }}>
-                <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
-                    Height: {Math.floor(player.height / 12)}&apos; {player.height % 12}&apos;&apos;
-                  </Typography>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Weight: {player.weight} lbs.</Typography>
-                </Stack>
-                <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Strength: {player.strength}</Typography>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Speed: {player.speed}</Typography>
-                </Stack>
-                <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Agility: {player.agility}</Typography>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Stamina: {player.stamina}</Typography>
-                </Stack>
-                <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Awareness: {player.awareness}</Typography>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Confidence: {player.confidence}</Typography>
-                </Stack>
-                <Stack sx={{ mb: 1 }}>
+                {build && (
+                  <>
+                    <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
+                        Height: {Math.floor(player.height / 12)}&apos; {player.height % 12}&apos;&apos;
+                      </Typography>
+                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Weight: {player.weight} lbs.</Typography>
+                    </Stack>
+                    <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
+                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Strength: {player.strength}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Speed: {player.speed}</Typography>
+                    </Stack>
+                    <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
+                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Agility: {player.agility}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Stamina: {player.stamina}</Typography>
+                    </Stack>
+                    <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
+                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Awareness: {player.awareness}</Typography>
+                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Confidence: {player.confidence}</Typography>
+                    </Stack>
+                  </>
+                )}
+                <Grid container spacing={1} sx={{ mr: { xs: 0, lg: 4 }, mb: 1, alignItems: 'center' }}>
+                  <Grid size={3}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 1:</Typography>
+                  </Grid>
+                  <Grid size={9} sx={{ display: 'flex', flexDirection: 'row' }}>
+                    <FormControl fullWidth>
+                      <Select size='small' id='trait-one-select' value={trait1} onChange={handleTrait1Change} disabled={lockTrait1}>
+                        {Object.entries(remTrait1Options).map(([key, value]) => (
+                          <MenuItem key={key} value={key}>
+                            {(value as any).name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <Checkbox checked={lockTrait1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLockTrait1(event.target.checked)} />
+                  </Grid>
+                  <Grid size={3}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 2:</Typography>
+                  </Grid>
+                  <Grid size={9} sx={{ display: 'flex', flexDirection: 'row' }}>
+                    <FormControl fullWidth>
+                      <Select size='small' id='trait-two-select' value={trait2} onChange={handleTrait2Change} disabled={lockTrait2}>
+                        {Object.entries(remTrait2Options).map(([key, value]) => (
+                          <MenuItem key={key} value={key}>
+                            {(value as any).name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <Checkbox checked={lockTrait2} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLockTrait2(event.target.checked)} />
+                  </Grid>
+                  <Grid size={3}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 3:</Typography>
+                  </Grid>
+                  <Grid size={9} sx={{ display: 'flex', flexDirection: 'row' }}>
+                    <FormControl fullWidth>
+                      <Select size='small' id='trait-three-select' value={trait3} onChange={handleTrait3Change} disabled={lockTrait3}>
+                        {Object.entries(remTrait3Options).map(([key, value]) => (
+                          <MenuItem key={key} value={key}>
+                            {(value as any).name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <Checkbox checked={lockTrait3} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLockTrait3(event.target.checked)} />
+                  </Grid>
+                </Grid>
+                {/* <Stack sx={{ mb: 1 }}>
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 1: {TRAIT_LOOKUP[player.trait1]}</Typography>
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 2: {TRAIT_LOOKUP[player.trait2]}</Typography>
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 3: {TRAIT_LOOKUP[player.trait3]}</Typography>
-                </Stack>
+                </Stack> */}
                 <Stack sx={{ mb: 1 }}>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Medium Salary: {getSalary(player).toLocaleString()}</Typography>
+                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Medium Salary: {getSalary().toLocaleString()}</Typography>
                 </Stack>
-                <Stack>
-                  <Typography sx={{ color: remSkillPoints < 0 ? 'red' : '', typography: { xs: 'body2', lg: 'body1' } }}>
-                    Skill Points Remaining: {remSkillPoints.toLocaleString()}
-                  </Typography>
-                  <Typography sx={{ color: remCapBoosts < 0 ? 'red' : '', typography: { xs: 'body2', lg: 'body1' } }}>
-                    Cap Boosts Remaining: {remCapBoosts}
-                  </Typography>
-                </Stack>
+                {build && (
+                  <>
+                    <Stack>
+                      <Typography sx={{ color: remSkillPoints < 0 ? 'red' : '', typography: { xs: 'body2', lg: 'body1' } }}>
+                        Skill Points Remaining: {remSkillPoints.toLocaleString()}
+                      </Typography>
+                      <Typography sx={{ color: remCapBoosts < 0 ? 'red' : '', typography: { xs: 'body2', lg: 'body1' } }}>
+                        Cap Boosts Remaining: {remCapBoosts}
+                      </Typography>
+                    </Stack>
+                  </>
+                )}
               </Box>
             </>
           )}
