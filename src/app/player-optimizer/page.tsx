@@ -7,14 +7,11 @@ import {
   Container,
   Divider,
   FormControl,
-  FormControlLabel,
-  FormGroup,
   InputLabel,
   LinearProgress,
   MenuItem,
   Select,
   SelectChangeEvent,
-  Slider,
   Stack,
   TextField,
   Typography,
@@ -65,7 +62,7 @@ export default function PlayerBuilder() {
   const [capBoostsSpent, setCapBoostsSpent] = useState<{ [key: string]: number }>({});
   const [skillMins, setSkillMins] = useState<{ [key: string]: number }>();
   const [attCombos, setAttCombos] = useState<any>();
-  const [allPossibleTraits, setAllPossibleTraits] = useState<any>();
+  const [allPossibleTraits, setAllPossibleTraits] = useState<any>([]);
   const [traitCombos, setTraitCombos] = useState<any>();
   const [heightWeightCombos, setHeightWeightCombos] = useState<any>();
   const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
@@ -75,8 +72,6 @@ export default function PlayerBuilder() {
   const [minSalary, setMinSalary] = useState<number>(0);
   const [maxSalary, setMaxSalary] = useState<number>(0);
   const [maxSalaryInput, setMaxSalaryInput] = useState<string>('15000000');
-  const [isSuperstar, setIsSuperstar] = useState(true);
-  const [isProdigy, setIsProdigy] = useState(false);
   const [build, setBuild] = useState<any>();
 
   const [remTrait1Options, setRemTrait1Options] = useState({});
@@ -181,13 +176,7 @@ export default function PlayerBuilder() {
             confidence: updatedPlayer.confidence,
           },
         ];
-        tr = isSuperstar
-          ? traitCombos.filter((x: any) => getTraitsSalary(x) <= +maxSalaryInput && x.every((y: string) => !y.includes('prodigy')))
-          : isProdigy
-            ? traitCombos.filter((x: any) => getTraitsSalary(x) <= +maxSalaryInput && x.every((y: string) => !y.includes('superstar')))
-            : traitCombos.filter(
-                (x: any) => getTraitsSalary(x) <= +maxSalaryInput && x.every((y: string) => !y.includes('superstar') && !y.includes('prodigy'))
-              );
+        tr = traitCombos.filter((x: any) => getTraitsSalary(x) <= +maxSalaryInput);
         break;
     }
 
@@ -218,7 +207,12 @@ export default function PlayerBuilder() {
     };
 
     if (!res.ok || res.status === 500) {
+      setIsPossibleCombo(false);
+      setIsOptimizing(false);
+      setOptimizeProgress(0);
+      setOptimizeBuffer(13);
       console.error('failed to optimize player');
+      return optimizedPlayer;
     } else {
       const result = await res.json();
       if (result.success) {
@@ -347,7 +341,7 @@ export default function PlayerBuilder() {
     });
   };
 
-  const getMaxSalary = (position: string): number => {
+  const getMaxSalary = (): number => {
     if (!filteredData.traits) return 0;
     let salary = SALARIES[selectedPosition] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
     let modifier = 0;
@@ -427,28 +421,20 @@ export default function PlayerBuilder() {
     setIsOptimizing(true);
     setIsPossibleCombo(true);
     setBuild(undefined);
+    setLockTrait1(false);
+    setLockTrait2(false);
+    setLockTrait3(false);
 
     let newPlayer = { ...player };
 
-    if (!isSuperstar && newPlayer.trait1.includes('superstar')) {
-      if (isProdigy) newPlayer.trait1 = 'prodigy';
-      else newPlayer.trait1 = 'jittery';
-    } else if (!isSuperstar && newPlayer.trait2.includes('superstar')) {
-      if (isProdigy) newPlayer.trait2 = 'prodigy';
-      else newPlayer.trait2 = 'jittery';
-    } else if (!isSuperstar && newPlayer.trait3.includes('superstar')) {
-      if (isProdigy) newPlayer.trait3 = 'prodigy';
-      else newPlayer.trait3 = 'jittery';
-    }
-
-    if (getTraitsSalary([newPlayer.trait1, newPlayer.trait2, newPlayer.trait3]) > +maxSalaryInput) {
-      newPlayer.trait1 = 'jittery';
-      newPlayer.trait2 = 'early_bloomer';
-      newPlayer.trait3 = 'workhorse';
-    }
-
     setOptimizeBuffer(13);
     let buildResult = await buildPlayer('at', newPlayer);
+    if (buildResult.newPlayer === undefined) {
+      setIsOptimizing(false);
+      setOptimizeProgress(0);
+      setOptimizeBuffer(13);
+      return;
+    }
     setOptimizeBuffer(15);
     setOptimizeProgress(13);
     buildResult = await buildPlayer('tr', buildResult.newPlayer);
@@ -563,6 +549,9 @@ export default function PlayerBuilder() {
     filterAndSortSkills();
     const basePlayer = getBasePlayers(selectedPosition);
     setPlayer(basePlayer);
+    setLockTrait1(false);
+    setLockTrait2(false);
+    setLockTrait3(false);
     setTrait1(basePlayer?.trait1 ?? '');
     setTrait2(basePlayer?.trait2 ?? '');
     setTrait3(basePlayer?.trait3 ?? '');
@@ -577,7 +566,7 @@ export default function PlayerBuilder() {
     setAllPossibleTraits(allPossibleTraits);
     setTraitCombos(allPossibleTraits);
     setHeightWeightCombos(getPossibleHeightsWeights(selectedPosition));
-    setMaxSalary(getMaxSalary(selectedPosition));
+    setMaxSalary(getMaxSalary());
   }, [filteredData]);
 
   useEffect(() => {
@@ -703,6 +692,9 @@ export default function PlayerBuilder() {
                   </>
                 )}
                 <Grid container spacing={1} sx={{ mr: { xs: 0, lg: 4 }, mb: 1, alignItems: 'center' }}>
+                  <Grid size={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <Typography variant='caption'>Check to Lock Trait</Typography>
+                  </Grid>
                   <Grid size={3}>
                     <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 1:</Typography>
                   </Grid>
@@ -749,11 +741,6 @@ export default function PlayerBuilder() {
                     <Checkbox checked={lockTrait3} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLockTrait3(event.target.checked)} />
                   </Grid>
                 </Grid>
-                {/* <Stack sx={{ mb: 1 }}>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 1: {TRAIT_LOOKUP[player.trait1]}</Typography>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 2: {TRAIT_LOOKUP[player.trait2]}</Typography>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 3: {TRAIT_LOOKUP[player.trait3]}</Typography>
-                </Stack> */}
                 <Stack sx={{ mb: 1 }}>
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Medium Salary: {getSalary().toLocaleString()}</Typography>
                 </Stack>
@@ -772,7 +759,7 @@ export default function PlayerBuilder() {
               </Box>
             </>
           )}
-          {!isPossibleCombo && skillMins && <Typography sx={{ color: 'red' }}>No possible combinations found to achieve skills</Typography>}
+          {!isPossibleCombo && skillMins && <Typography sx={{ color: 'red' }}>No possible combos found</Typography>}
           {selectedPosition && skillMins && player && (
             <>
               <Stack
@@ -796,30 +783,6 @@ export default function PlayerBuilder() {
                     },
                   }}
                 />
-                <FormGroup sx={{ flexDirection: 'row', flexWrap: 'nowrap' }}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={isSuperstar && !isProdigy}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIsSuperstar(event.target.checked)}
-                        disabled={isProdigy}
-                      />
-                    }
-                    label={<Typography variant='caption'>Allow Superstar</Typography>}
-                    sx={{ whiteSpace: 'nowrap' }}
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={isProdigy && !isSuperstar}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setIsProdigy(event.target.checked)}
-                        disabled={isSuperstar}
-                      />
-                    }
-                    label={<Typography variant='caption'>Allow Prodigy</Typography>}
-                    sx={{ whiteSpace: 'nowrap' }}
-                  />
-                </FormGroup>
                 <Button
                   variant='contained'
                   size='small'
