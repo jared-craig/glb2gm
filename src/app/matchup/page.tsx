@@ -350,7 +350,9 @@ export default function Matchup() {
         <Grid2 container sx={{ mb: 2 }}>
           <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
             <Divider variant='middle'>
-              <Typography typography={{ xs: 'h6' }}>Overall</Typography>
+              <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
+                Overall
+              </Typography>
             </Divider>
             <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
             <Box sx={{ py: 1 }}>
