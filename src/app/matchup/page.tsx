@@ -21,42 +21,34 @@ function TeamStats({ team1, team2, sort, label, textSize, decimals }: TeamStatsP
     <Stack direction='row' sx={{ justifyContent: 'center', alignItems: 'center' }}>
       {typeof team1 === 'string' && typeof team2 === 'string' && (
         <>
-          <Typography sx={{ width: '200px', typography: textSize }}>{team1 ?? 'N/A'}</Typography>
-          <Divider sx={{ width: '300px' }}>
-            <Typography sx={{ typography: textSize }}>{label}</Typography>
-          </Divider>
-          <Typography sx={{ width: '200px', typography: textSize }}>{team2 ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize, fontWeight: 'bolder' }}>{team1 ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize }}>{label}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize }}>{team2 ?? 'N/A'}</Typography>
         </>
       )}
       {typeof team1 === 'number' && typeof team2 === 'number' && team1 > team2 && (
         <>
-          <Typography sx={{ width: '200px', typography: textSize, color: sort === 'asc' ? '' : sort === 'desc' ? 'green' : '' }}>
+          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? '' : sort === 'desc' ? 'green' : '' }}>
             {team1?.toFixed(decimals) ?? 'N/A'}
           </Typography>
-          <Divider sx={{ width: '300px' }}>
-            <Typography sx={{ typography: textSize }}>{label}</Typography>
-          </Divider>
-          <Typography sx={{ width: '200px', typography: textSize, color: sort === 'asc' ? 'green' : '' }}>{team2?.toFixed(decimals) ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize }}>{label}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? 'green' : '' }}>{team2?.toFixed(decimals) ?? 'N/A'}</Typography>
         </>
       )}
       {typeof team1 === 'number' && typeof team2 === 'number' && team1 < team2 && (
         <>
-          <Typography sx={{ width: '200px', typography: textSize, color: sort === 'asc' ? 'green' : '' }}>{team1?.toFixed(decimals) ?? 'N/A'}</Typography>
-          <Divider sx={{ width: '300px' }}>
-            <Typography sx={{ typography: textSize }}>{label}</Typography>
-          </Divider>
-          <Typography sx={{ width: '200px', typography: textSize, color: sort === 'asc' ? '' : sort === 'desc' ? 'green' : '' }}>
+          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? 'green' : '' }}>{team1?.toFixed(decimals) ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize }}>{label}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize, color: sort === 'asc' ? '' : sort === 'desc' ? 'green' : '' }}>
             {team2?.toFixed(decimals) ?? 'N/A'}
           </Typography>
         </>
       )}
       {typeof team1 === 'number' && typeof team2 === 'number' && team1 == team2 && (
         <>
-          <Typography sx={{ width: '200px', typography: textSize }}>{team1?.toFixed(decimals) ?? 'N/A'}</Typography>
-          <Divider sx={{ width: '300px' }}>
-            <Typography sx={{ typography: textSize }}>{label}</Typography>
-          </Divider>
-          <Typography sx={{ width: '200px', typography: textSize }}>{team2?.toFixed(decimals) ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize }}>{team1?.toFixed(decimals) ?? 'N/A'}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize }}>{label}</Typography>
+          <Typography sx={{ width: '300px', typography: textSize }}>{team2?.toFixed(decimals) ?? 'N/A'}</Typography>
         </>
       )}
     </Stack>
@@ -358,11 +350,9 @@ export default function Matchup() {
         <Grid2 container sx={{ mb: 2 }}>
           <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
             <Divider variant='middle'>
-              <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
-                Overall
-              </Typography>
+              <Typography typography={{ xs: 'h6' }}>Overall</Typography>
             </Divider>
-            <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='vs' textSize={{ xs: 'body2' }} decimals={0} />
+            <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
             <Box sx={{ py: 1 }}>
               <TeamStats
                 team1={`${teamOne.wins}-${teamOne.losses}-${teamOne.ties}`}
@@ -529,11 +519,9 @@ export default function Matchup() {
           {topTenTeamOneGames && topTenTeamTwoGames && (
             <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={0}>
               <Divider variant='middle'>
-                <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
-                  Top Opponents
-                </Typography>
+                <Typography typography={{ xs: 'h6' }}>Top Opponents</Typography>
               </Divider>
-              <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='vs' textSize={{ xs: 'body2' }} decimals={0} />
+              <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
               <Box sx={{ py: 1 }}>
                 <TeamStats
                   team1={`${topTenTeamOneGames.wins}-${topTenTeamOneGames.losses}-${topTenTeamOneGames.ties}`}
@@ -723,11 +711,9 @@ export default function Matchup() {
           {teamOneCommonGames && teamTwoCommonGames && (
             <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={1}>
               <Divider variant='middle'>
-                <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
-                  Common Opponents
-                </Typography>
+                <Typography typography={{ xs: 'h6' }}>Common Opponents</Typography>
               </Divider>
-              <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='vs' textSize={{ xs: 'body2' }} decimals={0} />
+              <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
               <Box sx={{ py: 1 }}>
                 <TeamStats
                   team1={`${teamOneCommonGames.wins}-${teamOneCommonGames.losses}-${teamOneCommonGames.ties}`}
@@ -845,11 +831,9 @@ export default function Matchup() {
           {headToHeadGames && headToHeadGames.length > 0 && (
             <Grid2 size={{ xs: 12, xl: 6 }} sx={{ textAlign: 'center' }} spacing={1}>
               <Divider variant='middle'>
-                <Typography typography={{ xs: 'h6' }} sx={{ pb: 1 }}>
-                  H2H
-                </Typography>
+                <Typography typography={{ xs: 'h6' }}>H2H</Typography>
               </Divider>
-              <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='vs' textSize={{ xs: 'body2' }} decimals={0} />
+              <TeamStats team1={teamOne.team_name} team2={teamTwo.team_name} sort='' label='' textSize={{ xs: 'body2' }} decimals={0} />
               {headToHeadGames.map((x) => (
                 <Box key={x.id} sx={{ py: 1 }}>
                   <Box>
