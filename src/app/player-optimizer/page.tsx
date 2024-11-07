@@ -12,6 +12,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Slider,
   Stack,
   TextField,
   Typography,
@@ -19,7 +20,7 @@ import {
 import Grid from '@mui/material/Grid2';
 import { Fragment, useEffect, useState } from 'react';
 import { getSkillMins } from '../player-optimizer/skillMins';
-import { SKILL_LOOKUP, TRAIT_LOOKUP } from '../players/lookups';
+import { SKILL_LOOKUP } from '../players/lookups';
 import { Player } from '../players/player';
 import { getPossibleAttributes, getPossibleHeightsWeights, getPossibleTraits } from '../players/possibilities';
 import { SALARIES } from '../players/salaries';
@@ -27,6 +28,7 @@ import { getBasePlayers } from '../players/basePlayers';
 import LinearProgressWithLabel from '../components/LinearProgressWithLabel';
 import Link from 'next/link';
 import { OptimizedPlayer } from './optimizedPlayer';
+import { POSITION_DATA } from '../players/positionData';
 
 export interface PlayerBuilderData {
   skills: any;
@@ -56,6 +58,7 @@ export default function PlayerBuilder() {
   const [data, setData] = useState<PlayerBuilderData>({ skills: null, traits: null });
   const [filteredData, setFilteredData] = useState<PlayerBuilderData>({ skills: null, traits: null });
   const [selectedPosition, setSelectedPosition] = useState<string>('');
+  const [basePlayer, setBasePlayer] = useState<Player>();
   const [player, setPlayer] = useState<Player>();
   const [remSkillPoints, setRemSkillPoints] = useState<number>(0);
   const [remCapBoosts, setRemCapBoosts] = useState<number>(0);
@@ -73,6 +76,13 @@ export default function PlayerBuilder() {
   const [maxSalary, setMaxSalary] = useState<number>(0);
   const [maxSalaryInput, setMaxSalaryInput] = useState<string>('15000000');
   const [build, setBuild] = useState<any>();
+
+  const [height, setHeight] = useState<number>(0);
+  const [weight, setWeight] = useState<number>(0);
+  const [weightInputMin, setWeightInputMin] = useState<number>(0);
+  const [weightInputMax, setWeightInputMax] = useState<number>(0);
+  const [lockHeight, setLockHeight] = useState(false);
+  const [lockWeight, setLockWeight] = useState(false);
 
   const [remTrait1Options, setRemTrait1Options] = useState({});
   const [remTrait2Options, setRemTrait2Options] = useState({});
@@ -144,9 +154,11 @@ export default function PlayerBuilder() {
     let at: any[] = [];
     let tr: any[] = [];
 
+    let filteredHW = heightWeightCombos.filter((x: any) => (!lockHeight || x.height === +height) && (!lockWeight || x.weight === +weight));
+
     switch (optimize) {
       case 'hw':
-        hw = heightWeightCombos;
+        hw = filteredHW;
         at = [
           {
             strength: updatedPlayer.strength,
@@ -160,12 +172,12 @@ export default function PlayerBuilder() {
         tr = [[updatedPlayer.trait1, updatedPlayer.trait2, updatedPlayer.trait3]];
         break;
       case 'at':
-        hw = [{ height: updatedPlayer.height, weight: updatedPlayer.weight }];
+        hw = [{ height: lockHeight ? +height : updatedPlayer.height, weight: lockWeight ? +weight : updatedPlayer.weight }];
         at = attCombos;
         tr = [[updatedPlayer.trait1, updatedPlayer.trait2, updatedPlayer.trait3]];
         break;
       case 'tr':
-        hw = [{ height: updatedPlayer.height, weight: updatedPlayer.weight }];
+        hw = [{ height: lockHeight ? +height : updatedPlayer.height, weight: lockWeight ? +weight : updatedPlayer.weight }];
         at = [
           {
             strength: updatedPlayer.strength,
@@ -416,7 +428,7 @@ export default function PlayerBuilder() {
   };
 
   const handleOptimizeClick = async () => {
-    if (!skillMins || !player) return;
+    if (!skillMins || !basePlayer) return;
 
     setIsOptimizing(true);
     setIsPossibleCombo(true);
@@ -425,7 +437,7 @@ export default function PlayerBuilder() {
     setLockTrait2(false);
     setLockTrait3(false);
 
-    let newPlayer = { ...player };
+    let newPlayer = { ...basePlayer };
 
     setOptimizeBuffer(13);
     let buildResult = await buildPlayer('at', newPlayer);
@@ -495,9 +507,6 @@ export default function PlayerBuilder() {
 
     setBuild(buildResult.build);
     setPlayer(buildResult.newPlayer);
-    setTrait1(buildResult.newPlayer.trait1);
-    setTrait2(buildResult.newPlayer.trait2);
-    setTrait3(buildResult.newPlayer.trait3);
     setIsPossibleCombo(buildResult.isPossibleCombo);
     setRemSkillPoints(buildResult.remSkillPoints);
     setRemCapBoosts(buildResult.remCapBoosts);
@@ -527,6 +536,18 @@ export default function PlayerBuilder() {
     if (!Number.isNaN(num)) setMaxSalaryInput(num.toString());
   };
 
+  useEffect(() => {
+    if (!selectedPosition) return;
+    setWeightInputMin(
+      POSITION_DATA[selectedPosition].min_weight +
+        POSITION_DATA[selectedPosition].height_weight_modifier * (height - POSITION_DATA[selectedPosition].min_height)
+    );
+    setWeightInputMax(
+      POSITION_DATA[selectedPosition].max_weight +
+        POSITION_DATA[selectedPosition].height_weight_modifier * (height - POSITION_DATA[selectedPosition].min_height)
+    );
+  }, [height]);
+
   const handleTrait1Change = (event: SelectChangeEvent) => {
     setTrait1(event.target.value as string);
   };
@@ -542,19 +563,24 @@ export default function PlayerBuilder() {
   }, []);
 
   useEffect(() => {
+    if (!selectedPosition) return;
     setIsPossibleCombo(true);
     setRemSkillPoints(0);
     setRemCapBoosts(0);
     setBuild(undefined);
     filterAndSortSkills();
     const basePlayer = getBasePlayers(selectedPosition);
-    setPlayer(basePlayer);
+    setBasePlayer(basePlayer);
+    setLockHeight(false);
+    setLockWeight(false);
     setLockTrait1(false);
     setLockTrait2(false);
     setLockTrait3(false);
-    setTrait1(basePlayer?.trait1 ?? '');
-    setTrait2(basePlayer?.trait2 ?? '');
-    setTrait3(basePlayer?.trait3 ?? '');
+    setHeight(POSITION_DATA[selectedPosition].min_height);
+    setWeight(POSITION_DATA[selectedPosition].min_weight);
+    setTrait1(basePlayer.trait1);
+    setTrait2(basePlayer.trait2);
+    setTrait3(basePlayer.trait3);
     setMinSalary(getMinSalary(selectedPosition));
   }, [selectedPosition]);
 
@@ -572,6 +598,37 @@ export default function PlayerBuilder() {
   useEffect(() => {
     setMaxSalaryInput(maxSalary.toString());
   }, [maxSalary]);
+
+  useEffect(() => {
+    if (!height || !selectedPosition) return;
+    setWeightInputMin(
+      POSITION_DATA[selectedPosition].min_weight +
+        POSITION_DATA[selectedPosition].height_weight_modifier * (height - POSITION_DATA[selectedPosition].min_height)
+    );
+    setWeightInputMax(
+      POSITION_DATA[selectedPosition].max_weight +
+        POSITION_DATA[selectedPosition].height_weight_modifier * (height - POSITION_DATA[selectedPosition].min_height)
+    );
+  }, [height]);
+
+  useEffect(() => {
+    if (weight < weightInputMin) {
+      setLockWeight(false);
+      setWeight(weightInputMin);
+    } else if (weight > weightInputMax) {
+      setLockWeight(false);
+      setWeight(weightInputMax);
+    }
+  }, [weight, weightInputMin, weightInputMax]);
+
+  useEffect(() => {
+    if (!player) return;
+    setHeight(player.height);
+    setWeight(player.weight);
+    setTrait1(player.trait1);
+    setTrait2(player.trait2);
+    setTrait3(player.trait3);
+  }, [player]);
 
   useEffect(() => {
     if (!filteredData.traits) return;
@@ -629,7 +686,7 @@ export default function PlayerBuilder() {
         </>
       ) : (
         <>
-          <Grid container rowGap={1} sx={{ mb: 2 }}>
+          <Grid container sx={{ mb: 1 }}>
             {(!data.skills || !data.traits) && <LinearProgress />}
             {data.skills && data.traits && (
               <Box width={350} mt={1}>
@@ -666,41 +723,94 @@ export default function PlayerBuilder() {
               </Box>
             )}
           </Grid>
-          {selectedPosition && player && (
+          {selectedPosition && basePlayer && (
             <>
               <Box sx={{ width: 350 }}>
-                {build && (
-                  <>
-                    <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
-                        Height: {Math.floor(player.height / 12)}&apos; {player.height % 12}&apos;&apos;
-                      </Typography>
-                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Weight: {player.weight} lbs.</Typography>
-                    </Stack>
-                    <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Strength: {player.strength}</Typography>
-                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Speed: {player.speed}</Typography>
-                    </Stack>
-                    <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Agility: {player.agility}</Typography>
-                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Stamina: {player.stamina}</Typography>
-                    </Stack>
-                    <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
-                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Awareness: {player.awareness}</Typography>
-                      <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Confidence: {player.confidence}</Typography>
-                    </Stack>
-                  </>
-                )}
-                <Grid container spacing={1} sx={{ mr: { xs: 0, lg: 4 }, mb: 1, alignItems: 'center' }}>
-                  <Grid size={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Typography variant='caption'>Check to Lock Trait</Typography>
+                <Grid container spacing={1} sx={{ mr: { xs: 0, lg: 2 }, mb: 1, alignItems: 'center' }}>
+                  <Grid size={12} sx={{ textAlign: 'center' }}>
+                    <Typography variant='body2'>Check to Lock Option</Typography>
                   </Grid>
-                  <Grid size={3}>
-                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 1:</Typography>
+                  <Grid size={11} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <Slider
+                      size='small'
+                      step={1}
+                      marks
+                      min={POSITION_DATA[selectedPosition].min_height}
+                      max={POSITION_DATA[selectedPosition].max_height}
+                      value={height}
+                      onChange={(e, value) => setHeight(typeof value === 'number' ? value : value[0])}
+                      disabled={lockHeight}
+                      sx={{ width: '220px', mr: 2 }}
+                    />
+                    <Typography sx={{ typography: { xs: 'body2' } }}>{`${Math.floor(height / 12)}' ${height % 12}''`}</Typography>
                   </Grid>
-                  <Grid size={9} sx={{ display: 'flex', flexDirection: 'row' }}>
-                    <FormControl fullWidth>
-                      <Select size='small' id='trait-one-select' value={trait1} onChange={handleTrait1Change} disabled={lockTrait1}>
+                  <Grid size={1}>
+                    <Checkbox checked={lockHeight} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLockHeight(event.target.checked)} />
+                  </Grid>
+                  <Grid size={11} sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <Slider
+                      size='small'
+                      step={1}
+                      marks
+                      min={weightInputMin}
+                      max={weightInputMax}
+                      value={weight}
+                      onChange={(e, value) => setWeight(typeof value === 'number' ? value : value[0])}
+                      disabled={lockWeight}
+                      sx={{ width: '220px', mr: 2 }}
+                    />
+                    <Typography sx={{ typography: { xs: 'body2' } }}>{`${weight} lbs.`}</Typography>
+                  </Grid>
+                  <Grid size={1}>
+                    <Checkbox checked={lockWeight} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLockWeight(event.target.checked)} />
+                  </Grid>
+                  <Grid size={4}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Strength:</Typography>
+                  </Grid>
+                  <Grid size={2}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{player?.strength ?? basePlayer.strength}</Typography>
+                  </Grid>
+                  <Grid size={4}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Speed:</Typography>
+                  </Grid>
+                  <Grid size={2}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{player?.speed ?? basePlayer.speed}</Typography>
+                  </Grid>
+                  <Grid size={4}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Agility:</Typography>
+                  </Grid>
+                  <Grid size={2}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{player?.agility ?? basePlayer.agility}</Typography>
+                  </Grid>
+                  <Grid size={4}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Stamina:</Typography>
+                  </Grid>
+                  <Grid size={2}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{player?.stamina ?? basePlayer.stamina}</Typography>
+                  </Grid>
+                  <Grid size={4}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Awareness:</Typography>
+                  </Grid>
+                  <Grid size={2}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{player?.awareness ?? basePlayer.awareness}</Typography>
+                  </Grid>
+                  <Grid size={4}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Confidence:</Typography>
+                  </Grid>
+                  <Grid size={2}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{player?.confidence ?? basePlayer.confidence}</Typography>
+                  </Grid>
+                  <Grid size={11} sx={{ mt: 1 }}>
+                    <FormControl fullWidth size='small'>
+                      <InputLabel id='trait-one-label'>Trait 1</InputLabel>
+                      <Select
+                        labelId='trait-one-label'
+                        id='trait-one-select'
+                        value={trait1}
+                        onChange={handleTrait1Change}
+                        label='Trait 1'
+                        disabled={lockTrait1}
+                      >
                         {Object.entries(remTrait1Options).map(([key, value]) => (
                           <MenuItem key={key} value={key}>
                             {(value as any).name}
@@ -708,14 +818,21 @@ export default function PlayerBuilder() {
                         ))}
                       </Select>
                     </FormControl>
+                  </Grid>
+                  <Grid size={1}>
                     <Checkbox checked={lockTrait1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLockTrait1(event.target.checked)} />
                   </Grid>
-                  <Grid size={3}>
-                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 2:</Typography>
-                  </Grid>
-                  <Grid size={9} sx={{ display: 'flex', flexDirection: 'row' }}>
-                    <FormControl fullWidth>
-                      <Select size='small' id='trait-two-select' value={trait2} onChange={handleTrait2Change} disabled={lockTrait2}>
+                  <Grid size={11} sx={{ mt: 1 }}>
+                    <FormControl fullWidth size='small'>
+                      <InputLabel id='trait-two-label'>Trait 2</InputLabel>
+                      <Select
+                        labelId='trait-two-label'
+                        id='trait-two-select'
+                        value={trait2}
+                        onChange={handleTrait2Change}
+                        label='Trait 2'
+                        disabled={lockTrait2}
+                      >
                         {Object.entries(remTrait2Options).map(([key, value]) => (
                           <MenuItem key={key} value={key}>
                             {(value as any).name}
@@ -723,14 +840,21 @@ export default function PlayerBuilder() {
                         ))}
                       </Select>
                     </FormControl>
+                  </Grid>
+                  <Grid size={1}>
                     <Checkbox checked={lockTrait2} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLockTrait2(event.target.checked)} />
                   </Grid>
-                  <Grid size={3}>
-                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Trait 3:</Typography>
-                  </Grid>
-                  <Grid size={9} sx={{ display: 'flex', flexDirection: 'row' }}>
-                    <FormControl fullWidth>
-                      <Select size='small' id='trait-three-select' value={trait3} onChange={handleTrait3Change} disabled={lockTrait3}>
+                  <Grid size={11} sx={{ mt: 1 }}>
+                    <FormControl fullWidth size='small'>
+                      <InputLabel id='trait-three-label'>Trait 3</InputLabel>
+                      <Select
+                        labelId='trait-three-label'
+                        id='trait-three-select'
+                        value={trait3}
+                        onChange={handleTrait3Change}
+                        label='Trait 3'
+                        disabled={lockTrait3}
+                      >
                         {Object.entries(remTrait3Options).map(([key, value]) => (
                           <MenuItem key={key} value={key}>
                             {(value as any).name}
@@ -738,61 +862,60 @@ export default function PlayerBuilder() {
                         ))}
                       </Select>
                     </FormControl>
+                  </Grid>
+                  <Grid size={1}>
                     <Checkbox checked={lockTrait3} onChange={(event: React.ChangeEvent<HTMLInputElement>) => setLockTrait3(event.target.checked)} />
                   </Grid>
+                  <Grid size={12} sx={{ my: 1 }}>
+                    <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Medium Salary: {getSalary().toLocaleString()}</Typography>
+                  </Grid>
+                  <Grid size={11}>
+                    <TextField
+                      fullWidth
+                      size='small'
+                      label='Max Salary'
+                      helperText={`${minSalary.toLocaleString()} - ${maxSalary.toLocaleString()}`}
+                      value={maxSalaryInput}
+                      onChange={handleMaxSalaryChange}
+                      slotProps={{
+                        formHelperText: { sx: { textAlign: 'center' } },
+                      }}
+                    />
+                  </Grid>
                 </Grid>
-                <Stack sx={{ mb: 1 }}>
-                  <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Medium Salary: {getSalary().toLocaleString()}</Typography>
-                </Stack>
                 {build && (
-                  <>
-                    <Stack>
-                      <Typography sx={{ color: remSkillPoints < 0 ? 'red' : '', typography: { xs: 'body2', lg: 'body1' } }}>
-                        Skill Points Remaining: {remSkillPoints.toLocaleString()}
-                      </Typography>
-                      <Typography sx={{ color: remCapBoosts < 0 ? 'red' : '', typography: { xs: 'body2', lg: 'body1' } }}>
-                        Cap Boosts Remaining: {remCapBoosts}
-                      </Typography>
-                    </Stack>
-                  </>
+                  <Stack>
+                    <Typography sx={{ color: remSkillPoints < 0 ? 'red' : '', typography: { xs: 'body2', lg: 'body1' } }}>
+                      Skill Points Remaining: {remSkillPoints.toLocaleString()}
+                    </Typography>
+                    <Typography sx={{ color: remCapBoosts < 0 ? 'red' : '', typography: { xs: 'body2', lg: 'body1' } }}>
+                      Cap Boosts Remaining: {remCapBoosts}
+                    </Typography>
+                  </Stack>
                 )}
               </Box>
             </>
           )}
           {!isPossibleCombo && skillMins && <Typography sx={{ color: 'red' }}>No possible combos found</Typography>}
-          {selectedPosition && skillMins && player && (
+          {selectedPosition && skillMins && basePlayer && (
             <>
-              <Stack
-                direction={{ xs: 'column', md: 'row' }}
-                spacing={{ xs: 0, md: 2 }}
-                sx={{ alignItems: { xs: 'center', sm: 'baseline' }, justifyContent: 'flex-end', mt: 1, width: { xs: '350px', sm: '100%' } }}
+              <Button
+                variant='contained'
+                size='small'
+                onClick={() => handleOptimizeClick()}
+                disabled={
+                  isOptimizing ||
+                  +maxSalaryInput < minSalary ||
+                  (!height && lockHeight) ||
+                  (!weight && lockWeight) ||
+                  (!trait1 && lockTrait1) ||
+                  (!trait2 && lockTrait2) ||
+                  (!trait3 && lockTrait3)
+                }
+                sx={{ minWidth: '350px' }}
               >
-                <TextField
-                  size='small'
-                  label='Max Salary'
-                  helperText={`${minSalary.toLocaleString()} - ${maxSalary.toLocaleString()}`}
-                  value={maxSalaryInput}
-                  onChange={handleMaxSalaryChange}
-                  slotProps={{
-                    formHelperText: { sx: { textAlign: 'center' } },
-                  }}
-                  sx={{
-                    minWidth: { xs: '350px', sm: '150px' },
-                    '& .MuiInputBase-input': {
-                      fontSize: '14px',
-                    },
-                  }}
-                />
-                <Button
-                  variant='contained'
-                  size='small'
-                  onClick={() => handleOptimizeClick()}
-                  disabled={isOptimizing || +maxSalaryInput < minSalary}
-                  sx={{ minWidth: { xs: '350px', sm: '150px' } }}
-                >
-                  Optimize
-                </Button>
-              </Stack>
+                Optimize
+              </Button>
               <Grid container columnSpacing={2}>
                 {groupOrder[selectedPosition].map((group) => (
                   <Fragment key={group}>
@@ -818,7 +941,7 @@ export default function PlayerBuilder() {
                         <Fragment key={key}>
                           <Grid size={{ xs: 8, lg: 3 }} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <Typography sx={{ typography: { xs: 'body2' } }}>{SKILL_LOOKUP[key]}</Typography>
-                            {build && (
+                            {build && player && (
                               <>
                                 {capBoostsSpent[key] ? (
                                   <Typography sx={{ typography: { xs: 'body2' } }}>
