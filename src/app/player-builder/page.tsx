@@ -26,158 +26,12 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { SALARIES } from '../players/salaries';
+import { POSITION_DATA } from '../players/positionData';
 
 interface PlayerBuilderData {
   skills: any;
   traits: any;
 }
-
-const positionData: { [key: string]: any } = {
-  FS: {
-    min_height: 68,
-    max_height: 76,
-    max_weight: 205,
-    type: 'def',
-    full_name: 'Free Safety',
-    min_weight: 185,
-    height_weight_modifier: 2,
-  },
-  TE: {
-    min_height: 72,
-    max_height: 80,
-    max_weight: 260,
-    type: 'off',
-    full_name: 'Tight End',
-    min_weight: 230,
-    height_weight_modifier: 2,
-  },
-  HB: {
-    min_height: 66,
-    max_height: 76,
-    max_weight: 220,
-    type: 'off',
-    full_name: 'Halfback',
-    min_weight: 180,
-    height_weight_modifier: 4,
-  },
-  CB: {
-    min_height: 68,
-    max_height: 75,
-    max_weight: 200,
-    type: 'def',
-    full_name: 'Cornerback',
-    min_weight: 170,
-    height_weight_modifier: 2,
-  },
-  K: {
-    min_height: 69,
-    max_height: 77,
-    max_weight: 220,
-    type: 'off',
-    full_name: 'Kicker',
-    min_weight: 170,
-    height_weight_modifier: 1,
-  },
-  FB: {
-    min_height: 70,
-    max_height: 76,
-    max_weight: 250,
-    type: 'off',
-    full_name: 'Fullback',
-    min_weight: 220,
-    height_weight_modifier: 2,
-  },
-  LB: {
-    min_height: 70,
-    max_height: 78,
-    max_weight: 250,
-    type: 'def',
-    full_name: 'Linebacker',
-    min_weight: 220,
-    height_weight_modifier: 2,
-  },
-  C: {
-    min_height: 72,
-    max_height: 78,
-    max_weight: 300,
-    type: 'off',
-    full_name: 'Center',
-    min_weight: 230,
-    height_weight_modifier: 5,
-  },
-  SS: {
-    min_height: 69,
-    max_height: 77,
-    max_weight: 225,
-    type: 'def',
-    full_name: 'Strong Safety',
-    min_weight: 195,
-    height_weight_modifier: 1,
-  },
-  DT: {
-    min_height: 72,
-    max_height: 80,
-    max_weight: 300,
-    type: 'def',
-    full_name: 'Defensive Tackle',
-    min_weight: 250,
-    height_weight_modifier: 8,
-  },
-  DE: {
-    min_height: 71,
-    max_height: 80,
-    max_weight: 280,
-    type: 'def',
-    full_name: 'Defensive End',
-    min_weight: 240,
-    height_weight_modifier: 5,
-  },
-  P: {
-    min_height: 71,
-    max_height: 77,
-    max_weight: 230,
-    type: 'def',
-    full_name: 'Punter',
-    min_weight: 180,
-    height_weight_modifier: 4,
-  },
-  QB: {
-    min_height: 70,
-    max_height: 78,
-    max_weight: 205,
-    type: 'off',
-    full_name: 'Quarterback',
-    min_weight: 165,
-    height_weight_modifier: 6,
-  },
-  G: {
-    min_height: 74,
-    max_height: 79,
-    max_weight: 325,
-    type: 'off',
-    full_name: 'Guard',
-    min_weight: 290,
-    height_weight_modifier: 6,
-  },
-  OT: {
-    min_height: 74,
-    max_height: 81,
-    max_weight: 320,
-    type: 'off',
-    full_name: 'Offensive Tackle',
-    min_weight: 280,
-    height_weight_modifier: 4,
-  },
-  WR: {
-    min_height: 68,
-    max_height: 78,
-    max_weight: 205,
-    type: 'off',
-    full_name: 'Wide Receiver',
-    min_weight: 165,
-    height_weight_modifier: 3,
-  },
-};
 
 const groupOrder: { [key: string]: string[] } = {
   QB: ['Passing', 'Carrying', 'Physical', 'Mental'],
@@ -468,8 +322,8 @@ export default function PlayerBuilder() {
   useEffect(() => {
     if (!selectedPosition) return;
 
-    setHeightInput(positionData[selectedPosition].min_height);
-    setWeightInput(positionData[selectedPosition].min_weight);
+    setHeightInput(POSITION_DATA[selectedPosition].min_height);
+    setWeightInput(POSITION_DATA[selectedPosition].min_weight);
     setStrength(5);
     setSpeed(5);
     setAgility(5);
@@ -537,12 +391,12 @@ export default function PlayerBuilder() {
   useEffect(() => {
     if (!selectedPosition) return;
     setWeightInputMin(
-      positionData[selectedPosition].min_weight +
-        positionData[selectedPosition].height_weight_modifier * (heightInput - positionData[selectedPosition].min_height)
+      POSITION_DATA[selectedPosition].min_weight +
+        POSITION_DATA[selectedPosition].height_weight_modifier * (heightInput - POSITION_DATA[selectedPosition].min_height)
     );
     setWeightInputMax(
-      positionData[selectedPosition].max_weight +
-        positionData[selectedPosition].height_weight_modifier * (heightInput - positionData[selectedPosition].min_height)
+      POSITION_DATA[selectedPosition].max_weight +
+        POSITION_DATA[selectedPosition].height_weight_modifier * (heightInput - POSITION_DATA[selectedPosition].min_height)
     );
   }, [heightInput]);
 
@@ -597,8 +451,8 @@ export default function PlayerBuilder() {
                           size='small'
                           step={1}
                           marks
-                          min={positionData[selectedPosition].min_height}
-                          max={positionData[selectedPosition].max_height}
+                          min={POSITION_DATA[selectedPosition].min_height}
+                          max={POSITION_DATA[selectedPosition].max_height}
                           value={heightInput}
                           onChange={(e, value) => setHeightInput(typeof value === 'number' ? value : value[0])}
                           sx={{ width: '150px' }}
@@ -613,7 +467,7 @@ export default function PlayerBuilder() {
                       <Grid size={6}>
                         <Slider
                           size='small'
-                          step={positionData[selectedPosition].height_weight_modifier}
+                          step={1}
                           marks
                           min={weightInputMin}
                           max={weightInputMax}
