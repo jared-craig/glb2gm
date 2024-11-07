@@ -884,7 +884,7 @@ export default function PlayerBuilder() {
                   </Grid>
                 </Grid>
                 {build && (
-                  <Stack>
+                  <Stack sx={{ mb: 1 }}>
                     <Typography sx={{ color: remSkillPoints < 0 ? 'red' : '', typography: { xs: 'body2', lg: 'body1' } }}>
                       Skill Points Remaining: {remSkillPoints.toLocaleString()}
                     </Typography>
@@ -896,7 +896,7 @@ export default function PlayerBuilder() {
               </Box>
             </>
           )}
-          {!isPossibleCombo && skillMins && <Typography sx={{ color: 'red' }}>No possible combos found</Typography>}
+          {!isPossibleCombo && skillMins && <Typography sx={{ color: 'red', mb: 1 }}>No possible combos found</Typography>}
           {selectedPosition && skillMins && basePlayer && (
             <>
               <Button
