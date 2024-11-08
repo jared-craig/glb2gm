@@ -20,8 +20,14 @@ import { ABILITY_LOOKUP, ABILITY_MEDAL_LOOKUP, SKILL_LOOKUP, TRAIT_LOOKUP } from
 import { getTemplates, Template } from './templates';
 import { SALARIES } from '../players/salaries';
 import StarIcon from '@mui/icons-material/Star';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 export default function PlayerTemplates() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const queryPosition = searchParams.get('position');
+
   const [allTraits, setAllTraits] = useState<any>();
   const [selectedPosition, setSelectedPosition] = useState<string>('');
   const [templates, setTemplates] = useState<Template[]>();
@@ -30,6 +36,9 @@ export default function PlayerTemplates() {
   const handlePositionChange = (event: SelectChangeEvent) => {
     setSelectedPosition(event.target.value);
     setTemplates(getTemplates(event.target.value));
+    const params = new URLSearchParams();
+    params.set('position', event.target.value);
+    router.push(pathname + '?' + params.toString());
   };
 
   const handleEndGameSwitchChange = (templateName: string) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -68,6 +77,13 @@ export default function PlayerTemplates() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (queryPosition) {
+      setSelectedPosition(queryPosition);
+      setTemplates(getTemplates(queryPosition));
+    }
+  }, [queryPosition]);
 
   return (
     <Container maxWidth={false}>
