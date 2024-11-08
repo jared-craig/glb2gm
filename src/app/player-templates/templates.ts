@@ -1688,7 +1688,7 @@ export const getTemplates = (position: string): Template[] => {
       },
       abilities: {
         start: {
-          zone_shark: 3,
+          zone_shark: 2,
         },
         end: {
           zone_shark: 3,
