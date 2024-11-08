@@ -1601,7 +1601,7 @@ export const getTemplates = (position: string): Template[] => {
         },
       },
       abilities: {
-        start: 
+        start: {
           chase_down: 2,
         },
         end: {
