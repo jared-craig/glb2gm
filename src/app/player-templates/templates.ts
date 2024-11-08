@@ -1427,7 +1427,9 @@ export const getTemplates = (position: string): Template[] => {
         },
       },
       abilities: {
-        start: {},
+        start: {
+          shed_block: 3,
+        },
         end: {
           monster_hit: 3,
           chase_down: 3,
@@ -1547,7 +1549,7 @@ export const getTemplates = (position: string): Template[] => {
           hold_ground: 0.0,
           tackle_awareness: 80.0,
           defense_consistency: 35.0,
-          man_coverage_awareness: 70.0,
+          man_coverage_awareness: 74.0,
           zone_coverage_awareness: 0.0,
           coverage_technique: 30.0,
           coverage_deflection: 30.0,
@@ -1557,7 +1559,7 @@ export const getTemplates = (position: string): Template[] => {
           pass_rush_deflection: 0.0,
           balance: 45.0,
           footwork: 35.0,
-          quickness: 35.0,
+          quickness: 30.0,
           sprinting: 40.0,
           vertical: 0.0,
           diving: 0.0,
@@ -1599,7 +1601,9 @@ export const getTemplates = (position: string): Template[] => {
         },
       },
       abilities: {
-        start: {},
+        start: 
+          chase_down: 2,
+        },
         end: {
           on_an_island: 3,
           chase_down: 3,
