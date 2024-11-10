@@ -1701,8 +1701,8 @@ export const getTemplates = (position: string): Template[] => {
     {
       position: 'CB',
       templateName: 'Standard Man Star',
-      height: 68,
-      weight: 170,
+      height: 75,
+      weight: 184,
       strength: 1,
       speed: 1,
       agility: 10,
@@ -1794,8 +1794,8 @@ export const getTemplates = (position: string): Template[] => {
     {
       position: 'CB',
       templateName: 'Standard Zone Star',
-      height: 68,
-      weight: 170,
+      height: 75,
+      weight: 184,
       strength: 1,
       speed: 1,
       agility: 10,
