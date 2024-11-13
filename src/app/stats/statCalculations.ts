@@ -78,7 +78,7 @@ export const getReturningGmRating = (x: any): number => {
 
 export const getRushingGmRating = (x: any): number => {
   const gm = Math.round(
-    +(+x.yards / +x.games_played) +
+    2.0 * +(+x.yards / +x.games_played) +
       10.0 * +(+x.touchdowns / +x.games_played) +
       100.0 * +x.average -
       +x.fumbles_lost +
