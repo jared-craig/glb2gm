@@ -117,6 +117,17 @@ export default function PlayerReceivingStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'yards_per_target',
+          headerName: 'Y/TAR',
+          width: 120,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(row.yards / row.targets).toFixed(2);
+          },
+          disableColumnMenu: true,
+        },
+        {
           field: 'receptions_per_touchdown',
           headerName: 'REC/TD',
           width: 120,
@@ -197,7 +208,7 @@ export default function PlayerReceivingStats() {
         {
           field: 'player_name',
           headerName: 'NAME',
-          flex: 2,
+          flex: 1.5,
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Stack sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               <Link
@@ -272,6 +283,16 @@ export default function PlayerReceivingStats() {
             return +((row.receptions / row.targets) * 100.0).toFixed(1);
           },
           valueFormatter: (value) => `${value}%`,
+        },
+        {
+          field: 'yards_per_target',
+          headerName: 'Y/TAR',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          valueGetter: (value, row: GridRowModel) => {
+            return +(row.yards / row.targets).toFixed(2);
+          },
         },
         {
           field: 'receptions_per_touchdown',

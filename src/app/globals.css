@@ -1,6 +1,7 @@
 .desktop-text {
   display: flex;
   align-items: center;
+  font-size: small;
 }
 
 .mobile-text {
