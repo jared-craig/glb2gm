@@ -94,65 +94,66 @@ export default function TopTeam() {
   const [returnersFetching, setReturnersFetching] = useState<boolean>(true);
 
   const matchById = (array1: any[], array2: any[], statToPull: string, propToAdd: string) => {
-    let baseArray = JSON.parse(JSON.stringify(array1));
-    let addArray = JSON.parse(JSON.stringify(array2));
-    for (const item1 of baseArray) {
-      for (const item2 of addArray) {
-        if (item1.id === item2.id) {
-          item1[propToAdd] = +item2[statToPull];
-        }
-      }
+    const map = new Map();
+    for (const item2 of array2) {
+      map.set(item2.id, item2[statToPull]);
     }
-    return baseArray;
+
+    return array1.map((item1) => ({
+      ...item1,
+      [propToAdd]: map.get(item1.id) || item1[propToAdd],
+    }));
+  };
+
+  const comparePlayers = (a: any, b: any, getRatingFn: Function, tieBreakerFn: Function): number => {
+    const ratingDiff = getRatingFn(b) - getRatingFn(a);
+    if (ratingDiff === 0) return tieBreakerFn(a, b);
+    return ratingDiff;
+  };
+
+  const tieBreakerFns: { [key: string]: (a: any, b: any) => number } = {
+    passing: (a, b) => +b.yards - +a.yards,
+    rushing: (a, b) => +b.yards - +a.yards,
+    receiving: (a, b) => +b.yards - +a.yards,
+    blocking: (a, b) => +b.pancakes - +a.pancakes,
+    defensive: (a, b) => {
+      switch (a.position) {
+        case 'DT':
+        case 'DE':
+          return +b.sacks - +a.sacks;
+        case 'LB':
+          return +b.interceptions + +b.tackles - +b.missed_tackles - (+a.interceptions + +a.tackles - +a.missed_tackles);
+        case 'CB':
+        case 'FS':
+        case 'SS':
+          return +b.interceptions - +a.interceptions;
+        default:
+          return 0;
+      }
+    },
+    kicking: (a, b) => +b.fg_made - +a.fg_made,
+    punting: (a, b) => +b.average + +b.hangtime - (+a.average + +a.hangtime),
+    returning: (a, b) => +b.kr_average + +b.pr_average - (+a.kr_average + +a.pr_average),
   };
 
   const sortByRating = (stat: string, a: any, b: any): number => {
-    let ratingDiff = 0;
     switch (stat) {
       case 'passing':
-        ratingDiff = getPassingGmRating(b) - getPassingGmRating(a);
-        if (ratingDiff === 0) return +b.yards - +a.yards;
-        return ratingDiff;
+        return comparePlayers(a, b, getPassingGmRating, tieBreakerFns.passing);
       case 'rushing':
-        ratingDiff = getRushingGmRating(b) - getRushingGmRating(a);
-        if (ratingDiff === 0) return +b.yards - +a.yards;
-        return ratingDiff;
+        return comparePlayers(a, b, getRushingGmRating, tieBreakerFns.rushing);
       case 'receiving':
-        ratingDiff = getReceivingGmRating(b) - getReceivingGmRating(a);
-        if (ratingDiff === 0) return +b.yards - +a.yards;
-        return ratingDiff;
+        return comparePlayers(a, b, getReceivingGmRating, tieBreakerFns.receiving);
       case 'blocking':
-        ratingDiff = getBlockingGmRating(b) - getBlockingGmRating(a);
-        if (ratingDiff === 0) return +b.pancakes - +a.pancakes;
-        return ratingDiff;
+        return comparePlayers(a, b, getBlockingGmRating, tieBreakerFns.blocking);
       case 'defensive':
-        ratingDiff = getDefensiveGmRating(b) - getDefensiveGmRating(a);
-        if (ratingDiff === 0) {
-          switch (a.position) {
-            case 'DT':
-            case 'DE':
-              return +b.sacks - +a.sacks;
-            case 'LB':
-              return +b.interceptions + +b.tackles - +b.missed_tackles - (+a.interceptions + +a.tackles - +a.missed_tackles);
-            case 'CB':
-            case 'FS':
-            case 'SS':
-              return +b.interceptions - +a.interceptions;
-          }
-        }
-        return ratingDiff;
+        return comparePlayers(a, b, getDefensiveGmRating, tieBreakerFns.defensive);
       case 'kicking':
-        ratingDiff = getKickingGmRating(b) - getKickingGmRating(a);
-        if (ratingDiff === 0) return +b.fg_made - +a.fg_made;
-        return ratingDiff;
+        return comparePlayers(a, b, getKickingGmRating, tieBreakerFns.kicking);
       case 'punting':
-        ratingDiff = getPuntingGmRating(b) - getPuntingGmRating(a);
-        if (ratingDiff === 0) return +b.average + +b.hangtime - (+a.average + +a.hangtime);
-        return ratingDiff;
+        return comparePlayers(a, b, getPuntingGmRating, tieBreakerFns.punting);
       case 'returning':
-        ratingDiff = getReturningGmRating(b) - getReturningGmRating(a);
-        if (ratingDiff === 0) return +b.kr_average + +b.pr_average - (+a.kr_average + +a.pr_average);
-        return ratingDiff;
+        return comparePlayers(a, b, getReturningGmRating, tieBreakerFns.returning);
       default:
         return 0;
     }
@@ -210,7 +211,7 @@ export default function TopTeam() {
     vets = vetQBs.length > 0 ? [...vets, ...vetQBs] : [...vets, ...[undefined, undefined]];
     setPasserVetData(vets);
 
-    setTimeout(() => setPassersFetching(false), 1000);
+    setPassersFetching(false);
   };
 
   const fetchRusherData = async () => {
@@ -250,7 +251,7 @@ export default function TopTeam() {
     vets = vetHBs.length > 0 ? [...vets, ...vetHBs] : [...vets, ...[undefined, undefined]];
     setRusherVetData(vets);
 
-    setTimeout(() => setRushersFetching(false), 1000);
+    setRushersFetching(false);
   };
 
   const fetchReceiverData = async () => {
@@ -287,7 +288,7 @@ export default function TopTeam() {
     vets = vetWRs.length > 0 ? [...vets, ...vetWRs] : [...vets, ...[undefined, undefined, undefined, undefined]];
     setReceiverVetData(vets);
 
-    setTimeout(() => setReceiversFetching(false), 1000);
+    setReceiversFetching(false);
   };
 
   const fetchDefensiveData = async () => {
@@ -354,7 +355,7 @@ export default function TopTeam() {
     vets = vetSs.length > 0 ? [...vets, ...vetSs] : [...vets, ...[undefined, undefined, undefined, undefined]];
     setDefenderVetData(vets);
 
-    setTimeout(() => setDefendersFetching(false), 1000);
+    setDefendersFetching(false);
   };
 
   const fetchBlockingData = async () => {
@@ -399,7 +400,7 @@ export default function TopTeam() {
     vets = vetOTs.length > 0 ? [...vets, ...vetOTs] : [...vets, ...[undefined, undefined, undefined, undefined]];
     setBlockerVetData(vets);
 
-    setTimeout(() => setBlockersFetching(false), 1000);
+    setBlockersFetching(false);
   };
 
   const fetchKickingData = async () => {
@@ -428,7 +429,7 @@ export default function TopTeam() {
     vets = vetKs.length > 0 ? [...vets, ...vetKs] : [...vets, ...[undefined, undefined]];
     setKickerVetData(vets);
 
-    setTimeout(() => setKickersFetching(false), 1000);
+    setKickersFetching(false);
   };
 
   const fetchPuntingData = async () => {
@@ -457,7 +458,7 @@ export default function TopTeam() {
     vets = vetPs.length > 0 ? [...vets, ...vetPs] : [...vets, ...[undefined, undefined]];
     setPunterVetData(vets);
 
-    setTimeout(() => setPuntersFetching(false), 1000);
+    setPuntersFetching(false);
   };
 
   const fetchReturnerData = async () => {
@@ -488,7 +489,7 @@ export default function TopTeam() {
     vets = vet.length > 0 ? [...vets, ...vet] : [...vets, ...[undefined, undefined]];
     setReturnerVetData(vets);
 
-    setTimeout(() => setReturnersFetching(false), 1000);
+    setReturnersFetching(false);
   };
 
   useEffect(() => {
