@@ -1,15 +1,5 @@
 import { Skeleton, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
-import {
-  getBlockingGmRating,
-  getDefensiveGmRating,
-  getKickingGmRating,
-  getPassingGmRating,
-  getPuntingGmRating,
-  getReceivingGmRating,
-  getReturningGmRating,
-  getRushingGmRating,
-} from '../stats/statCalculations';
 
 interface AllStarTeamPlayerProps {
   player: any;
@@ -66,7 +56,6 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
       stats = { YD: player.yards, YPG: (+player.yards / +player.games_played).toFixed(1), TD: player.touchdowns, INT: player.interceptions };
       if (+player.rush_yards / +player.yards >= THRESHOLDS.QB_RUSH_YARDS_RATIO) stats.RUSHYD = player.rush_yards;
       if (player.rush_touchdowns >= THRESHOLDS.QB_RUSH_TDS) stats.RUSHTD = player.rush_touchdowns;
-      rating = getPassingGmRating(player);
       break;
     case 'FB':
     case 'HB':
@@ -77,18 +66,15 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
         TD: +player.touchdowns + +(player.rec_touchdowns ?? 0),
       };
       if (+player.broken_tackles / +player.rushes >= THRESHOLDS.BTK_RATIO) stats.BTK = player.broken_tackles;
-      rating = getRushingGmRating(player);
       break;
     case 'TE':
     case 'WR':
       stats = { YD: player.yards, YPG: (+player.yards / +player.games_played).toFixed(1), TD: player.touchdowns };
-      rating = getReceivingGmRating(player);
       break;
     case 'C':
     case 'G':
     case 'OT':
       stats = { CAKE: player.pancakes, RCAKED: player.reverse_pancaked, HALW: player.hurries_allowed, SALW: player.sacks_allowed };
-      rating = getBlockingGmRating(player);
       break;
     case 'DT':
     case 'DE':
@@ -103,7 +89,6 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
       if (player.passes_knocked_loose >= THRESHOLDS.KLS * gamesPlayed) stats.KL = player.passes_knocked_loose;
       if (player.tackles >= THRESHOLDS.TACKLES * gamesPlayed) stats.TK = player.tackles;
       if (player.tackles >= THRESHOLDS.TACKLES * gamesPlayed && +player.sticks / +player.tackles >= THRESHOLDS.STICK_RATIO) stats.STICK = player.sticks;
-      rating = getDefensiveGmRating(player);
       break;
     case 'K':
       stats = {
@@ -114,21 +99,18 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
       if (player.fifty_plus_made >= THRESHOLDS.FIFTY_PLUS) stats['50+'] = player.fifty_plus_made;
       const touchbackPercent = +player.touchbacks / +player.kickoffs;
       if (touchbackPercent >= THRESHOLDS.TB_RATIO) stats['TB%'] = (touchbackPercent * 100.0).toFixed(1);
-      rating = getKickingGmRating(player);
       break;
     case 'P':
       stats.AVG = player.average;
       stats.HANG = player.hangtime;
       stats['INS 5'] = +player.inside_five + +player.coffins;
       stats['INS 10'] = player.inside_ten;
-      rating = getPuntingGmRating(player);
       break;
     case 'RET':
       stats['KR AVG'] = player.kr_average;
       stats['KR TD'] = player.kr_touchdowns;
       stats['PR AVG'] = player.pr_average;
       stats['PR TD'] = player.pr_touchdowns;
-      rating = getReturningGmRating(player);
       break;
   }
 
@@ -155,9 +137,6 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
           <Typography variant='caption'>N/A</Typography>
         )}
       </Stack>
-      {/* <Typography variant='caption' sx={{ pl: 3 }}>
-        GM Rating: {rating}
-      </Typography> */}
     </Stack>
   );
 }
