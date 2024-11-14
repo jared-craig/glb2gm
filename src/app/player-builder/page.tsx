@@ -135,19 +135,6 @@ export default function PlayerBuilder() {
     return maxlevel;
   };
 
-  const CalcCostSPMemoized = (() => {
-    const cache: any = {};
-    return (skill: string, amount: number, level: number) => {
-      const key = `<span class="math-inline">\{skill\}\-</span>{amount}-${level}`;
-      if (cache[key] !== undefined) {
-        return cache[key];
-      }
-      const result = CalcCostSP(skill, amount, level);
-      cache[key] = result;
-      return result;
-    };
-  })();
-
   const CalcCostSP = (skill: string, mod: number, level: number) => {
     if (!filteredData.skills[skill]) return Number.MAX_SAFE_INTEGER;
     level += mod;
@@ -289,7 +276,7 @@ export default function PlayerBuilder() {
       let rsp = remSkillPoints;
       let rcb = remCapBoosts;
       for (let i = 0; i < change; i++) {
-        const cost = CalcCostSPMemoized(skill, 1, sd.currentLevel);
+        const cost = CalcCostSP(skill, 1, sd.currentLevel);
         if (rsp - cost < 0) break;
         if (sd.currentLevel < sd.currentMaxLevel && sd.currentLevel < 100) {
           rsp -= cost;
@@ -308,7 +295,7 @@ export default function PlayerBuilder() {
       let rsp = remSkillPoints;
       let rcb = remCapBoosts;
       for (let i = change; i < 0; i++) {
-        const cost = CalcCostSPMemoized(skill, 1, sd.currentLevel - 1);
+        const cost = CalcCostSP(skill, 1, sd.currentLevel - 1);
         if (sd.capBoostsSpent > 0 && sd.currentLevel === sd.maxLevel + (5.0 * sd.capBoostsSpent - 5.0) + 1.0) {
           rsp += cost;
           sd = { ...sd, currentLevel: sd.currentLevel - 1, currentMaxLevel: sd.currentMaxLevel - 5.0, capBoostsSpent: sd.capBoostsSpent - 1 };
@@ -357,7 +344,7 @@ export default function PlayerBuilder() {
     for (const sk of Object.keys(filteredData.skills)) {
       const baseLevel = FindBaseLevel(sk);
       const maxLevel = FindMaxLevel(sk);
-      skillDist[sk] = { baseLevel, currentLevel: baseLevel, maxLevel, currentMaxLevel: maxLevel, capBoostsSpent: 0 };
+      skillDist[sk] = { baseLevel: baseLevel, currentLevel: baseLevel, maxLevel: maxLevel, currentMaxLevel: maxLevel, capBoostsSpent: 0 };
     }
     setSkillDistribution(skillDist);
     setRemCapBoosts(isMaxLevelPlayer ? 7 : 4);
@@ -378,19 +365,27 @@ export default function PlayerBuilder() {
 
   useEffect(() => {
     if (!filteredData.traits) return;
-
-    const filteredTraits = Object.entries(filteredData.traits).filter(([key, value]) => {
-      const conflicts = (value as any).conflicts;
-      return !(key === trait1 || key === trait2 || key === trait3 || conflicts.includes(trait1) || conflicts.includes(trait2) || conflicts.includes(trait3));
-    });
-
-    const remTrait1Options = Object.fromEntries(filteredTraits.filter(([key]) => key !== trait2 && key !== trait3));
-    const remTrait2Options = Object.fromEntries(filteredTraits.filter(([key]) => key !== trait1 && key !== trait3));
-    const remTrait3Options = Object.fromEntries(filteredTraits.filter(([key]) => key !== trait1 && key !== trait2));
-
-    setRemTrait1Options(remTrait1Options);
-    setRemTrait2Options(remTrait2Options);
-    setRemTrait3Options(remTrait3Options);
+    setRemTrait1Options(
+      Object.fromEntries(
+        Object.entries(filteredData.traits).filter(
+          ([key, value]) => key !== trait2 && key !== trait3 && !(value as any).conflicts.includes(trait2) && !(value as any).conflicts.includes(trait3)
+        )
+      )
+    );
+    setRemTrait2Options(
+      Object.fromEntries(
+        Object.entries(filteredData.traits).filter(
+          ([key, value]) => key !== trait1 && key !== trait3 && !(value as any).conflicts.includes(trait1) && !(value as any).conflicts.includes(trait3)
+        )
+      )
+    );
+    setRemTrait3Options(
+      Object.fromEntries(
+        Object.entries(filteredData.traits).filter(
+          ([key, value]) => key !== trait1 && key !== trait2 && !(value as any).conflicts.includes(trait1) && !(value as any).conflicts.includes(trait2)
+        )
+      )
+    );
   }, [trait1, trait2, trait3]);
 
   useEffect(() => {
