@@ -5,6 +5,7 @@ import { Container, LinearProgress, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Link from 'next/link';
 import { PlayerData } from '@/app/players/playerData';
+import { getRankColor } from '@/app/helpers';
 
 const combinePlayerData = (...objects: any): any => {
   return objects.reduce((acc: any, obj: any) => {
@@ -22,20 +23,6 @@ const THRESHOLDS = {
   FG_ATTEMPTS: 0.5,
   PUNTS: 0.5,
   RETURNS: 1.0,
-};
-
-const getRankColor = (rankString: string, maxRank: number, sort: string) => {
-  if (rankString === 'N/A') return 'inherit';
-  const rankStringNum = rankString.match(/\d+/);
-  if (!rankStringNum) return 'inherit';
-  const rank = +rankStringNum[0];
-  const normalizedRank = (maxRank - rank) / (maxRank - 1);
-
-  const red = Math.round(sort === 'asc' ? 255 * (1 - normalizedRank) : 255 * normalizedRank);
-  const green = Math.round(sort === 'asc' ? 255 * normalizedRank : 255 * (1 - normalizedRank));
-  const blue = 0;
-
-  return `rgb(${red}, ${green}, ${blue})`;
 };
 
 export default function TeamDetails({ params }: { params: { playerId: string } }) {
