@@ -82,23 +82,22 @@ export default function PlayerPassingStats() {
     const pointDiff = teamData.offensive_points - teamData.defensive_points;
     const yardDiff = teamData.offensive_total_yards - teamData.defensive_total_yards;
 
-    let bonusFactor = 0.0;
-    if (tier === 'All Tiers') {
-      switch (teamData.tier) {
-        case 'Rookie':
-          bonusFactor = 20.0;
-          break;
-        case 'Sophomore':
-          bonusFactor = 40.0;
-          break;
-        case 'Professional':
-          bonusFactor = 60.0;
-          break;
-        case 'Veteran':
-          bonusFactor = 100.0;
-          break;
-      }
+    let bonusFactor = 1.0;
+    switch (teamData.tier) {
+      case 'Rookie':
+        bonusFactor = 20.0;
+        break;
+      case 'Sophomore':
+        bonusFactor = 40.0;
+        break;
+      case 'Professional':
+        bonusFactor = 60.0;
+        break;
+      case 'Veteran':
+        bonusFactor = 100.0;
+        break;
     }
+
     let bonus =
       bonusFactor * topTeamWins +
       (bonusFactor / 10.0) * topTeamLosses -
