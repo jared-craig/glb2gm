@@ -500,10 +500,10 @@ export default function TopTeam() {
     if (!gamesPlayed) return;
 
     setThresholds({
-      PASS_ATTEMPTS: 10.0 * gamesPlayed,
-      CARRIES: 10.0 * gamesPlayed,
+      PASS_ATTEMPTS: 20.0 * gamesPlayed,
+      CARRIES: 20.0 * gamesPlayed,
       RECEPTIONS: 1.0 * gamesPlayed,
-      BLOCKER_PLAYS: 25.0 * gamesPlayed,
+      BLOCKER_PLAYS: 30.0 * gamesPlayed,
       FG_ATTEMPTS: 1.0 * gamesPlayed,
       PUNTS: 1.0 * gamesPlayed,
       RETURNS: 1.0 * gamesPlayed,
