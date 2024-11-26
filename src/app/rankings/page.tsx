@@ -167,6 +167,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          sortingOrder: ['desc', 'asc'],
         },
         {
           field: 'offensive_rushing_yards',
@@ -175,6 +176,7 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          sortingOrder: ['desc', 'asc'],
         },
         {
           field: 'offensive_passing_yards',
@@ -183,6 +185,16 @@ export default function PlayerPassingStats() {
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          sortingOrder: ['desc', 'asc'],
+        },
+        {
+          field: 'offensive_points',
+          headerName: 'OFF POINTS',
+          width: 140,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+          sortingOrder: ['desc', 'asc'],
         },
         {
           field: 'defensive_total_yards',
@@ -205,6 +217,15 @@ export default function PlayerPassingStats() {
         {
           field: 'defensive_passing_yards',
           headerName: 'DEF PASS YDS',
+          width: 140,
+          type: 'number',
+          pinnable: false,
+          disableColumnMenu: true,
+          sortingOrder: ['asc', 'desc'],
+        },
+        {
+          field: 'defensive_points',
+          headerName: 'PTS ALLOWED',
           width: 140,
           type: 'number',
           pinnable: false,
@@ -251,7 +272,7 @@ export default function PlayerPassingStats() {
         {
           field: 'team_name',
           headerName: 'TEAM',
-          flex: 2,
+          flex: 1.5,
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Stack sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               <Link
@@ -267,7 +288,7 @@ export default function PlayerPassingStats() {
         {
           field: 'tier_rank',
           headerName: 'TIER',
-          flex: 0.5,
+          flex: 0.6,
           type: 'number',
           pinnable: false,
           sortingOrder: ['asc', 'desc'],
@@ -275,7 +296,7 @@ export default function PlayerPassingStats() {
         {
           field: 'global_rank',
           headerName: 'GLOBAL',
-          flex: 0.5,
+          flex: 0.6,
           type: 'number',
           pinnable: false,
           sortingOrder: ['asc', 'desc'],
@@ -283,7 +304,7 @@ export default function PlayerPassingStats() {
         {
           field: 'record',
           headerName: 'W-L-T',
-          flex: 0.5,
+          flex: 0.6,
           pinnable: false,
           valueGetter: (value, row) => {
             return `${row.wins}-${row.losses}-${row.ties}`;
@@ -298,6 +319,7 @@ export default function PlayerPassingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+          sortingOrder: ['desc', 'asc'],
         },
         {
           field: 'offensive_rushing_yards',
@@ -305,6 +327,7 @@ export default function PlayerPassingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+          sortingOrder: ['desc', 'asc'],
         },
         {
           field: 'offensive_passing_yards',
@@ -312,6 +335,15 @@ export default function PlayerPassingStats() {
           flex: 1,
           type: 'number',
           pinnable: false,
+          sortingOrder: ['desc', 'asc'],
+        },
+        {
+          field: 'offensive_points',
+          headerName: 'OFF POINTS',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          sortingOrder: ['desc', 'asc'],
         },
         {
           field: 'defensive_total_yards',
@@ -332,6 +364,14 @@ export default function PlayerPassingStats() {
         {
           field: 'defensive_passing_yards',
           headerName: 'DEF PASS YDS',
+          flex: 1,
+          type: 'number',
+          pinnable: false,
+          sortingOrder: ['asc', 'desc'],
+        },
+        {
+          field: 'defensive_points',
+          headerName: 'PTS ALLOWED',
           flex: 1,
           type: 'number',
           pinnable: false,
