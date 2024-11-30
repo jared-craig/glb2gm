@@ -446,7 +446,7 @@ export const getTemplates = (position: string): Template[] => {
           route_elusiveness: 0.0,
           catch_hands: 30.0,
           catch_in_traffic: 0.0,
-          catch_grip: 3.0,
+          catch_grip: 30.0,
           catch_awareness: 0.0,
           catch_consistency: 0.0,
           carry_grip: 30.0,
