@@ -72,31 +72,40 @@ export default function PlayerPassingStats() {
         },
         {
           field: 'coffins',
-          headerName: 'COFFIN',
+          headerName: 'COFFIN%',
           width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          valueGetter: (value, row) => {
+            return ((value / row.punts) * 100.0).toFixed(2);
+          },
         },
         {
           field: 'inside_five',
-          headerName: 'INS 5',
+          headerName: 'INS 5%',
           width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          valueGetter: (value, row) => {
+            return ((value / row.punts) * 100.0).toFixed(2);
+          },
         },
         {
           field: 'inside_ten',
-          headerName: 'INS 10',
+          headerName: 'INS 10%',
           width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          valueGetter: (value, row) => {
+            return ((value / row.punts) * 100.0).toFixed(2);
+          },
         },
         {
           field: 'inside_twenty',
-          headerName: 'INS 20',
+          headerName: 'INS 20%',
           width: 120,
           type: 'number',
           pinnable: false,
@@ -104,11 +113,14 @@ export default function PlayerPassingStats() {
         },
         {
           field: 'touchbacks',
-          headerName: 'TB',
+          headerName: 'TB%',
           width: 120,
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
+          valueGetter: (value, row) => {
+            return ((value / row.punts) * 100.0).toFixed(2);
+          },
         },
         {
           field: 'gm_rating',
@@ -163,38 +175,53 @@ export default function PlayerPassingStats() {
         },
         {
           field: 'coffins',
-          headerName: 'COFFIN',
+          headerName: 'COFFIN%',
           flex: 1,
           type: 'number',
           pinnable: false,
+          valueGetter: (value, row) => {
+            return ((value / row.punts) * 100.0).toFixed(2);
+          },
         },
         {
           field: 'inside_five',
-          headerName: 'INS 5',
+          headerName: 'INS 5%',
           flex: 1,
           type: 'number',
           pinnable: false,
+          valueGetter: (value, row) => {
+            return ((value / row.punts) * 100.0).toFixed(2);
+          },
         },
         {
           field: 'inside_ten',
-          headerName: 'INS 10',
+          headerName: 'INS 10%',
           flex: 1,
           type: 'number',
           pinnable: false,
+          valueGetter: (value, row) => {
+            return ((value / row.punts) * 100.0).toFixed(2);
+          },
         },
         {
           field: 'inside_twenty',
-          headerName: 'INS 20',
+          headerName: 'INS 20%',
           flex: 1,
           type: 'number',
           pinnable: false,
+          valueGetter: (value, row) => {
+            return ((value / row.punts) * 100.0).toFixed(2);
+          },
         },
         {
           field: 'touchbacks',
-          headerName: 'TB',
+          headerName: 'TB%',
           flex: 1,
           type: 'number',
           pinnable: false,
+          valueGetter: (value, row) => {
+            return ((value / row.punts) * 100.0).toFixed(2);
+          },
         },
         {
           field: 'gm_rating',
