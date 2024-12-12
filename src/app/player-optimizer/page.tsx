@@ -76,6 +76,7 @@ export default function PlayerBuilder() {
   const [maxSalary, setMaxSalary] = useState<number>(0);
   const [maxSalaryInput, setMaxSalaryInput] = useState<string>('15000000');
   const [build, setBuild] = useState<any>();
+  const [optimizedBuild, setOptimizedBuild] = useState<any>();
 
   const [height, setHeight] = useState<number>(0);
   const [weight, setWeight] = useState<number>(0);
@@ -505,6 +506,11 @@ export default function PlayerBuilder() {
     buildResult = await buildPlayer('hw', buildResult.newPlayer);
     setOptimizeProgress(100);
 
+    setOptimizedBuild({
+      ...readifyPlayer(buildResult.newPlayer),
+      Salary: getSalary().toLocaleString(),
+      ...readifyBuild(buildResult.build),
+    });
     setBuild(buildResult.build);
     setPlayer(buildResult.newPlayer);
     setIsPossibleCombo(buildResult.isPossibleCombo);
@@ -536,17 +542,32 @@ export default function PlayerBuilder() {
     if (!Number.isNaN(num)) setMaxSalaryInput(num.toString());
   };
 
-  useEffect(() => {
-    if (!selectedPosition) return;
-    setWeightInputMin(
-      POSITION_DATA[selectedPosition].min_weight +
-        POSITION_DATA[selectedPosition].height_weight_modifier * (height - POSITION_DATA[selectedPosition].min_height)
-    );
-    setWeightInputMax(
-      POSITION_DATA[selectedPosition].max_weight +
-        POSITION_DATA[selectedPosition].height_weight_modifier * (height - POSITION_DATA[selectedPosition].min_height)
-    );
-  }, [height]);
+  const handleCopyClick = async () => {
+    await navigator.clipboard.writeText(JSON.stringify(optimizedBuild, null, 2));
+    alert('Build copied to your clipboard.');
+  };
+
+  const readifyPlayer = (playerObj: Player | undefined) => {
+    if (!playerObj) return {};
+    return {
+      position: playerObj.position,
+      height: `${Math.floor(playerObj.height / 12)}'${playerObj.height % 12}''`,
+      weight: `${playerObj.weight} lbs.`,
+      strength: playerObj.strength,
+      speed: playerObj.speed,
+      agility: playerObj.agility,
+      stamina: playerObj.stamina,
+      awareness: playerObj.awareness,
+      confidence: playerObj.confidence,
+      trait1: data.traits[playerObj.trait1].name,
+      trait2: data.traits[playerObj.trait2].name,
+      trait3: data.traits[playerObj.trait3].name,
+    };
+  };
+
+  const readifyBuild = (buildObj: any) => {
+    return Object.fromEntries(Object.entries(buildObj).map(([key, value]) => [SKILL_LOOKUP[key], value]));
+  };
 
   const handleTrait1Change = (event: SelectChangeEvent) => {
     setTrait1(event.target.value as string);
@@ -561,6 +582,18 @@ export default function PlayerBuilder() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (!selectedPosition) return;
+    setWeightInputMin(
+      POSITION_DATA[selectedPosition].min_weight +
+        POSITION_DATA[selectedPosition].height_weight_modifier * (height - POSITION_DATA[selectedPosition].min_height)
+    );
+    setWeightInputMax(
+      POSITION_DATA[selectedPosition].max_weight +
+        POSITION_DATA[selectedPosition].height_weight_modifier * (height - POSITION_DATA[selectedPosition].min_height)
+    );
+  }, [height]);
 
   useEffect(() => {
     if (!selectedPosition) return;
@@ -899,23 +932,30 @@ export default function PlayerBuilder() {
           {!isPossibleCombo && skillMins && <Typography sx={{ color: 'red', mb: 1 }}>No possible combos found</Typography>}
           {selectedPosition && skillMins && basePlayer && (
             <>
-              <Button
-                variant='contained'
-                size='small'
-                onClick={() => handleOptimizeClick()}
-                disabled={
-                  isOptimizing ||
-                  +maxSalaryInput < minSalary ||
-                  (!height && lockHeight) ||
-                  (!weight && lockWeight) ||
-                  (!trait1 && lockTrait1) ||
-                  (!trait2 && lockTrait2) ||
-                  (!trait3 && lockTrait3)
-                }
-                sx={{ minWidth: '350px' }}
-              >
-                Optimize
-              </Button>
+              <Stack spacing={1} sx={{ maxWidth: '350px' }}>
+                <Button
+                  variant='contained'
+                  size='small'
+                  onClick={() => handleOptimizeClick()}
+                  disabled={
+                    isOptimizing ||
+                    +maxSalaryInput < minSalary ||
+                    (!height && lockHeight) ||
+                    (!weight && lockWeight) ||
+                    (!trait1 && lockTrait1) ||
+                    (!trait2 && lockTrait2) ||
+                    (!trait3 && lockTrait3)
+                  }
+                  sx={{ minWidth: '350px' }}
+                >
+                  Optimize
+                </Button>
+                {build && (
+                  <Button variant='contained' size='small' onClick={() => handleCopyClick()} sx={{ minWidth: '350px' }}>
+                    Copy Optimized Build to Clipboard
+                  </Button>
+                )}
+              </Stack>
               <Grid container columnSpacing={2}>
                 {groupOrder[selectedPosition].map((group) => (
                   <Fragment key={group}>
