@@ -136,21 +136,6 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
             <Stack spacing={{ xs: 0, md: 0.5 }}>
               <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>Offense</Typography>
               <Stack direction='row' spacing={1}>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                  Run:{' '}
-                  {((+teamData.offensive_rushes / (+teamData.offensive_rushes + +teamData.offensive_attempts + +teamData.offensive_sacks)) * 100.0).toFixed(1)}%
-                </Typography>
-                <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                  Pass:{' '}
-                  {(
-                    ((+teamData.offensive_attempts + +teamData.offensive_sacks) /
-                      (+teamData.offensive_rushes + +teamData.offensive_attempts + +teamData.offensive_sacks)) *
-                    100.0
-                  ).toFixed(1)}
-                  %
-                </Typography>
-              </Stack>
-              <Stack direction='row' spacing={1}>
                 <Typography
                   sx={{
                     typography: { xs: 'body2', sm: 'body2' },
@@ -220,7 +205,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 <Typography
                   sx={{
                     typography: { xs: 'body2', sm: 'body2' },
-                    color: getRankColor(getLeagueRank('offensive_sacks', 'asc'), leagueData.length, 'desc'),
+                    color: getRankColor(getLeagueRank('offensive_sacks', 'asc'), leagueData.length, 'asc'),
                   }}
                 >
                   ( {getLeagueRank('offensive_sacks', 'asc')} )
@@ -231,7 +216,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 <Typography
                   sx={{
                     typography: { xs: 'body2', sm: 'body2' },
-                    color: getRankColor(getLeagueRank('offensive_interceptions', 'asc'), leagueData.length, 'desc'),
+                    color: getRankColor(getLeagueRank('offensive_interceptions', 'asc'), leagueData.length, 'asc'),
                   }}
                 >
                   ( {getLeagueRank('offensive_interceptions', 'asc')} )
@@ -242,7 +227,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 <Typography
                   sx={{
                     typography: { xs: 'body2', sm: 'body2' },
-                    color: getRankColor(getLeagueRank('offensive_fumbles_lost', 'asc'), leagueData.length, 'desc'),
+                    color: getRankColor(getLeagueRank('offensive_fumbles_lost', 'asc'), leagueData.length, 'asc'),
                   }}
                 >
                   ( {getLeagueRank('offensive_fumbles_lost', 'asc')} )
@@ -258,7 +243,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 <Typography
                   sx={{
                     typography: { xs: 'body2', sm: 'body2' },
-                    color: getRankColor(getLeagueRank('defensive_total_yards', 'asc'), leagueData.length, 'desc'),
+                    color: getRankColor(getLeagueRank('defensive_total_yards', 'asc'), leagueData.length, 'asc'),
                   }}
                 >
                   ( {getLeagueRank('defensive_total_yards', 'asc')} )
@@ -269,7 +254,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 <Typography
                   sx={{
                     typography: { xs: 'body2', sm: 'body2' },
-                    color: getRankColor(getLeagueRank('defensive_rushing_yards', 'asc'), leagueData.length, 'desc'),
+                    color: getRankColor(getLeagueRank('defensive_rushing_yards', 'asc'), leagueData.length, 'asc'),
                   }}
                 >
                   ( {getLeagueRank('defensive_rushing_yards', 'asc')} )
@@ -282,7 +267,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 <Typography
                   sx={{
                     typography: { xs: 'body2', sm: 'body2' },
-                    color: getRankColor(getLeagueRank('defensive_rushing_yards_per_carry', 'asc'), leagueData.length, 'desc'),
+                    color: getRankColor(getLeagueRank('defensive_rushing_yards_per_carry', 'asc'), leagueData.length, 'asc'),
                   }}
                 >
                   ( {getLeagueRank('defensive_rushing_yards_per_carry', 'asc')} )
@@ -293,7 +278,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 <Typography
                   sx={{
                     typography: { xs: 'body2', sm: 'body2' },
-                    color: getRankColor(getLeagueRank('defensive_passing_yards', 'asc'), leagueData.length, 'desc'),
+                    color: getRankColor(getLeagueRank('defensive_passing_yards', 'asc'), leagueData.length, 'asc'),
                   }}
                 >
                   ( {getLeagueRank('defensive_passing_yards', 'asc')} )
@@ -306,7 +291,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 <Typography
                   sx={{
                     typography: { xs: 'body2', sm: 'body2' },
-                    color: getRankColor(getLeagueRank('defensive_passing_yards_per_attempt', 'asc'), leagueData.length, 'desc'),
+                    color: getRankColor(getLeagueRank('defensive_passing_yards_per_attempt', 'asc'), leagueData.length, 'asc'),
                   }}
                 >
                   ( {getLeagueRank('defensive_passing_yards_per_attempt', 'asc')} )
@@ -360,25 +345,6 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Stack spacing={{ xs: 0, md: 0.5 }}>
                   <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>Offense</Typography>
-                  <Stack direction='row' spacing={1}>
-                    <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                      Run:{' '}
-                      {(
-                        (+topTenGames.offensive_rushes / (+topTenGames.offensive_rushes + +topTenGames.offensive_attempts + +topTenGames.offensive_sacks)) *
-                        100.0
-                      ).toFixed(1)}
-                      %
-                    </Typography>
-                    <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                      Pass:{' '}
-                      {(
-                        ((+topTenGames.offensive_attempts + +topTenGames.offensive_sacks) /
-                          (+topTenGames.offensive_rushes + +topTenGames.offensive_attempts + +topTenGames.offensive_sacks)) *
-                        100.0
-                      ).toFixed(1)}
-                      %
-                    </Typography>
-                  </Stack>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
                     Total YPG: {(topTenGames.offensive_total_yards / topTenGames.games).toFixed(2)}
                   </Typography>
