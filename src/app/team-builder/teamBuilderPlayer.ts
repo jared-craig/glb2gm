@@ -9,4 +9,5 @@ export interface TeamBuilderPlayer {
   salary: number;
   is_new: boolean;
   order_index: number;
+  build_json: string;
 }

@@ -436,6 +436,7 @@ model TeamBuilderPlayers {
   is_new           Boolean
   order_index      Int
   team_id          String           @db.UniqueIdentifier
+  build_json       String?          @db.NVarChar(Max)
   TeamBuilderTeams TeamBuilderTeams @relation(fields: [team_id], references: [id], onUpdate: NoAction, map: "FK_TeamBuilderPlayers_TeamBuilderTeams")
 }
 
