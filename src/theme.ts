@@ -1,7 +1,7 @@
 'use client';
 import { Aldrich } from 'next/font/google';
 import { createTheme } from '@mui/material/styles';
-import type {} from '@mui/x-data-grid-pro/themeAugmentation';
+import type {} from '@mui/x-data-grid-premium/themeAugmentation';
 import { lime } from '@mui/material/colors';
 
 const roboto = Aldrich({

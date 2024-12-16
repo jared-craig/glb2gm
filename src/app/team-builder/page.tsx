@@ -14,8 +14,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import {
-  DataGridPro,
+  DataGridPremium,
   GridActionsCellItem,
   GridColDef,
   GridEventListener,
@@ -25,10 +26,11 @@ import {
   GridRowModes,
   GridRowModesModel,
   GridRowOrderChangeParams,
+  GridRowParams,
   GridRowsProp,
-  GridSlots,
   GridToolbarContainer,
-} from '@mui/x-data-grid-pro';
+  ToolbarPropsOverrides,
+} from '@mui/x-data-grid-premium';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import React from 'react';
 import { TeamBuilderTeam } from './teamBuilderTeam';
@@ -36,6 +38,13 @@ import LoadTeamDialog from './LoadTeamDialog';
 import SaveTeamDialog from './SaveTeamDialog';
 import DeleteTeamDialog from './DeleteTeamDialog';
 import UpdateTeamDialog from './UpdateTeamDialog';
+
+declare module '@mui/x-data-grid-premium' {
+  interface ToolbarPropsOverrides {
+    setPlayers: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
+    setRowModesModel: (newModel: (oldModel: GridRowModesModel) => GridRowModesModel) => void;
+  }
+}
 
 function generateGuid() {
   return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/[x]/g, function (c) {
@@ -80,6 +89,7 @@ export default function TeamBuilder() {
   const handleCloseUpdateTeamDialog = (value?: string) => {
     setOpenUpdateTeamDialog(false);
     if (value) setTeamNameUpdateInput(value);
+    updateTeam();
   };
 
   const handleCloseDeleteTeamDialog = (shouldDelete: boolean) => {
@@ -116,12 +126,13 @@ export default function TeamBuilder() {
   };
 
   const updateTeam = async () => {
+    console.log(team);
     if (!team) return;
     const teamToSave: TeamBuilderTeam = {
       id: team.id,
       user_email: user?.email!,
       team_name: teamNameUpdateInput,
-      players: (players as TeamBuilderPlayer[]).map((x) => ({ ...x, id: generateGuid(), is_new: false })),
+      players: (players as TeamBuilderPlayer[]).map((x) => ({ ...x, is_new: false })),
     };
     const res = await fetch('/api/team-builder', {
       method: 'PUT',
@@ -196,12 +207,7 @@ export default function TeamBuilder() {
     return '';
   };
 
-  interface EditToolbarProps {
-    setPlayers: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
-    setRowModesModel: (newModel: (oldModel: GridRowModesModel) => GridRowModesModel) => void;
-  }
-
-  function EditToolbar(props: EditToolbarProps) {
+  function EditToolbar(props: ToolbarPropsOverrides) {
     const { setPlayers, setRowModesModel } = props;
 
     const handleClick = () => {
@@ -545,7 +551,7 @@ export default function TeamBuilder() {
           field: 'actions',
           type: 'actions',
           width: 120,
-          getActions: ({ id }) => {
+          getActions: ({ id }: GridRowParams) => {
             const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
             if (isInEditMode) {
@@ -844,7 +850,7 @@ export default function TeamBuilder() {
   return (
     <Container maxWidth='xl' sx={{ mb: 2 }}>
       {traits && (
-        <DataGridPro
+        <DataGridPremium
           hideFooter
           rows={players}
           columns={playerColumns}
@@ -866,7 +872,7 @@ export default function TeamBuilder() {
               : 'valid-row'
           }
           slots={{
-            toolbar: EditToolbar as GridSlots['toolbar'],
+            toolbar: EditToolbar,
           }}
           slotProps={{
             toolbar: { setPlayers, setRowModesModel },
