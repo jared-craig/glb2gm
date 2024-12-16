@@ -1,8 +1,16 @@
 import { FormControl, ListItemText, MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import { GridToolbarContainer, GridToolbarQuickFilter } from '@mui/x-data-grid-pro';
+import { GridToolbarContainer, GridToolbarQuickFilter, ToolbarPropsOverrides } from '@mui/x-data-grid-premium';
 import { useState } from 'react';
 
-function CustomGridToolbar({ tierFilter, tierOptions }: any) {
+declare module '@mui/x-data-grid-premium' {
+  interface ToolbarPropsOverrides {
+    tierFilter: (tier: string) => void;
+    tierOptions: string[];
+  }
+}
+
+function CustomGridToolbar(props: ToolbarPropsOverrides) {
+  const { tierFilter, tierOptions } = props;
   const [tier, setTier] = useState<string>(tierOptions[tierOptions.length - 1]);
   const MenuProps = {
     PaperProps: {

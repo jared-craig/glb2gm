@@ -1,6 +1,6 @@
 'use client';
 
-import { DataGridPro, GridColDef, GridRenderCellParams, GridRowModel } from '@mui/x-data-grid-pro';
+import { DataGridPremium, GridColDef, GridRenderCellParams, GridRowModel } from '@mui/x-data-grid-premium';
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerReturningData } from './playerReturningData';
@@ -181,7 +181,7 @@ export default function PlayerReturningStats() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <DataGridPro
+      <DataGridPremium
         rows={rows ?? []}
         columns={columns}
         loading={rows.length <= 0 && !fetched}

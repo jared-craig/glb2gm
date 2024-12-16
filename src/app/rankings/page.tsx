@@ -1,6 +1,6 @@
 'use client';
 
-import { DataGridPro, GridColDef, GridComparatorFn, GridRenderCellParams } from '@mui/x-data-grid-pro';
+import { DataGridPremium, GridColDef, GridComparatorFn, GridRenderCellParams } from '@mui/x-data-grid-premium';
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import CustomGridToolbar from '@/app/components/CustomGridToolBar';
@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { TeamData } from '../teams/teamData';
 import { getTeamGmRating } from '../stats/statCalculations';
 import { GameData } from '../games/gameData';
+import { getTopTeamRank } from '../teams/teamHelpers';
 
 export default function PlayerPassingStats() {
   const theme = useTheme();
@@ -38,20 +39,22 @@ export default function PlayerPassingStats() {
     if (teamData.tier === 'Professional') {
       topTeams = [...data].filter(
         (x) =>
-          (x.tier === teamData.tier && x.tier_rank <= 6.0 && x.id !== teamData.id) ||
+          (x.tier === teamData.tier && x.tier_rank <= 8.0 && x.id !== teamData.id) ||
           (x.tier === 'Veteran' && (x.global_rank <= teamData.global_rank || x.global_rank <= 12.0) && x.id !== teamData.id)
       );
     } else {
-      topTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank <= 10.0 && x.id !== teamData.id);
+      topTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank <= getTopTeamRank(teamData.tier) && x.id !== teamData.id);
     }
 
     let notTopTeams: TeamData[] = [];
     if (teamData.tier === 'Professional') {
-      notTopTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank > 6.0 && x.id !== teamData.id);
+      notTopTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank > getTopTeamRank(teamData.tier) && x.id !== teamData.id);
     } else if (teamData.tier === 'Veteran') {
-      notTopTeams = [...data].filter((x) => (x.tier === teamData.tier && x.tier_rank > 10.0 && x.id !== teamData.id) || x.tier === 'Professional');
+      notTopTeams = [...data].filter(
+        (x) => (x.tier === teamData.tier && x.tier_rank > getTopTeamRank(teamData.tier) && x.id !== teamData.id) || x.tier === 'Professional'
+      );
     } else {
-      notTopTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank > 10.0 && x.id !== teamData.id);
+      notTopTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank > getTopTeamRank(teamData.tier) && x.id !== teamData.id);
     }
 
     const teamOneWins = [...allTeamGames].filter(
@@ -148,8 +151,21 @@ export default function PlayerPassingStats() {
           sortingOrder: ['asc', 'desc'],
         },
         {
-          field: 'record',
+          field: 'overall_record',
           headerName: 'W-L-T',
+          width: 120,
+          pinnable: false,
+          disableColumnMenu: true,
+          valueGetter: (value, row) => {
+            return `${row.wins}-${row.losses}-${row.ties}`;
+          },
+          sortComparator: recordComparator,
+          headerAlign: 'right',
+          align: 'right',
+        },
+        {
+          field: 'top_record',
+          headerName: 'VS Top',
           width: 120,
           pinnable: false,
           disableColumnMenu: true,
@@ -302,8 +318,20 @@ export default function PlayerPassingStats() {
           sortingOrder: ['asc', 'desc'],
         },
         {
-          field: 'record',
-          headerName: 'W-L-T',
+          field: 'overall_record',
+          headerName: 'Overall',
+          flex: 0.6,
+          pinnable: false,
+          valueGetter: (value, row) => {
+            return `${row.wins}-${row.losses}-${row.ties}`;
+          },
+          sortComparator: recordComparator,
+          headerAlign: 'right',
+          align: 'right',
+        },
+        {
+          field: 'top_record',
+          headerName: 'VS Top',
           flex: 0.6,
           pinnable: false,
           valueGetter: (value, row) => {
@@ -413,7 +441,7 @@ export default function PlayerPassingStats() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <DataGridPro
+      <DataGridPremium
         rows={rows ?? []}
         columns={columns}
         loading={rows.length <= 0 && !fetched}

@@ -14,7 +14,8 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
   const [allTeams, setAllTeams] = useState<TeamData[]>();
   const [teamData, setTeamData] = useState<TeamData>();
   const [allTeamOneGames, setAllTeamOneGames] = useState<GameData[]>();
-  const [topTenGames, setTopTenGames] = useState<any>();
+  const [topTeamGames, setTopTeamGames] = useState<any>();
+  const [topTeamsForRanks, setTopTeamsForRanks] = useState<TeamData[]>();
 
   const fetchData = async () => {
     const res = await fetch('/api/teams');
@@ -28,16 +29,16 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
     setAllTeamOneGames(teamOneGameData);
   };
 
-  const getTopTenGames = () => {
+  const getTopTeamGames = () => {
     if (!allTeams || !teamData || !allTeamOneGames) return;
 
-    const teamOneTopTeams = [...allTeams].filter((x) => x.tier === teamData.tier && x.tier_rank <= getTopTeamRank(teamData.tier) && x.id !== teamData.id);
+    const topTeams = [...allTeams].filter((x) => x.tier === teamData.tier && x.tier_rank <= getTopTeamRank(teamData.tier) && x.id !== teamData.id);
 
-    const teamOneTopGames = [...allTeamOneGames].filter((x) => x.team_one_id === teamData.id && teamOneTopTeams.some((y) => y.id === x.team_two_id));
+    const teamOneTopGames = [...allTeamOneGames].filter((x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id));
     const teamOneRecord = getRecord(teamOneTopGames, teamData.id);
     const teamOneTopGamesSum = sumArray(teamOneTopGames.map((x) => extractTeamData(x, 'team_one_')));
     if (teamOneTopGamesSum) teamOneTopGamesSum['games'] = teamOneTopGames.length;
-    const teamTwoTopGames = [...allTeamOneGames].filter((x) => x.team_two_id === teamData.id && teamOneTopTeams.some((y) => y.id === x.team_one_id));
+    const teamTwoTopGames = [...allTeamOneGames].filter((x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id));
     const teamTwoRecord = getRecord(teamTwoTopGames, teamData.id);
     const teamTwoTopGamesSum = sumArray(teamTwoTopGames.map((x) => extractTeamData(x, 'team_two_')));
     if (teamTwoTopGamesSum) teamTwoTopGamesSum['games'] = teamTwoTopGames.length;
@@ -50,7 +51,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
           : teamTwoTopGamesSum;
 
     if (!topTenGames) {
-      setTopTenGames(null);
+      setTopTeamGames(null);
       return;
     }
 
@@ -58,7 +59,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
     topTenGames['losses'] = teamOneRecord.losses + teamTwoRecord.losses;
     topTenGames['ties'] = teamOneRecord.ties + teamTwoRecord.ties;
 
-    setTopTenGames(topTenGames);
+    setTopTeamGames(topTenGames);
   };
 
   const formatWithOrdinal = (number: number): string => {
@@ -101,7 +102,7 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
   }, []);
 
   useEffect(() => {
-    getTopTenGames();
+    getTopTeamGames();
   }, [allTeams, teamData, allTeamOneGames]);
 
   return (
@@ -335,39 +336,39 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
           <Grid size={12}>
             <Typography variant='caption'>* ( out of {leagueData.length} League Teams )</Typography>
           </Grid>
-          {topTenGames && (
+          {topTeamGames && (
             <>
               <Grid size={{ xs: 12 }}>
                 <Typography sx={{ typography: { xs: 'h6', sm: 'h6' } }}>
-                  VS Top Teams ({topTenGames.wins}-{topTenGames.losses}-{topTenGames.ties})
+                  VS Top Teams ({topTeamGames.wins}-{topTeamGames.losses}-{topTeamGames.ties})
                 </Typography>
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Stack spacing={{ xs: 0, md: 0.5 }}>
                   <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>Offense</Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Total YPG: {(topTenGames.offensive_total_yards / topTenGames.games).toFixed(2)}
+                    Total YPG: {(topTeamGames.offensive_total_yards / topTeamGames.games).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Rushing YPG: {(topTenGames.offensive_rushing_yards / topTenGames.games).toFixed(2)}
+                    Rushing YPG: {(topTeamGames.offensive_rushing_yards / topTeamGames.games).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Rushing YPC: {(topTenGames.offensive_rushing_yards / topTenGames.offensive_rushes).toFixed(2)}
+                    Rushing YPC: {(topTeamGames.offensive_rushing_yards / topTeamGames.offensive_rushes).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Passing YPG: {(topTenGames.offensive_passing_yards / topTenGames.games).toFixed(2)}
+                    Passing YPG: {(topTeamGames.offensive_passing_yards / topTeamGames.games).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Passing YPA: {(topTenGames.offensive_passing_yards / topTenGames.offensive_attempts).toFixed(2)}
+                    Passing YPA: {(topTeamGames.offensive_passing_yards / topTeamGames.offensive_attempts).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Sacks Taken/Game: {(topTenGames.offensive_sacks / topTenGames.games).toFixed(2)}
+                    Sacks Taken/Game: {(topTeamGames.offensive_sacks / topTeamGames.games).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Interceptions/Game: {(topTenGames.offensive_interceptions / topTenGames.games).toFixed(2)}
+                    Interceptions/Game: {(topTeamGames.offensive_interceptions / topTeamGames.games).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Fumbles/Game: {(topTenGames.offensive_fumbles_lost / topTenGames.games).toFixed(2)}
+                    Fumbles/Game: {(topTeamGames.offensive_fumbles_lost / topTeamGames.games).toFixed(2)}
                   </Typography>
                 </Stack>
               </Grid>
@@ -375,28 +376,28 @@ export default function TeamDetails({ params }: { params: { teamId: string } }) 
                 <Stack spacing={{ xs: 0, md: 0.5 }}>
                   <Typography sx={{ typography: { xs: 'body1', sm: 'body1' } }}>Defense</Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Total YPG: {(topTenGames.defensive_total_yards / topTenGames.games).toFixed(2)}
+                    Total YPG: {(topTeamGames.defensive_total_yards / topTeamGames.games).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Rushing YPG: {(topTenGames.defensive_rushing_yards / topTenGames.games).toFixed(2)}
+                    Rushing YPG: {(topTeamGames.defensive_rushing_yards / topTeamGames.games).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Rushing YPC: {(topTenGames.defensive_rushing_yards / topTenGames.defensive_rushes).toFixed(2)}
+                    Rushing YPC: {(topTeamGames.defensive_rushing_yards / topTeamGames.defensive_rushes).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Passing YPG: {(topTenGames.defensive_passing_yards / topTenGames.games).toFixed(2)}
+                    Passing YPG: {(topTeamGames.defensive_passing_yards / topTeamGames.games).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Passing YPA: {(topTenGames.defensive_passing_yards / topTenGames.defensive_attempts).toFixed(2)}
+                    Passing YPA: {(topTeamGames.defensive_passing_yards / topTeamGames.defensive_attempts).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Sacks/Game: {(topTenGames.defensive_sacks / topTenGames.games).toFixed(2)}
+                    Sacks/Game: {(topTeamGames.defensive_sacks / topTeamGames.games).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Interceptions/Game: {(topTenGames.defensive_interceptions / topTenGames.games).toFixed(2)}
+                    Interceptions/Game: {(topTeamGames.defensive_interceptions / topTeamGames.games).toFixed(2)}
                   </Typography>
                   <Typography sx={{ typography: { xs: 'body2', sm: 'body2' } }}>
-                    Forced Fumbles/Game: {(topTenGames.defensive_fumbles_lost / topTenGames.games).toFixed(2)}
+                    Forced Fumbles/Game: {(topTeamGames.defensive_fumbles_lost / topTeamGames.games).toFixed(2)}
                   </Typography>
                 </Stack>
               </Grid>
