@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { TeamData } from '../../teams/teamData';
 import { Container, LinearProgress, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
@@ -9,7 +9,8 @@ import { GameData } from '@/app/games/gameData';
 import { sumArray, extractTeamData, getRecord, getTopTeamRank } from '@/app/teams/teamHelpers';
 import { getRankColor } from '@/app/helpers';
 
-export default function TeamDetails({ params }: { params: { teamId: string } }) {
+export default function TeamDetails(props: { params: Promise<{ teamId: string }> }) {
+  const params = use(props.params);
   const [leagueData, setLeagueData] = useState<TeamData[]>();
   const [allTeams, setAllTeams] = useState<TeamData[]>();
   const [teamData, setTeamData] = useState<TeamData>();

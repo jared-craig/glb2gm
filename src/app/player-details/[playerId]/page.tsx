@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { Container, LinearProgress, Stack, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Link from 'next/link';
@@ -25,7 +25,8 @@ const THRESHOLDS = {
   RETURNS: 1.0,
 };
 
-export default function TeamDetails({ params }: { params: { playerId: string } }) {
+export default function TeamDetails(props: { params: Promise<{ playerId: string }> }) {
+  const params = use(props.params);
   const [tierData, setTierData] = useState<any>();
   const [playerData, setPlayerData] = useState<any>();
   const [genericPlayerData, setGenericPlayerData] = useState<PlayerData>();
