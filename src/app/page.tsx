@@ -3,8 +3,10 @@
 import { Container, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
 import ForumIcon from '@mui/icons-material/Forum';
+import { useUser } from '@auth0/nextjs-auth0';
 
 export default function Home() {
+  const { user } = useUser();
   return (
     <Container maxWidth='xl'>
       <Stack spacing={0.5}>
@@ -19,11 +21,9 @@ export default function Home() {
               <ListItemText
                 primary='All Stars'
                 secondary='1st and 2nd team All Stars according to the GM Rating system.'
-                primaryTypographyProps={{
-                  fontSize: 14,
-                }}
-                secondaryTypographyProps={{
-                  fontSize: 12,
+                slotProps={{
+                  primary: { sx: { fontSize: 14 } },
+                  secondary: { sx: { fontSize: 12 } },
                 }}
               />
             </ListItem>
@@ -31,11 +31,9 @@ export default function Home() {
               <ListItemText
                 primary='Player Builder'
                 secondary='Build your dream player from scratch.'
-                primaryTypographyProps={{
-                  fontSize: 14,
-                }}
-                secondaryTypographyProps={{
-                  fontSize: 12,
+                slotProps={{
+                  primary: { sx: { fontSize: 14 } },
+                  secondary: { sx: { fontSize: 12 } },
                 }}
               />
             </ListItem>
@@ -43,11 +41,9 @@ export default function Home() {
               <ListItemText
                 primary='Player Optimizer'
                 secondary='Optimize height/weight, attributes, and traits for a build.'
-                primaryTypographyProps={{
-                  fontSize: 14,
-                }}
-                secondaryTypographyProps={{
-                  fontSize: 12,
+                slotProps={{
+                  primary: { sx: { fontSize: 14 } },
+                  secondary: { sx: { fontSize: 12 } },
                 }}
               />
             </ListItem>
@@ -55,11 +51,9 @@ export default function Home() {
               <ListItemText
                 primary='Player Templates'
                 secondary='Looking for inspiration or are you a new player?'
-                primaryTypographyProps={{
-                  fontSize: 14,
-                }}
-                secondaryTypographyProps={{
-                  fontSize: 12,
+                slotProps={{
+                  primary: { sx: { fontSize: 14 } },
+                  secondary: { sx: { fontSize: 12 } },
                 }}
               />
             </ListItem>
@@ -67,11 +61,9 @@ export default function Home() {
               <ListItemText
                 primary='Player Statistics'
                 secondary="By tier and category. Filter and sort to your heart's content."
-                primaryTypographyProps={{
-                  fontSize: 14,
-                }}
-                secondaryTypographyProps={{
-                  fontSize: 12,
+                slotProps={{
+                  primary: { sx: { fontSize: 14 } },
+                  secondary: { sx: { fontSize: 12 } },
                 }}
               />
             </ListItem>
@@ -79,11 +71,9 @@ export default function Home() {
               <ListItemText
                 primary='Team Rankings'
                 secondary='See how your team is stacking up against the competition.'
-                primaryTypographyProps={{
-                  fontSize: 14,
-                }}
-                secondaryTypographyProps={{
-                  fontSize: 12,
+                slotProps={{
+                  primary: { sx: { fontSize: 14 } },
+                  secondary: { sx: { fontSize: 12 } },
                 }}
               />
             </ListItem>
@@ -91,11 +81,9 @@ export default function Home() {
               <ListItemText
                 primary='Matchup'
                 secondary='Compare your team to another.'
-                primaryTypographyProps={{
-                  fontSize: 14,
-                }}
-                secondaryTypographyProps={{
-                  fontSize: 12,
+                slotProps={{
+                  primary: { sx: { fontSize: 14 } },
+                  secondary: { sx: { fontSize: 12 } },
                 }}
               />
             </ListItem>
@@ -103,11 +91,9 @@ export default function Home() {
               <ListItemText
                 primary='Team Builder'
                 secondary='Construct the team of your dreams.'
-                primaryTypographyProps={{
-                  fontSize: 14,
-                }}
-                secondaryTypographyProps={{
-                  fontSize: 12,
+                slotProps={{
+                  primary: { sx: { fontSize: 14 } },
+                  secondary: { sx: { fontSize: 12 } },
                 }}
               />
             </ListItem>
