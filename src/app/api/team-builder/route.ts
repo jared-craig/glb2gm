@@ -1,12 +1,12 @@
+import { auth0 } from '@/app/lib/auth0';
 import { TeamBuilderTeam } from '@/app/team-builder/teamBuilderTeam';
-import { getSession } from '@auth0/nextjs-auth0';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const session = await getSession();
+    const session = await auth0.getSession();
     const user = session?.user;
     if (!user?.email) return Response.error();
     const allTeamBuilderData = await prisma.teamBuilderTeams.findMany({

@@ -9,26 +9,30 @@ import HeaderBar from './components/HeaderBar';
 
 import { Analytics } from '@vercel/analytics/react';
 
-import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { Suspense } from 'react';
+
+import { Auth0Provider } from '@auth0/nextjs-auth0';
+import { auth0 } from './lib/auth0';
 
 export const metadata: Metadata = {
   title: 'GLB2GM',
   description: 'GLB2 Tools, Statistics, and Analysis',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth0.getSession();
+
   return (
     <html lang='en' translate='no'>
       <head>
         <link rel='icon' href='/favicon.ico' />
       </head>
-      <UserProvider>
-        <body>
+      <body>
+        <Auth0Provider user={session?.user}>
           <MuiXLicense />
           <Analytics />
           <AppRouterCacheProvider>
@@ -49,8 +53,8 @@ export default function RootLayout({
               </Suspense>
             </ThemeProvider>
           </AppRouterCacheProvider>
-        </body>
-      </UserProvider>
+        </Auth0Provider>
+      </body>
     </html>
   );
 }

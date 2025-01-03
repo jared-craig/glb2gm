@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,16 +13,18 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import logo from '../assets/logo-no-background.png';
 import Link from 'next/link';
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { Button, Skeleton } from '@mui/material';
+import { useState } from 'react';
+import { useUser } from '@auth0/nextjs-auth0';
 
 const pages = ['All Stars', 'Player Builder', 'Player Optimizer', 'Player Templates', 'Player Stats', 'Team Rankings', 'Matchup', 'Team Builder'];
 
-function HeaderBar() {
+export default function HeaderBar() {
   const router = useRouter();
-  const { user, error, isLoading } = useUser();
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  const { user, isLoading, error } = useUser();
+
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -105,17 +106,16 @@ function HeaderBar() {
             </Typography>
           </Box>
           {user ? (
-            <Button href='/api/auth/logout'>Logout</Button>
+            <Button href='/auth/logout'>Logout</Button>
           ) : isLoading ? (
             <Typography>
               <Skeleton width={60} />
             </Typography>
           ) : (
-            <Button href='/api/auth/login'>Login</Button>
+            <Button href='/auth/login'>Login</Button>
           )}
         </Toolbar>
       </Container>
     </AppBar>
   );
 }
-export default HeaderBar;
