@@ -31,7 +31,7 @@ import {
   GridToolbarContainer,
   ToolbarPropsOverrides,
 } from '@mui/x-data-grid-premium';
-import { useUser } from '@auth0/nextjs-auth0/client';
+import { useUser } from '@auth0/nextjs-auth0';
 import React from 'react';
 import { TeamBuilderTeam } from './teamBuilderTeam';
 import LoadTeamDialog from './LoadTeamDialog';
@@ -456,14 +456,14 @@ export default function TeamBuilder() {
             value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
-              ? (traits?.filter(
+              ? traits?.filter(
                   (x) =>
                     x.trait_key !== params.row.trait2 &&
                     x.trait_key !== params.row.trait3 &&
                     !x.position_exclusions.split(',').includes(params.row.position) &&
                     !x.conflicts.split(',').includes(params.row.trait2 === '' ? null : params.row.trait2) &&
                     !x.conflicts.split(',').includes(params.row.trait3 === '' ? null : params.row.trait3)
-                ) ?? [])
+                ) ?? []
               : [],
           cellClassName: (params) => getTraitClassName(params.value),
         },
@@ -479,14 +479,14 @@ export default function TeamBuilder() {
             value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
-              ? (traits?.filter(
+              ? traits?.filter(
                   (x) =>
                     x.trait_key !== params.row.trait1 &&
                     x.trait_key !== params.row.trait3 &&
                     !x.position_exclusions.split(',').includes(params.row.position) &&
                     !x.conflicts.split(',').includes(params.row.trait1 === '' ? null : params.row.trait1) &&
                     !x.conflicts.split(',').includes(params.row.trait3 === '' ? null : params.row.trait3)
-                ) ?? [])
+                ) ?? []
               : [],
           cellClassName: (params) => getTraitClassName(params.value),
         },
@@ -502,14 +502,14 @@ export default function TeamBuilder() {
             value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
-              ? (traits?.filter(
+              ? traits?.filter(
                   (x) =>
                     x.trait_key !== params.row.trait1 &&
                     x.trait_key !== params.row.trait2 &&
                     !x.position_exclusions.split(',').includes(params.row.position) &&
                     !x.conflicts.split(',').includes(params.row.trait1 === '' ? null : params.row.trait1) &&
                     !x.conflicts.split(',').includes(params.row.trait2 === '' ? null : params.row.trait2)
-                ) ?? [])
+                ) ?? []
               : [],
           cellClassName: (params) => getTraitClassName(params.value),
         },
@@ -630,14 +630,14 @@ export default function TeamBuilder() {
             value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
-              ? (traits?.filter(
+              ? traits?.filter(
                   (x) =>
                     x.trait_key !== params.row.trait2 &&
                     x.trait_key !== params.row.trait3 &&
                     !x.position_exclusions.split(',').includes(params.row.position) &&
                     !x.conflicts.split(',').includes(params.row.trait2 === '' ? null : params.row.trait2) &&
                     !x.conflicts.split(',').includes(params.row.trait3 === '' ? null : params.row.trait3)
-                ) ?? [])
+                ) ?? []
               : [],
           cellClassName: (params) => getTraitClassName(params.value),
         },
@@ -653,14 +653,14 @@ export default function TeamBuilder() {
             value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
-              ? (traits?.filter(
+              ? traits?.filter(
                   (x) =>
                     x.trait_key !== params.row.trait1 &&
                     x.trait_key !== params.row.trait3 &&
                     !x.position_exclusions.split(',').includes(params.row.position) &&
                     !x.conflicts.split(',').includes(params.row.trait1 === '' ? null : params.row.trait1) &&
                     !x.conflicts.split(',').includes(params.row.trait3 === '' ? null : params.row.trait3)
-                ) ?? [])
+                ) ?? []
               : [],
           cellClassName: (params) => getTraitClassName(params.value),
         },
@@ -676,14 +676,14 @@ export default function TeamBuilder() {
             value.salary_modifier > 0 ? `${value.trait_name} (${(value.salary_modifier * 100.0).toFixed(0)}%)` : value.trait_name,
           valueOptions: (params) =>
             params.row.position !== ''
-              ? (traits?.filter(
+              ? traits?.filter(
                   (x) =>
                     x.trait_key !== params.row.trait1 &&
                     x.trait_key !== params.row.trait2 &&
                     !x.position_exclusions.split(',').includes(params.row.position) &&
                     !x.conflicts.split(',').includes(params.row.trait1 === '' ? null : params.row.trait1) &&
                     !x.conflicts.split(',').includes(params.row.trait2 === '' ? null : params.row.trait2)
-                ) ?? [])
+                ) ?? []
               : [],
           cellClassName: (params) => getTraitClassName(params.value),
         },
