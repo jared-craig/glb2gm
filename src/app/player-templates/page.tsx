@@ -116,28 +116,24 @@ export default function PlayerTemplates() {
           </Grid>
           {templates &&
             templates.map((temp) => (
-              <Fragment key={temp.templateName}>
+              <Grid key={temp.templateName} container size={{ xs: 12, md: 6, lg: 4, xl: 3 }} sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
                 <Grid size={12}>
-                  <Box width={350}>
-                    <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-                      <Typography sx={{ typography: { xs: 'body1' }, display: 'flex', alignItems: 'center' }}>
-                        {temp.templateName}
-                        {(temp.trait1.includes('superstar') || temp.trait1.includes('prodigy')) && (
-                          <StarIcon fontSize='small' sx={{ ml: 0.5, color: temp.trait1.includes('superstar') ? 'gold' : 'silver' }} />
-                        )}
-                      </Typography>
-                      <FormControlLabel
-                        control={
-                          <Switch checked={endGamesChecked[temp.templateName] ?? true} onChange={handleEndGameSwitchChange(temp.templateName)} size='small' />
-                        }
-                        label='End Build'
-                        sx={{ mr: 0 }}
-                      />
-                    </Stack>
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 12, xl: 3 }}>
-                  <Box width={350}>
+                  <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
+                    <Typography sx={{ typography: { xs: 'body1' }, display: 'flex', alignItems: 'center' }}>
+                      {(temp.trait1.includes('superstar') || temp.trait1.includes('prodigy')) && (
+                        <StarIcon fontSize='small' sx={{ mr: 0.5, color: temp.trait1.includes('superstar') ? 'gold' : 'silver' }} />
+                      )}
+                      {temp.templateName}
+                    </Typography>
+                    <FormControlLabel
+                      control={
+                        <Switch checked={endGamesChecked[temp.templateName] ?? true} onChange={handleEndGameSwitchChange(temp.templateName)} size='small' />
+                      }
+                      label='End Build'
+                      sx={{ mr: 0 }}
+                    />
+                  </Stack>
+                  <Grid size={12}>
                     <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between', mb: 1 }}>
                       <Typography sx={{ typography: { xs: 'body2' } }}>
                         Height: {Math.floor(temp.height / 12)}&apos; {temp.height % 12}&apos;&apos;
@@ -170,7 +166,7 @@ export default function PlayerTemplates() {
                           {Object.entries(buildValue)
                             .filter(() => (temp.templateName in endGamesChecked && !endGamesChecked[temp.templateName] ? build === 'start' : build === 'end'))
                             .map(([ability, abilityValue]) => (
-                              <Grid key={`${build}-${ability}-${abilityValue}`} size={6}>
+                              <Grid key={`${build}-${ability}-${abilityValue}`} size={12}>
                                 <Typography color={ABILITY_MEDAL_LOOKUP[abilityValue].color} sx={{ typography: { xs: 'body2' } }}>
                                   {ABILITY_LOOKUP[ability]}
                                 </Typography>
@@ -179,34 +175,30 @@ export default function PlayerTemplates() {
                         </Fragment>
                       ))}
                     </Grid>
-                  </Box>
+                  </Grid>
+                  <Grid size={12}>
+                    {Object.entries(temp.skills).map(([build, buildValue]) => (
+                      <Fragment key={build}>
+                        {Object.entries(buildValue)
+                          .filter(
+                            ([skill, skillValue]) =>
+                              (temp.templateName in endGamesChecked && !endGamesChecked[temp.templateName] ? build === 'start' : build === 'end') &&
+                              skillValue > 0
+                          )
+                          .map(([skill, skillValue]) => (
+                            <Fragment key={`${build}-${skill}-${skillValue}`}>
+                              <Grid size={12} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 0.25 }}>
+                                <Typography sx={{ typography: { xs: 'body2' } }}>{SKILL_LOOKUP[skill]}</Typography>
+                                <Typography sx={{ typography: { xs: 'body2' } }}>{skillValue}</Typography>
+                              </Grid>
+                              <Divider />
+                            </Fragment>
+                          ))}
+                      </Fragment>
+                    ))}
+                  </Grid>
                 </Grid>
-                <Grid container size={{ xs: 12, xl: 9 }} rowSpacing={1} columnSpacing={4} sx={{ alignContent: 'flex-start', mb: 1 }}>
-                  {Object.entries(temp.skills).map(([build, buildValue]) => (
-                    <Fragment key={build}>
-                      {Object.entries(buildValue)
-                        .filter(
-                          ([skill, skillValue]) =>
-                            (temp.templateName in endGamesChecked && !endGamesChecked[temp.templateName] ? build === 'start' : build === 'end') &&
-                            skillValue > 0
-                        )
-                        .map(([skill, skillValue]) => (
-                          <Grid
-                            key={`${build}-${skill}-${skillValue}`}
-                            size={{ xs: 6, sm: 4, md: 3, lg: 2, xl: 2 }}
-                            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                          >
-                            <Typography sx={{ typography: { xs: 'body2' } }}>{SKILL_LOOKUP[skill]}</Typography>
-                            <Typography sx={{ typography: { xs: 'body2' } }}>{skillValue}</Typography>
-                          </Grid>
-                        ))}
-                    </Fragment>
-                  ))}
-                </Grid>
-                <Grid size={12}>
-                  <Divider />
-                </Grid>
-              </Fragment>
+              </Grid>
             ))}
         </Grid>
       )}
