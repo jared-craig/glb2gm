@@ -7,13 +7,14 @@ const CalcCostSP = (filteredData: any, skill: string, playerData: Player, mod: n
   if (!skillData) return Number.MAX_SAFE_INTEGER;
   level += mod;
 
-  const basePrice = skillData.position_base_price?.[playerData.position] ?? skillData.base_price;
-  const positionMultiplier = skillData.position_multiplier[playerData.position];
+  const { position, strength, agility, awareness, speed, stamina, confidence, height, weight, trait1, trait2, trait3 } = playerData;
+  const basePrice = skillData.position_base_price?.[position] ?? skillData.base_price;
+  const positionMultiplier = skillData.position_multiplier[position];
   const attributes = skillData.attributes;
-  const { strength, agility, awareness, speed, stamina, confidence, height, weight } = playerData;
 
   let cost = basePrice * positionMultiplier;
-  const exponent = typeof skillData.exponent !== 'undefined' ? skillData.exponent : 1.3;
+  const exponent = skillData.exponent ?? 1.3;
+
   cost += attributes.strength * strength;
   cost += attributes.agility * agility;
   cost += attributes.awareness * awareness;
@@ -23,19 +24,12 @@ const CalcCostSP = (filteredData: any, skill: string, playerData: Player, mod: n
   cost += skillData.height * (height - 66);
   cost += skillData.weight * weight;
 
-  let skillModifiers = filteredData.traits[playerData.trait1].skill_modifiers;
-  if (skill in skillModifiers) {
-    cost *= 1 + (skillModifiers[skill].cost || 0);
-  }
-
-  skillModifiers = filteredData.traits[playerData.trait2].skill_modifiers;
-  if (skill in skillModifiers) {
-    cost *= 1 + (skillModifiers[skill].cost || 0);
-  }
-
-  skillModifiers = filteredData.traits[playerData.trait3].skill_modifiers;
-  if (skill in skillModifiers) {
-    cost *= 1 + (skillModifiers[skill].cost || 0);
+  const traits = [trait1, trait2, trait3];
+  for (const trait of traits) {
+    const skillModifiers = filteredData.traits[trait]?.skill_modifiers;
+    if (skillModifiers && skill in skillModifiers) {
+      cost *= 1 + (skillModifiers[skill].cost || 0);
+    }
   }
 
   cost = Math.round(cost * (Math.pow(level, exponent) / 59.0));
@@ -49,43 +43,53 @@ const FindBaseLevel = (filteredData: any, skill: string, player: Player) => {
   let level = 0;
   let spspent = 0;
   let spmax = player.trait1 === 'natural' || player.trait2 === 'natural' || player.trait3 === 'natural' ? 1000 : 500;
+
   while (spspent < spmax) {
     level += 1;
-    spspent += CalcCostSP(filteredData, skill, player, 1, level);
+    const cost = CalcCostSP(filteredData, skill, player, 1, level);
+    if (spspent + cost > spmax) break;
+    spspent += cost;
   }
+
   return level;
 };
 
 const FindMaxLevel = (filteredData: any, data: any, skill: string, playerData: Player, capBoostsSpent: any): number => {
-  if (!filteredData.skills[skill]) return 100;
+  const skillData = filteredData.skills[skill];
+  if (!skillData) return 100;
+
+  const { strength, agility, awareness, speed, stamina, confidence, height, weight, position, trait1, trait2, trait3 } = playerData;
+  const { attributes, position_multiplier } = skillData;
+
+  const calculateReduction = (attributeValue: number, attributeMultiplier: number) => Math.pow(attributeValue, 1.3) * (attributeMultiplier || 0);
 
   let maxlevel = 33;
-  maxlevel -= Math.pow(playerData.strength, 1.3) * (filteredData.skills[skill].attributes.strength || 0);
-  maxlevel -= Math.pow(playerData.agility, 1.3) * (filteredData.skills[skill].attributes.agility || 0);
-  maxlevel -= Math.pow(playerData.awareness, 1.3) * (filteredData.skills[skill].attributes.awareness || 0);
-  maxlevel -= Math.pow(playerData.speed, 1.3) * (filteredData.skills[skill].attributes.speed || 0);
-  maxlevel -= Math.pow(playerData.stamina, 1.3) * (filteredData.skills[skill].attributes.stamina || 0);
-  maxlevel -= Math.pow(playerData.confidence, 1.3) * (filteredData.skills[skill].attributes.confidence || 0);
+  maxlevel -= calculateReduction(strength, attributes.strength);
+  maxlevel -= calculateReduction(agility, attributes.agility);
+  maxlevel -= calculateReduction(awareness, attributes.awareness);
+  maxlevel -= calculateReduction(speed, attributes.speed);
+  maxlevel -= calculateReduction(stamina, attributes.stamina);
+  maxlevel -= calculateReduction(confidence, attributes.confidence);
 
-  if (skill in data.traits[playerData.trait1].skill_modifiers) {
-    maxlevel += data.traits[playerData.trait1].skill_modifiers[skill].max || 0;
-  }
-  if (skill in data.traits[playerData.trait2].skill_modifiers) {
-    maxlevel += data.traits[playerData.trait2].skill_modifiers[skill].max || 0;
-  }
-  if (skill in data.traits[playerData.trait3].skill_modifiers) {
-    maxlevel += data.traits[playerData.trait3].skill_modifiers[skill].max || 0;
+  const traits = [trait1, trait2, trait3];
+  for (const trait of traits) {
+    const skillModifiers = data.traits[trait]?.skill_modifiers;
+    if (skillModifiers && skill in skillModifiers) {
+      maxlevel += skillModifiers[skill]?.max || 0;
+    }
   }
 
-  maxlevel += (100 - filteredData.skills[skill].position_multiplier[playerData.position]) * 0.4;
-  maxlevel -= filteredData.skills[skill].height * (playerData.height - 66) * 0.5;
-  maxlevel -= filteredData.skills[skill].weight * playerData.weight * 0.25;
+  maxlevel += (100 - position_multiplier[position]) * 0.4;
+  maxlevel -= skillData.height * (height - 66) * 0.5;
+  maxlevel -= skillData.weight * weight * 0.25;
 
   if (maxlevel < 25) {
     maxlevel = 25;
   }
 
-  if (capBoostsSpent?.hasOwnProperty(skill)) maxlevel += capBoostsSpent[skill] * 5.0;
+  if (capBoostsSpent?.[skill]) {
+    maxlevel += capBoostsSpent[skill] * 5.0;
+  }
 
   maxlevel = Math.round(maxlevel);
 
@@ -97,14 +101,13 @@ const FindMaxLevel = (filteredData: any, data: any, skill: string, playerData: P
 };
 
 const isBuild1Better = (build1: any, build2: any): boolean => {
-  if (build1.cbr === build2.cbr && build1.sp > build2.sp) return true;
-  else if (build1.sp <= build2.sp && build1.cbr <= build2.cbr) return false;
-  else if (build1.sp > build2.sp && build1.cbr > build2.cbr) return true;
-  else {
-    const build1Value = build1.sp - Math.abs(build1.cbr) * 5000;
-    const build2Value = build2.sp - Math.abs(build2.cbr) * 5000;
-    return build1Value > build2Value;
-  }
+  if (build1.cbr === build2.cbr) return build1.sp > build2.sp;
+  if (build1.sp <= build2.sp && build1.cbr <= build2.cbr) return false;
+  if (build1.sp > build2.sp && build1.cbr > build2.cbr) return true;
+
+  const build1Value = build1.sp - Math.abs(build1.cbr) * 5000;
+  const build2Value = build2.sp - Math.abs(build2.cbr) * 5000;
+  return build1Value > build2Value;
 };
 
 interface PostRequestProps {
@@ -118,7 +121,7 @@ interface PostRequestProps {
 }
 
 export async function POST(request: NextRequest) {
-  const reqData: any = await request.json();
+  const reqData: PostRequestProps = await request.json();
   const { position, attCombos, traitCombos, heightWeightCombos, data, filteredData, skillMins }: PostRequestProps = reqData;
 
   let best: any = { sp: Number.NEGATIVE_INFINITY, cbr: Number.NEGATIVE_INFINITY };

@@ -324,34 +324,25 @@ export default function PlayerBuilder() {
     let salary = SALARIES[position] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
 
     if (salary > 5000000) {
-      salary = 25000 * Math.ceil(salary / 25000);
+      return 25000 * Math.ceil(salary / 25000);
     } else if (salary > 1000000) {
-      salary = 10000 * Math.ceil(salary / 10000);
+      return 10000 * Math.ceil(salary / 10000);
     } else {
-      salary = 5000 * Math.ceil(salary / 5000);
+      return 5000 * Math.ceil(salary / 5000);
     }
-
-    return salary;
   };
 
   const filterConflicts = (sourceArray: any[], targetArray: any[]) => {
     let count = 0;
-    sourceArray.forEach((sourceItem) => {
-      if (count === 3) return;
-      let hasConflict = false;
+    const conflictSet = new Set(targetArray.map((item) => item[1].conflicts).flat());
 
-      targetArray.forEach((targetItem) => {
-        if (targetItem[1].conflicts.includes(sourceItem[0])) {
-          hasConflict = true;
-          return;
-        }
-      });
-
-      if (!hasConflict) {
+    for (const sourceItem of sourceArray) {
+      if (count === 3) break;
+      if (!conflictSet.has(sourceItem[0])) {
         targetArray.push(sourceItem);
         count++;
       }
-    });
+    }
   };
 
   const getMaxSalary = (): number => {
@@ -374,46 +365,53 @@ export default function PlayerBuilder() {
     salary *= 1 + modifier;
 
     if (salary > 5000000) {
-      salary = 25000 * Math.ceil(salary / 25000);
+      return 25000 * Math.ceil(salary / 25000);
     } else if (salary > 1000000) {
-      salary = 10000 * Math.ceil(salary / 10000);
+      return 10000 * Math.ceil(salary / 10000);
     } else {
-      salary = 5000 * Math.ceil(salary / 5000);
+      return 5000 * Math.ceil(salary / 5000);
     }
-
-    return salary;
   };
 
   const FindMaxLevel = (skill: string, playerData: Player, capBoostsSpent: any): number => {
-    if (!filteredData.skills[skill]) return 100;
+    const skillData = filteredData.skills[skill];
+    if (!skillData) return 100;
 
-    var maxlevel = 33;
-    maxlevel -= Math.pow(playerData.strength, 1.3) * (filteredData.skills[skill].attributes.strength || 0);
-    maxlevel -= Math.pow(playerData.agility, 1.3) * (filteredData.skills[skill].attributes.agility || 0);
-    maxlevel -= Math.pow(playerData.awareness, 1.3) * (filteredData.skills[skill].attributes.awareness || 0);
-    maxlevel -= Math.pow(playerData.speed, 1.3) * (filteredData.skills[skill].attributes.speed || 0);
-    maxlevel -= Math.pow(playerData.stamina, 1.3) * (filteredData.skills[skill].attributes.stamina || 0);
-    maxlevel -= Math.pow(playerData.confidence, 1.3) * (filteredData.skills[skill].attributes.confidence || 0);
+    const { strength, agility, awareness, speed, stamina, confidence, height: playerHeight, weight: playerWeight, position } = playerData;
+    const { attributes, position_multiplier, height, weight } = skillData;
 
-    if (skill in data.traits[playerData.trait1].skill_modifiers) {
-      maxlevel += data.traits[playerData.trait1].skill_modifiers[skill].max || 0;
-    }
-    if (skill in data.traits[playerData.trait2].skill_modifiers) {
-      maxlevel += data.traits[playerData.trait2].skill_modifiers[skill].max || 0;
-    }
-    if (skill in data.traits[playerData.trait3].skill_modifiers) {
-      maxlevel += data.traits[playerData.trait3].skill_modifiers[skill].max || 0;
-    }
+    const calculateReduction = (attributeValue: number, attributeMultiplier: number) => attributeValue ** 1.3 * (attributeMultiplier || 0);
 
-    maxlevel += (100 - filteredData.skills[skill].position_multiplier[playerData.position]) * 0.4;
-    maxlevel -= filteredData.skills[skill].height * (playerData.height - 66) * 0.5;
-    maxlevel -= filteredData.skills[skill].weight * playerData.weight * 0.25;
+    let maxlevel = 33;
+    maxlevel -= calculateReduction(strength, attributes.strength);
+    maxlevel -= calculateReduction(agility, attributes.agility);
+    maxlevel -= calculateReduction(awareness, attributes.awareness);
+    maxlevel -= calculateReduction(speed, attributes.speed);
+    maxlevel -= calculateReduction(stamina, attributes.stamina);
+    maxlevel -= calculateReduction(confidence, attributes.confidence);
+
+    const addTraitModifier = (trait: string) => {
+      const traitModifiers = data.traits[trait]?.skill_modifiers;
+      if (traitModifiers && skill in traitModifiers) {
+        maxlevel += traitModifiers[skill]?.max || 0;
+      }
+    };
+
+    addTraitModifier(playerData.trait1);
+    addTraitModifier(playerData.trait2);
+    addTraitModifier(playerData.trait3);
+
+    maxlevel += (100 - position_multiplier[position]) * 0.4;
+    maxlevel -= height * (playerHeight - 66) * 0.5;
+    maxlevel -= weight * playerWeight * 0.25;
 
     if (maxlevel < 25) {
       maxlevel = 25;
     }
 
-    if (capBoostsSpent?.hasOwnProperty(skill)) maxlevel += capBoostsSpent[skill] * 5.0;
+    if (capBoostsSpent?.[skill]) {
+      maxlevel += capBoostsSpent[skill] * 5.0;
+    }
 
     maxlevel = Math.round(maxlevel);
 
