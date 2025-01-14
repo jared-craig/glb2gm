@@ -28,17 +28,18 @@ export default function PlayerTemplates() {
   const searchParams = useSearchParams();
   const queryPosition = searchParams.get('position');
 
-  const [allTraits, setAllTraits] = useState<any>();
-  const [selectedPosition, setSelectedPosition] = useState<string>('');
+  const [allTraits, setAllTraits] = useState<Record<string, any>>();
+  const [selectedPosition, setSelectedPosition] = useState<string>(queryPosition || '');
   const [templates, setTemplates] = useState<Template[]>();
   const [endGamesChecked, setEndGamesChecked] = useState<Record<string, boolean>>({});
 
-  const handlePositionChange = (event: SelectChangeEvent) => {
-    setSelectedPosition(event.target.value);
-    setTemplates(getTemplates(event.target.value));
+  const handlePositionChange = (event: SelectChangeEvent<string>) => {
+    const position = event.target.value;
+    setSelectedPosition(position);
+    setTemplates(getTemplates(position));
     const params = new URLSearchParams();
-    params.set('position', event.target.value);
-    router.push(pathname + '?' + params.toString());
+    params.set('position', position);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleEndGameSwitchChange = (templateName: string) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +81,6 @@ export default function PlayerTemplates() {
 
   useEffect(() => {
     if (queryPosition) {
-      setSelectedPosition(queryPosition);
       setTemplates(getTemplates(queryPosition));
     }
   }, [queryPosition]);
