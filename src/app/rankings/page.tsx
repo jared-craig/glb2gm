@@ -57,10 +57,10 @@ export default function PlayerPassingStats() {
       notTopTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank > getTopTeamRank(teamData.tier) && x.id !== teamData.id);
     }
 
-    const teamOneWins = [...allTeamGames].filter(
+    const teamOneTopTeamWins = [...allTeamGames].filter(
       (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points > x.team_two_points
     );
-    const teamTwoWins = [...allTeamGames].filter(
+    const teamTwoTopTeamWins = [...allTeamGames].filter(
       (x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id) && x.team_one_points < x.team_two_points
     );
 
@@ -78,7 +78,7 @@ export default function PlayerPassingStats() {
       (x) => x.team_two_id === teamData.id && notTopTeams.some((y) => y.id === x.team_one_id) && x.team_one_points > x.team_two_points
     );
 
-    const topTeamWins = teamOneWins.length + teamTwoWins.length;
+    const topTeamWins = teamOneTopTeamWins.length + teamTwoTopTeamWins.length;
     const topTeamLosses = teamOneTopTeamLosses.length + teamTwoTopTeamLosses.length;
     const badTeamLosses = teamOneBadTeamLosses.length + teamTwoBadTeamLosses.length;
 
@@ -153,19 +153,6 @@ export default function PlayerPassingStats() {
         {
           field: 'overall_record',
           headerName: 'W-L-T',
-          width: 120,
-          pinnable: false,
-          disableColumnMenu: true,
-          valueGetter: (value, row) => {
-            return `${row.wins}-${row.losses}-${row.ties}`;
-          },
-          sortComparator: recordComparator,
-          headerAlign: 'right',
-          align: 'right',
-        },
-        {
-          field: 'top_record',
-          headerName: 'VS Top',
           width: 120,
           pinnable: false,
           disableColumnMenu: true,
@@ -320,18 +307,6 @@ export default function PlayerPassingStats() {
         {
           field: 'overall_record',
           headerName: 'Overall',
-          flex: 0.6,
-          pinnable: false,
-          valueGetter: (value, row) => {
-            return `${row.wins}-${row.losses}-${row.ties}`;
-          },
-          sortComparator: recordComparator,
-          headerAlign: 'right',
-          align: 'right',
-        },
-        {
-          field: 'top_record',
-          headerName: 'VS Top',
           flex: 0.6,
           pinnable: false,
           valueGetter: (value, row) => {
