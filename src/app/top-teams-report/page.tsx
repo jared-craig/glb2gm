@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid2';
 import { TeamData } from '@/app/teams/teamData';
 import { GameData } from '@/app/games/gameData';
 import { extractTeamData, getTopTeamRank, sumArray } from '@/app/teams/teamHelpers';
+import Link from 'next/link';
 
 interface StatSectionParams {
   stat: string;
@@ -26,10 +27,15 @@ function StatSection({ stat, title, filteredData }: StatSectionParams) {
         <Typography variant='body1'>Top Games</Typography>
       </Grid>
       {filteredData.map((teamData) => (
-        <Fragment key={teamData.team_name}>
+        <Fragment key={teamData.id}>
           <Grid size={6}>
             <Typography variant='body2' noWrap>
-              {teamData.team_name}
+              <Link
+                href={`/team-details/${teamData.id}`}
+                style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+              >
+                {teamData.team_name}
+              </Link>
             </Typography>
           </Grid>
           <Grid size={2}>
@@ -98,6 +104,7 @@ export default function PlayerPassingStats() {
       extraTeamData = [
         ...extraTeamData,
         {
+          id: teamData.id,
           team_name: teamData.team_name,
           tier: teamData.tier,
           topTeamGames,
