@@ -107,10 +107,6 @@ export default function PlayerPassingStats() {
     setExtraData(extraTeamData);
   }, [allGamesData]);
 
-  useEffect(() => {
-    console.log(extraData);
-  }, [extraData]);
-
   return (
     <Container maxWidth={false}>
       {extraData.length > 0 && (

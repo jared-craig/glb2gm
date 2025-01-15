@@ -126,7 +126,6 @@ export default function TeamBuilder() {
   };
 
   const updateTeam = async () => {
-    console.log(team);
     if (!team) return;
     const teamToSave: TeamBuilderTeam = {
       id: team.id,
