@@ -18,7 +18,9 @@ function StatSection({ stat, title, filteredData }: StatSectionParams) {
   return (
     <>
       <Grid size={6}>
-        <Typography variant='body1'>{title}</Typography>
+        <Typography variant='body1' color='secondary'>
+          {title}
+        </Typography>
       </Grid>
       <Grid size={2}>
         <Typography variant='body1'>Avg</Typography>
