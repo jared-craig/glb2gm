@@ -10,12 +10,9 @@ export default function Home() {
   return (
     <Container maxWidth='xl'>
       <Stack spacing={0.5}>
-        <Typography variant='body1'>
-          App is currently in <i>development</i>
-        </Typography>
-        <Typography variant='body1'>Data is updated nightly (usually)</Typography>
+        <Typography variant='body2'>Data is updated nightly (usually)</Typography>
         <Stack spacing={-1}>
-          <Typography variant='body1'>Current Features:</Typography>
+          <Typography variant='body2'>Current Features:</Typography>
           <List>
             <ListItem disablePadding>
               <ListItemText
@@ -71,6 +68,16 @@ export default function Home() {
               <ListItemText
                 primary='Team Rankings'
                 secondary='See how your team is stacking up against the competition.'
+                slotProps={{
+                  primary: { sx: { fontSize: 14 } },
+                  secondary: { sx: { fontSize: 12 } },
+                }}
+              />
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemText
+                primary='Top Teams Report'
+                secondary='View the top teams by various metrics.'
                 slotProps={{
                   primary: { sx: { fontSize: 14 } },
                   secondary: { sx: { fontSize: 12 } },
