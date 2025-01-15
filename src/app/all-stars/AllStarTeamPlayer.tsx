@@ -50,7 +50,6 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
     );
 
   let stats: any = {};
-  let rating: number = 0;
   switch (player?.position) {
     case 'QB':
       stats = { YD: player.yards, YPG: (+player.yards / +player.games_played).toFixed(1), TD: player.touchdowns, INT: player.interceptions };
@@ -117,7 +116,7 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
   return (
     <Stack>
       <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
-        <Typography sx={{ typography: { xs: 'body2' } }}>
+        <Typography color='secondary' sx={{ typography: { xs: 'body2' } }}>
           <Link href={`/player-details/${player.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
             <strong>{player.position}</strong> {player.player_name}
           </Link>
