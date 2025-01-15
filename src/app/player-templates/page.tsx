@@ -116,7 +116,7 @@ export default function PlayerTemplates() {
           </Grid>
           {templates &&
             templates.map((temp) => (
-              <Grid key={temp.templateName} container size={{ xs: 12, md: 6, lg: 4, xl: 3 }} sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 2 }}>
+              <Grid key={temp.templateName} container size={{ xs: 12, md: 6, lg: 4, xl: 3 }} sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 2 }}>
                 <Grid size={12}>
                   <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
                     <Typography sx={{ typography: { xs: 'body1' }, display: 'flex', alignItems: 'center' }}>
