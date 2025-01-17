@@ -733,7 +733,10 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                 </Stack>
               </Grid>
               <Grid size={12}>
-                <Typography variant='caption'>* ( out of {topTeamsForRanks.length} Top Teams )</Typography>
+                <Typography variant='caption'>* ( out of {topTeamsForRanks.length} eligible teams )</Typography>
+              </Grid>
+              <Grid size={12}>
+                <Typography variant='caption'>* Teams eligible are those that have played at least 33% of their games against Top Teams</Typography>
               </Grid>
             </>
           )}

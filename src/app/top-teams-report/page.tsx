@@ -265,7 +265,7 @@ export default function TopTeamsReport() {
           ))}
           <Grid size={12}>
             <Typography variant='body2' color='secondary' sx={{ mt: 1 }}>
-              * Teams considered are those that have played at least 33% of their games against Top Teams
+              * Teams eligible are those that have played at least 33% of their games against Top Teams
             </Typography>
           </Grid>
         </Grid>
