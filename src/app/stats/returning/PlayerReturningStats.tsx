@@ -75,6 +75,13 @@ export default function PlayerReturningStats() {
           disableColumnMenu: true,
         },
         {
+          field: 'krs',
+          headerName: 'KRS',
+          width: 120,
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
           field: 'pr_yards',
           headerName: 'PR YARDS',
           width: 120,
@@ -91,6 +98,13 @@ export default function PlayerReturningStats() {
         {
           field: 'pr_touchdowns',
           headerName: 'PR TD',
+          width: 120,
+          pinnable: false,
+          disableColumnMenu: true,
+        },
+        {
+          field: 'prs',
+          headerName: 'PRS',
           width: 120,
           pinnable: false,
           disableColumnMenu: true,
@@ -150,6 +164,12 @@ export default function PlayerReturningStats() {
           pinnable: false,
         },
         {
+          field: 'krs',
+          headerName: 'KRS',
+          flex: 1,
+          pinnable: false,
+        },
+        {
           field: 'pr_yards',
           headerName: 'PR YARDS',
           flex: 1,
@@ -164,6 +184,12 @@ export default function PlayerReturningStats() {
         {
           field: 'pr_touchdowns',
           headerName: 'PR TD',
+          flex: 1,
+          pinnable: false,
+        },
+        {
+          field: 'prs',
+          headerName: 'PRS',
           flex: 1,
           pinnable: false,
         },
