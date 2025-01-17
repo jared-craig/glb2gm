@@ -5,7 +5,7 @@ import { Container, Divider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { TeamData } from '@/app/teams/teamData';
 import { GameData } from '@/app/games/gameData';
-import { extractTeamData, getTopTeamRank, sumArray } from '@/app/teams/teamHelpers';
+import { extractTeamData, getRecord, getTopTeamRank, sumArray } from '@/app/teams/teamHelpers';
 import Link from 'next/link';
 
 interface StatSectionParams {
@@ -52,7 +52,7 @@ function StatSection({ stat, title, filteredData }: StatSectionParams) {
   );
 }
 
-export default function PlayerPassingStats() {
+export default function TopTeamsReport() {
   const [data, setData] = useState<TeamData[]>([]);
   const [extraData, setExtraData] = useState<any[]>([]);
   const [allGamesData, setAllGamesData] = useState<GameData[]>([]);
@@ -83,16 +83,18 @@ export default function PlayerPassingStats() {
         topTeams = [...data].filter(
           (x) =>
             (x.tier === teamData.tier && x.tier_rank <= getTopTeamRank(teamData.tier) && x.id !== teamData.id) ||
-            (x.tier === 'Veteran' && (x.global_rank <= teamData.global_rank || x.global_rank <= 12.0) && x.id !== teamData.id)
+            (x.tier === 'Veteran' && (x.global_rank <= teamData.global_rank || x.global_rank <= 10.0) && x.id !== teamData.id)
         );
       } else {
         topTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank <= getTopTeamRank(teamData.tier) && x.id !== teamData.id);
       }
 
       const teamOneTopTeamGames = [...allTeamGames].filter((x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id));
+      const teamOneRecord = getRecord(teamOneTopTeamGames, teamData.id);
       const teamOneTopGamesSum = sumArray(teamOneTopTeamGames.map((x) => extractTeamData(x, 'team_one_')));
       if (teamOneTopGamesSum) teamOneTopGamesSum['games'] = teamOneTopTeamGames.length;
       const teamTwoTopTeamGames = [...allTeamGames].filter((x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id));
+      const teamTwoRecord = getRecord(teamTwoTopTeamGames, teamData.id);
       const teamTwoTopGamesSum = sumArray(teamTwoTopTeamGames.map((x) => extractTeamData(x, 'team_two_')));
       if (teamTwoTopGamesSum) teamTwoTopGamesSum['games'] = teamTwoTopTeamGames.length;
 
@@ -102,6 +104,12 @@ export default function PlayerPassingStats() {
           : teamOneTopGamesSum
           ? teamOneTopGamesSum
           : teamTwoTopGamesSum;
+
+      if (topTeamGames) {
+        topTeamGames['wins'] = teamOneRecord.wins + teamTwoRecord.wins;
+        topTeamGames['losses'] = teamOneRecord.losses + teamTwoRecord.losses;
+        topTeamGames['ties'] = teamOneRecord.ties + teamTwoRecord.ties;
+      }
 
       extraTeamData = [
         ...extraTeamData,
