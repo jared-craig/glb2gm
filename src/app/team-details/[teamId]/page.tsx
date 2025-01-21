@@ -399,7 +399,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                     <TableCell align='right' sx={{ color: getRankColor(getLeagueRank('defensive_total_yards', 'asc'), leagueData.length, 'asc') }}>
                       {getLeagueRank('defensive_total_yards', 'asc')}
                     </TableCell>
-                    <TableCell align='right' sx={{ color: getRankColor(getTierRank('defensive_total_yarde', 'asc'), tierData.length, 'asc') }}>
+                    <TableCell align='right' sx={{ color: getRankColor(getTierRank('defensive_total_yards', 'asc'), tierData.length, 'asc') }}>
                       {getTierRank('defensive_total_yards', 'asc')}
                     </TableCell>
                   </TableRow>
