@@ -509,7 +509,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                     </TableHead>
                     <TableBody>
                       <TableRow>
-                        <TableCell>Points Scored/Game</TableCell>
+                        <TableCell>Points Scored/G</TableCell>
                         <TableCell align='right'>{(topTeamGames.offensive_points / topTeamGames.games).toFixed(2)}</TableCell>
                         <TableCell
                           align='right'
@@ -569,7 +569,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Sacks/Game</TableCell>
+                        <TableCell>Sacks/G</TableCell>
                         <TableCell align='right'>{(topTeamGames.offensive_sacks / topTeamGames.games).toFixed(2)}</TableCell>
                         <TableCell
                           align='right'
@@ -579,7 +579,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Interceptions/Game</TableCell>
+                        <TableCell>Interceptions/G</TableCell>
                         <TableCell align='right'>{(topTeamGames.offensive_interceptions / topTeamGames.games).toFixed(2)}</TableCell>
                         <TableCell
                           align='right'
@@ -589,7 +589,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Fumbles/Game</TableCell>
+                        <TableCell>Fumbles/G</TableCell>
                         <TableCell align='right'>{(topTeamGames.offensive_fumbles_lost / topTeamGames.games).toFixed(2)}</TableCell>
                         <TableCell
                           align='right'
@@ -614,7 +614,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                     </TableHead>
                     <TableBody>
                       <TableRow>
-                        <TableCell>Points Allowed/Game</TableCell>
+                        <TableCell>Points Allowed/G</TableCell>
                         <TableCell align='right'>{(topTeamGames.defensive_points / topTeamGames.games).toFixed(2)}</TableCell>
                         <TableCell
                           align='right'
@@ -674,7 +674,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Sacks/Games</TableCell>
+                        <TableCell>Sacks/G</TableCell>
                         <TableCell align='right'>{(topTeamGames.defensive_sacks / topTeamGames.games).toFixed(2)}</TableCell>
                         <TableCell
                           align='right'
@@ -684,7 +684,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Interceptions/Game</TableCell>
+                        <TableCell>Interceptions/G</TableCell>
                         <TableCell align='right'>{(topTeamGames.defensive_interceptions / topTeamGames.games).toFixed(2)}</TableCell>
                         <TableCell
                           align='right'
@@ -694,7 +694,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Fumbles/Game</TableCell>
+                        <TableCell>Fumbles/G</TableCell>
                         <TableCell align='right'>{(topTeamGames.defensive_fumbles_lost / topTeamGames.games).toFixed(2)}</TableCell>
                         <TableCell
                           align='right'
