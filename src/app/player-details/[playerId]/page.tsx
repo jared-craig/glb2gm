@@ -780,7 +780,7 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
                   <TableFooter>
                     <TableRow>
                       <TableCell colSpan={3} align='right'>
-                        * Eligible {genericPlayerData.position}s
+                        * Eligible {genericPlayerData.position}: played {THRESHOLDS.DEFENSIVE_GAMES_PLAYED * 100.0}% of team games
                       </TableCell>
                     </TableRow>
                   </TableFooter>
@@ -840,7 +840,7 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
               </TableContainer>
             </Grid>
           )}
-          {playerData.kicking && (
+          {playerData.kicking && playerData.kicking.fg_attempts >= THRESHOLDS.FG_ATTEMPTS * genericPlayerData.games_played && (
             <Grid size={{ xs: 12, sm: 6 }}>
               <TableContainer component={Paper}>
                 <Table size='small'>
