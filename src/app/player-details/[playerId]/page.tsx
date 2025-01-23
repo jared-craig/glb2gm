@@ -44,6 +44,7 @@ const THRESHOLDS = {
   FG_ATTEMPTS: 0.5,
   PUNTS: 0.5,
   RETURNS: 0.5,
+  DEFENSIVE_GAMES_PLAYED: 0.75,
 };
 
 export default function TeamDetails(props: { params: Promise<{ playerId: string }> }) {
@@ -51,6 +52,7 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
   const [tierData, setTierData] = useState<any>();
   const [playerData, setPlayerData] = useState<any>();
   const [genericPlayerData, setGenericPlayerData] = useState<PlayerData>();
+  const [gamesPlayed, setGamesPlayed] = useState<number>(1);
 
   const fetchData = async () => {
     const [passRes, rushRes, receivingRes, blockingRes, defensiveRes, kickingRes, puntingRes, returningRes] = await Promise.all([
@@ -83,6 +85,7 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
     const returning = returningData.find((x: PlayerData) => x.id === +params.playerId);
 
     const gamesPlayed = Math.max(...passData.map((x: PlayerData) => x.games_played));
+    setGamesPlayed(gamesPlayed);
 
     const currentPlayerData = combinePlayerData(
       { passing: passing },
@@ -105,7 +108,11 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
         ),
       },
       { blocking: blockingData.filter((x: any) => x.tier === blocking?.tier && x.plays >= THRESHOLDS.BLOCKER_PLAYS * gamesPlayed) },
-      { defensive: defensiveData.filter((x: any) => x.tier === defensive?.tier && x.games_played / gamesPlayed >= 0.75 && x.position === defensive?.position) },
+      {
+        defensive: defensiveData.filter(
+          (x: any) => x.tier === defensive?.tier && x.games_played / gamesPlayed >= THRESHOLDS.DEFENSIVE_GAMES_PLAYED && x.position === defensive?.position
+        ),
+      },
       { kicking: kickingData.filter((x: any) => x.tier === kicking?.tier && x.fg_attempts >= THRESHOLDS.FG_ATTEMPTS * +x.games_played) },
       { punting: puntingData.filter((x: any) => x.tier === punting?.tier && x.punts >= THRESHOLDS.PUNTS * +x.games_played) },
       { returning: returningData.filter((x: any) => x.tier === returning?.tier && x.prs + x.krs >= THRESHOLDS.RETURNS * +x.games_played) }
@@ -231,8 +238,14 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
         return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: x.tackles })).sort((a, b) => b.sortValue - a.sortValue);
       case 'defensive_missed_tackles':
         return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: x.missed_tackles })).sort((a, b) => a.sortValue - b.sortValue);
+      case 'defensive_tackle_percentage':
+        return [...tierData.defensive]
+          .map((x) => ({ id: x.id, sortValue: x.tackles / (x.tackles + x.missed_tackles) }))
+          .sort((a, b) => b.sortValue - a.sortValue);
       case 'defensive_sticks':
         return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: x.sticks })).sort((a, b) => b.sortValue - a.sortValue);
+      case 'defensive_stick_percentage':
+        return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: x.sticks / x.tackles })).sort((a, b) => b.sortValue - a.sortValue);
       case 'defensive_sacks':
         return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: x.sacks })).sort((a, b) => b.sortValue - a.sortValue);
       case 'defensive_interceptions':
@@ -700,7 +713,7 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
               </TableContainer>
             </Grid>
           )}
-          {playerData.defensive && (
+          {playerData.defensive && genericPlayerData.games_played / gamesPlayed >= THRESHOLDS.DEFENSIVE_GAMES_PLAYED && (
             <Grid size={{ xs: 12, sm: 6 }}>
               <TableContainer component={Paper}>
                 <Table size='small'>
@@ -727,10 +740,26 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
                       </TableCell>
                     </TableRow>
                     <TableRow>
+                      <TableCell>Tackle %</TableCell>
+                      <TableCell>
+                        {((playerData.defensive.tackles / (playerData.defensive.tackles + playerData.defensive.missed_tackles)) * 100.0).toFixed(2)}
+                      </TableCell>
+                      <TableCell sx={{ color: getRankColor(getTierRank('defensive_tackle_percentage'), tierData.defensive.length, 'asc') }}>
+                        {getTierRank('defensive_tackle_percentage')}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
                       <TableCell>Sticks</TableCell>
                       <TableCell>{playerData.defensive.sticks}</TableCell>
                       <TableCell sx={{ color: getRankColor(getTierRank('defensive_sticks'), tierData.defensive.length, 'asc') }}>
                         {getTierRank('defensive_sticks')}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Stick %</TableCell>
+                      <TableCell>{((playerData.defensive.sticks / playerData.defensive.tackles) * 100.0).toFixed(2)}</TableCell>
+                      <TableCell sx={{ color: getRankColor(getTierRank('defensive_stick_percentage'), tierData.defensive.length, 'asc') }}>
+                        {getTierRank('defensive_stick_percentage')}
                       </TableCell>
                     </TableRow>
                     <TableRow>
