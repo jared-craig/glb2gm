@@ -20,8 +20,8 @@ export default function PlayerRushingStats() {
   const fetchData = async () => {
     const res = await fetch('/api/blocking');
     const data = await res.json();
-    setData(data);
-    setRows(data.filter((x: PlayerBlockingData) => x.tier === tier));
+    setData(data.filter((x: PlayerBlockingData) => x.plays >= 10.0 * x.games_played));
+    setRows(data.filter((x: PlayerBlockingData) => x.tier === tier && x.plays >= 10.0 * x.games_played));
     setFetched(true);
   };
 

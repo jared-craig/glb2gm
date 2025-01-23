@@ -249,7 +249,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
       {(!teamData || !tierData || !leagueData) && <LinearProgress sx={{ borderRadius: 2 }} />}
       {teamData && tierData && leagueData && (
         <Grid container rowSpacing={2} columnSpacing={2} sx={{ mb: 1 }}>
-          <Grid size={{ xs: 12 }}>
+          <Grid size={12}>
             <Stack spacing={-0.5}>
               <Typography variant='h5'>{teamData.team_name}</Typography>
               <Typography variant='caption'>
@@ -261,13 +261,13 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
               </Link>
             </Stack>
           </Grid>
-          <Grid size={{ xs: 12 }}>
+          <Grid size={12}>
             <Stack direction='row' spacing={2}>
               <Typography variant='h6'>Global: {teamData.global_rank}</Typography>
               <Typography variant='h6'>Tier: {teamData.tier_rank}</Typography>
             </Stack>
           </Grid>
-          <Grid size={{ xs: 12 }}>
+          <Grid size={12}>
             <Typography variant='h6'>
               Overall ({teamData.wins}-{teamData.losses}-{teamData.ties})
             </Typography>
@@ -492,7 +492,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
           </Grid>
           {topTeamGames && topTeamsForRanks && topTeamsForRanks.some((x) => x.id === teamData.id) && (
             <>
-              <Grid size={{ xs: 12 }}>
+              <Grid size={12}>
                 <Typography variant='h6'>
                   VS Top Teams ({topTeamGames.wins}-{topTeamGames.losses}-{topTeamGames.ties})
                 </Typography>
