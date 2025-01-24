@@ -93,9 +93,8 @@ export default function PlayerRushingStats() {
           pinnable: false,
           disableColumnMenu: true,
           valueGetter: (value, row: GridRowModel) => {
-            return (+row.tackles / (+row.tackles + +row.missed_tackles)) * 100.0;
+            return +((+row.tackles / (+row.tackles + +row.missed_tackles)) * 100.0).toFixed(2);
           },
-          valueFormatter: (value) => `${value} %`,
         },
         {
           field: 'sticks',
@@ -232,9 +231,8 @@ export default function PlayerRushingStats() {
           type: 'number',
           pinnable: false,
           valueGetter: (value, row: GridRowModel) => {
-            return (+row.tackles / (+row.tackles + +row.missed_tackles)) * 100.0;
+            return +((+row.tackles / (+row.tackles + +row.missed_tackles)) * 100.0).toFixed(2);
           },
-          valueFormatter: (value: number) => `${value.toFixed(1)}%`,
         },
         {
           field: 'sticks',
