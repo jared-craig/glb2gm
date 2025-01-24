@@ -95,10 +95,14 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
         return [...tierData].sort((a, b) => +(b.offensive_rushing_yards / +b.offensive_rushes) - +(a.offensive_rushing_yards / +a.offensive_rushes));
       case 'offensive_passing_yards_per_attempt':
         return [...tierData].sort((a, b) => +(b.offensive_passing_yards / +b.offensive_attempts) - +(a.offensive_passing_yards / +a.offensive_attempts));
+      case 'offensive_passing_completion_percent':
+        return [...tierData].sort((a, b) => b.offensive_completions / b.offensive_attempts - a.offensive_completions / a.offensive_attempts);
       case 'defensive_rushing_yards_per_carry':
         return [...tierData].sort((a, b) => +(a.defensive_rushing_yards / +a.defensive_rushes) - +(b.defensive_rushing_yards / +b.defensive_rushes));
       case 'defensive_passing_yards_per_attempt':
         return [...tierData].sort((a, b) => +(a.defensive_passing_yards / +a.defensive_attempts) - +(b.defensive_passing_yards / +b.defensive_attempts));
+      case 'defensive_passing_completion_percent':
+        return [...tierData].sort((a, b) => a.defensive_completions / a.defensive_attempts - b.defensive_completions / b.defensive_attempts);
       default:
         if (dir === 'asc') {
           return [...tierData].sort((a, b) => +a[stat as keyof TeamData] - +b[stat as keyof TeamData]);
@@ -115,10 +119,14 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
         return [...leagueData].sort((a, b) => +(b.offensive_rushing_yards / +b.offensive_rushes) - +(a.offensive_rushing_yards / +a.offensive_rushes));
       case 'offensive_passing_yards_per_attempt':
         return [...leagueData].sort((a, b) => +(b.offensive_passing_yards / +b.offensive_attempts) - +(a.offensive_passing_yards / +a.offensive_attempts));
+      case 'offensive_passing_completion_percent':
+        return [...leagueData].sort((a, b) => b.offensive_completions / b.offensive_attempts - a.offensive_completions / a.offensive_attempts);
       case 'defensive_rushing_yards_per_carry':
         return [...leagueData].sort((a, b) => +(a.defensive_rushing_yards / +a.defensive_rushes) - +(b.defensive_rushing_yards / +b.defensive_rushes));
       case 'defensive_passing_yards_per_attempt':
         return [...leagueData].sort((a, b) => +(a.defensive_passing_yards / +a.defensive_attempts) - +(b.defensive_passing_yards / +b.defensive_attempts));
+      case 'defensive_passing_completion_percent':
+        return [...leagueData].sort((a, b) => a.defensive_completions / a.defensive_attempts - b.defensive_completions / b.defensive_attempts);
       default:
         if (dir === 'asc') {
           return [...leagueData].sort((a, b) => +a[stat as keyof TeamData] - +b[stat as keyof TeamData]);
@@ -158,6 +166,11 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
             b.topTeamGames.offensive_passing_yards / b.topTeamGames.offensive_attempts -
             a.topTeamGames.offensive_passing_yards / a.topTeamGames.offensive_attempts
         );
+      case 'offensive_passing_completion_percent':
+        return [...topTeamsForRanks].sort(
+          (a, b) =>
+            b.topTeamGames.offensive_completions / b.topTeamGames.offensive_attempts - a.topTeamGames.offensive_completions / a.topTeamGames.offensive_attempts
+        );
       case 'offensive_sacks_taken_per_game':
         return [...topTeamsForRanks].sort(
           (a, b) => a.topTeamGames.offensive_sacks / a.topTeamGames.games - b.topTeamGames.offensive_sacks / b.topTeamGames.games
@@ -196,6 +209,11 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
           (a, b) =>
             a.topTeamGames.defensive_passing_yards / a.topTeamGames.defensive_attempts -
             b.topTeamGames.defensive_passing_yards / b.topTeamGames.defensive_attempts
+        );
+      case 'defensive_passing_completion_percent':
+        return [...topTeamsForRanks].sort(
+          (a, b) =>
+            a.topTeamGames.defensive_completions / a.topTeamGames.defensive_attempts - b.topTeamGames.defensive_completions / b.topTeamGames.defensive_attempts
         );
       case 'defensive_sacks_per_game':
         return [...topTeamsForRanks].sort(
@@ -348,6 +366,19 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                     </TableCell>
                   </TableRow>
                   <TableRow>
+                    <TableCell>Passing Comp %</TableCell>
+                    <TableCell align='right'>{((teamData.offensive_completions / teamData.offensive_attempts) * 100.0).toFixed(2)}</TableCell>
+                    <TableCell
+                      align='right'
+                      sx={{ color: getRankColor(getLeagueRank('offensive_passing_completion_percent', 'desc'), leagueData.length, 'asc') }}
+                    >
+                      {getLeagueRank('offensive_passing_completion_percent', 'desc')}
+                    </TableCell>
+                    <TableCell align='right' sx={{ color: getRankColor(getTierRank('offensive_passing_completion_percent', 'desc'), tierData.length, 'asc') }}>
+                      {getTierRank('offensive_passing_completion_percent', 'desc')}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
                     <TableCell>Sacks</TableCell>
                     <TableCell align='right'>{teamData.offensive_sacks}</TableCell>
                     <TableCell align='right' sx={{ color: getRankColor(getLeagueRank('offensive_sacks', 'asc'), leagueData.length, 'asc') }}>
@@ -454,6 +485,19 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                     </TableCell>
                     <TableCell align='right' sx={{ color: getRankColor(getTierRank('defensive_passing_yards_per_attempt', 'asc'), tierData.length, 'asc') }}>
                       {getTierRank('defensive_passing_yards_per_attempt', 'asc')}
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Passing Comp %</TableCell>
+                    <TableCell align='right'>{((teamData.defensive_completions / teamData.defensive_attempts) * 100.0).toFixed(2)}</TableCell>
+                    <TableCell
+                      align='right'
+                      sx={{ color: getRankColor(getLeagueRank('defensive_passing_completion_percent', 'asc'), leagueData.length, 'asc') }}
+                    >
+                      {getLeagueRank('defensive_passing_completion_percent', 'asc')}
+                    </TableCell>
+                    <TableCell align='right' sx={{ color: getRankColor(getTierRank('defensive_passing_completion_percent', 'asc'), tierData.length, 'asc') }}>
+                      {getTierRank('defensive_passing_completion_percent', 'asc')}
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -569,6 +613,16 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                         </TableCell>
                       </TableRow>
                       <TableRow>
+                        <TableCell>Passing Comp %</TableCell>
+                        <TableCell align='right'>{((topTeamGames.offensive_completions / topTeamGames.offensive_attempts) * 100.0).toFixed(2)}</TableCell>
+                        <TableCell
+                          align='right'
+                          sx={{ color: getRankColor(getTopTeamsRank('offensive_passing_completion_percent', 'desc'), topTeamsForRanks.length, 'asc') }}
+                        >
+                          {getTopTeamsRank('offensive_passing_completion_percent', 'desc')}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
                         <TableCell>Sacks/G</TableCell>
                         <TableCell align='right'>{(topTeamGames.offensive_sacks / topTeamGames.games).toFixed(2)}</TableCell>
                         <TableCell
@@ -671,6 +725,16 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
                           sx={{ color: getRankColor(getTopTeamsRank('defensive_passing_yards_per_attempt', 'asc'), topTeamsForRanks.length, 'asc') }}
                         >
                           {getTopTeamsRank('defensive_passing_yards_per_attempt', 'asc')}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell>Passing Comp %</TableCell>
+                        <TableCell align='right'>{((topTeamGames.defensive_completions / topTeamGames.defensive_attempts) * 100.0).toFixed(2)}</TableCell>
+                        <TableCell
+                          align='right'
+                          sx={{ color: getRankColor(getTopTeamsRank('defensive_passing_completion_percent', 'asc'), topTeamsForRanks.length, 'asc') }}
+                        >
+                          {getTopTeamsRank('defensive_passing_completion_percent', 'asc')}
                         </TableCell>
                       </TableRow>
                       <TableRow>
