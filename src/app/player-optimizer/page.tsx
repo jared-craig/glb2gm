@@ -334,11 +334,9 @@ export default function PlayerBuilder() {
 
   const filterConflicts = (sourceArray: any[], targetArray: any[]) => {
     let count = 0;
-    const conflictSet = new Set(targetArray.map((item) => item[1].conflicts).flat());
-
     for (const sourceItem of sourceArray) {
       if (count === 3) break;
-      if (!conflictSet.has(sourceItem[0])) {
+      if (!targetArray.some((x) => x[1].conflicts.includes(sourceItem[0]))) {
         targetArray.push(sourceItem);
         count++;
       }
