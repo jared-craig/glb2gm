@@ -37,6 +37,7 @@ import LoadTeamDialog from './LoadTeamDialog';
 import SaveTeamDialog from './SaveTeamDialog';
 import DeleteTeamDialog from './DeleteTeamDialog';
 import UpdateTeamDialog from './UpdateTeamDialog';
+import { toast } from 'react-toastify';
 
 declare module '@mui/x-data-grid-premium' {
   interface ToolbarPropsOverrides {
@@ -113,6 +114,7 @@ export default function TeamBuilder() {
       body: JSON.stringify(teamToSave),
     });
     if (!res.ok || res.status === 500) {
+      toast.error('Failed to save team');
       console.error('failed to save team');
     } else {
       setTeam(teamToSave);
@@ -140,6 +142,7 @@ export default function TeamBuilder() {
       body: JSON.stringify(teamToSave),
     });
     if (!res.ok || res.status === 500) {
+      toast.error('Failed to update team');
       console.error('failed to update team');
     } else {
       setTeam(teamToSave);
@@ -159,6 +162,7 @@ export default function TeamBuilder() {
       body: JSON.stringify({ id: team.id }),
     });
     if (!res.ok || res.status === 500) {
+      toast.error('Failed to delete team');
       console.error('failed to delete team');
     } else {
       setTeam(undefined);
