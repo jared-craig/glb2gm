@@ -351,7 +351,7 @@ export default function PlayerBuilder() {
     let expensiveTraits: any[] = [];
 
     filterConflicts(
-      Object.entries(filteredData.traits).sort(([aKey, aValue]: any, [bKey, bValue]: any) => bValue.salary_modifier - aValue.salary_modifier),
+      Object.entries(filteredData.traits).sort(([, aValue]: any, [, bValue]: any) => bValue.salary_modifier - aValue.salary_modifier),
       expensiveTraits
     );
 
