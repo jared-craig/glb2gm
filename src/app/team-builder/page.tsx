@@ -14,7 +14,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import ArrowCircleDownIcon from '@mui/icons-material/ArrowCircleDown';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import EditNoteIcon from '@mui/icons-material/EditNote';
 import {
   DataGridPremium,
   GridActionsCellItem,
@@ -209,13 +208,13 @@ export default function TeamBuilder() {
   function EditToolbar(props: ToolbarPropsOverrides) {
     const { setPlayers, setRowModesModel } = props;
 
-    const handleClick = () => {
+    const handleAddClick = () => {
       setDataGridLoading(true);
       const id = generateGuid();
       const lastOrderIndex = players.length > 0 ? Math.max(...players.map((x) => x.order_index)) : 0;
       setPlayers((oldRows: any) => [
         ...oldRows,
-        { id, player_name: '', position: '', trait1: '', trait2: '', trait3: '', contract: '', salary: 0, is_new: true, order_index: lastOrderIndex + 1 },
+        { id, player_name: '', position: '', trait1: '', trait2: '', trait3: '', contract: 'Medium', salary: 0, is_new: true, order_index: lastOrderIndex + 1 },
       ]);
       setRowModesModel((oldModel) => ({
         ...oldModel,
@@ -245,9 +244,9 @@ export default function TeamBuilder() {
     return (
       <GridToolbarContainer>
         <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ width: '100%', justifyContent: 'space-between', alignItems: 'center', p: 0.5 }}>
-          <Stack sx={{ mb: { xs: 1, sm: 0 } }}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ alignItems: 'center' }}>
             {!user && (
-              <Typography variant='body2' sx={{ color: 'red', px: 1 }}>
+              <Typography variant='body2' sx={{ color: 'red' }}>
                 Please login before starting to save progress
               </Typography>
             )}
@@ -264,17 +263,17 @@ export default function TeamBuilder() {
               <Button variant='contained' size='small' color='warning' onClick={handleDeleteTeamClick} disabled={!user?.email || !team}>
                 Delete
               </Button>
-              <Typography>{team?.team_name ?? ''}</Typography>
             </Stack>
+            <Typography>{team?.team_name ?? ''}</Typography>
           </Stack>
           <Stack direction='row' spacing={2} sx={{ alignItems: 'center' }}>
             <Typography sx={{ color: capRemaining < 0 ? 'red' : '' }}>Cap Space: {capRemaining.toLocaleString()}</Typography>
-            <Button color='secondary' startIcon={<AddIcon />} onClick={handleClick} disabled={players.length >= 48}>
+            <Button color='secondary' startIcon={<AddIcon />} onClick={handleAddClick} disabled={players.length >= 48}>
               Add
             </Button>
           </Stack>
         </Stack>
-        <Stack direction={{ xs: 'column', lg: 'row' }} sx={{ width: '100%', justifyContent: 'space-around' }}>
+        <Stack direction={{ xs: 'column', lg: 'row' }} sx={{ width: '100%', justifyContent: 'space-around', alignItems: 'center' }}>
           <Stack direction='row' spacing={1}>
             <Typography variant='body2' sx={{ color: players.filter((x) => x.position === 'QB').length > 2 ? 'red' : '' }}>
               {players.filter((x) => x.position === 'QB').length}/2 QB
@@ -301,7 +300,7 @@ export default function TeamBuilder() {
               {players.filter((x) => x.position === 'OT').length}/5 OT
             </Typography>
           </Stack>
-          <Typography variant='body2' sx={{ color: players.length < 36 || players.length > 48 ? 'red' : '' }}>
+          <Typography variant='body1' sx={{ textAlign: 'center', color: players.length < 36 || players.length > 48 ? 'red' : '' }}>
             {players.length}/48 Total
           </Typography>
           <Stack direction='row' spacing={1}>
