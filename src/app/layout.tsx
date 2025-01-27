@@ -14,6 +14,8 @@ import { Suspense } from 'react';
 import { Auth0Provider } from '@auth0/nextjs-auth0';
 import { auth0 } from './lib/auth0';
 
+import { ToastContainer } from 'react-toastify';
+
 export const metadata: Metadata = {
   title: 'GLB2GM',
   description: 'GLB2 Tools, Statistics, and Analysis',
@@ -51,6 +53,7 @@ export default async function RootLayout({
                   {children}
                 </Box>
               </Suspense>
+              <ToastContainer />
             </ThemeProvider>
           </AppRouterCacheProvider>
         </Auth0Provider>
