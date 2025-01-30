@@ -518,7 +518,7 @@ export default function TeamBuilder() {
         {
           field: 'contract',
           headerName: 'Contract',
-          width: 120,
+          width: 100,
           pinnable: false,
           editable: true,
           type: 'singleSelect',
@@ -692,7 +692,7 @@ export default function TeamBuilder() {
         {
           field: 'contract',
           headerName: 'Contract',
-          flex: 0.75,
+          flex: 0.5,
           pinnable: false,
           editable: true,
           type: 'singleSelect',
