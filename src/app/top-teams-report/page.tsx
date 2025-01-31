@@ -1,56 +1,12 @@
 'use client';
 
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Divider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { TeamData } from '@/app/teams/teamData';
 import { GameData } from '@/app/games/gameData';
 import { extractTeamData, getRecord, getTopTeamRank, sumArray } from '@/app/teams/teamHelpers';
-import Link from 'next/link';
-
-interface StatSectionParams {
-  stat: string;
-  title: string;
-  filteredData: any[];
-}
-
-function StatSection({ stat, title, filteredData }: StatSectionParams) {
-  return (
-    <>
-      <Grid size={6}>
-        <Typography variant='body1' color='secondary'>
-          {title}
-        </Typography>
-      </Grid>
-      <Grid size={2}>
-        <Typography variant='body1'>Avg</Typography>
-      </Grid>
-      <Grid size={4} sx={{ textAlign: 'right' }}>
-        <Typography variant='body1'>Top Games</Typography>
-      </Grid>
-      {filteredData.map((teamData) => (
-        <Fragment key={teamData.id}>
-          <Grid size={6}>
-            <Typography variant='body2' noWrap>
-              <Link
-                href={`/team-details/${teamData.id}`}
-                style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-              >
-                {teamData.team_name}
-              </Link>
-            </Typography>
-          </Grid>
-          <Grid size={2}>
-            <Typography variant='body2'>{(teamData.topTeamGames[stat as keyof TeamData] / teamData.topTeamGames.games).toFixed(1)}</Typography>
-          </Grid>
-          <Grid size={4} sx={{ textAlign: 'right' }}>
-            <Typography variant='body2'>{teamData.topTeamGames.games}</Typography>
-          </Grid>
-        </Fragment>
-      ))}
-    </>
-  );
-}
+import StatSection from './StatSection';
 
 export default function TopTeamsReport() {
   const [data, setData] = useState<TeamData[]>([]);
@@ -132,6 +88,21 @@ export default function TopTeamsReport() {
             <Grid key={tier} container size={{ xs: 12, md: 6, xl: 3 }} sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 2 }}>
               <Grid size={12}>
                 <Typography variant='h6'>{tier}</Typography>
+              </Grid>
+              <StatSection
+                stat='total_yards_differential'
+                title='Total Yards Diff'
+                filteredData={extraData
+                  .filter((x) => x.tier === tier && x.topTeamGames?.games / gamesPlayed >= 0.33)
+                  .sort(
+                    (a, b) =>
+                      (b.topTeamGames?.offensive_total_yards - b.topTeamGames?.defensive_total_yards) / b.topTeamGames?.games -
+                      (a.topTeamGames?.offensive_total_yards - a.topTeamGames?.defensive_total_yards) / a.topTeamGames?.games
+                  )
+                  .slice(0, 5)}
+              />
+              <Grid size={12}>
+                <Divider />
               </Grid>
               <StatSection
                 stat='offensive_total_yards'
@@ -219,6 +190,44 @@ export default function TopTeamsReport() {
                 <Divider />
               </Grid>
               <StatSection
+                stat='turnover_differential'
+                title='Turnover Diff'
+                filteredData={extraData
+                  .filter((x) => x.tier === tier && x.topTeamGames?.games / gamesPlayed >= 0.33)
+                  .sort(
+                    (a, b) =>
+                      (b.topTeamGames?.defensive_interceptions +
+                        b.topTeamGames?.defensive_fumbles_lost -
+                        b.topTeamGames?.offensive_interceptions -
+                        b.topTeamGames?.offensive_fumbles_lost) /
+                        b.topTeamGames?.games -
+                      (a.topTeamGames?.defensive_interceptions +
+                        a.topTeamGames?.defensive_fumbles_lost -
+                        a.topTeamGames?.offensive_interceptions -
+                        a.topTeamGames?.offensive_fumbles_lost) /
+                        a.topTeamGames?.games
+                  )
+                  .slice(0, 5)}
+              />
+              <Grid size={12}>
+                <Divider />
+              </Grid>
+              <StatSection
+                stat='defensive_turnovers'
+                title='Turnovers'
+                filteredData={extraData
+                  .filter((x) => x.tier === tier && x.topTeamGames?.games / gamesPlayed >= 0.33)
+                  .sort(
+                    (a, b) =>
+                      (b.topTeamGames?.defensive_interceptions + b.topTeamGames?.defensive_fumbles_lost) / b.topTeamGames?.games -
+                      (a.topTeamGames?.defensive_interceptions + a.topTeamGames?.defensive_fumbles_lost) / a.topTeamGames?.games
+                  )
+                  .slice(0, 5)}
+              />
+              <Grid size={12}>
+                <Divider />
+              </Grid>
+              <StatSection
                 stat='defensive_interceptions'
                 title='Interceptions'
                 filteredData={extraData
@@ -237,6 +246,21 @@ export default function TopTeamsReport() {
                 filteredData={extraData
                   .filter((x) => x.tier === tier && x.topTeamGames?.games / gamesPlayed >= 0.33)
                   .sort((a, b) => b.topTeamGames?.defensive_fumbles / b.topTeamGames?.games - a.topTeamGames?.defensive_fumbles / a.topTeamGames?.games)
+                  .slice(0, 5)}
+              />
+              <Grid size={12}>
+                <Divider />
+              </Grid>
+              <StatSection
+                stat='point_differential'
+                title='Point Diff'
+                filteredData={extraData
+                  .filter((x) => x.tier === tier && x.topTeamGames?.games / gamesPlayed >= 0.33)
+                  .sort(
+                    (a, b) =>
+                      (b.topTeamGames?.offensive_points - b.topTeamGames?.defensive_points) / b.topTeamGames?.games -
+                      (a.topTeamGames?.offensive_points - a.topTeamGames?.defensive_points) / a.topTeamGames?.games
+                  )
                   .slice(0, 5)}
               />
               <Grid size={12}>
