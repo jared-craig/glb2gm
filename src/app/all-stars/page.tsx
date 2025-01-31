@@ -22,6 +22,9 @@ import { PlayerBlockingData } from '../stats/blocking/playerBlockingData';
 import { PlayerKickingData } from '../stats/kicking/playerKickingData';
 import { PlayerPuntingData } from '../stats/punting/playerPuntingData';
 import { PlayerReturningData } from '../stats/returning/playerReturningData';
+import OffensiveAllStarTeam from './OffensiveAllStarTeam';
+import DefensiveAllStarTeam from './DefensiveAllStarTeam';
+import SpecialTeamsAllStarTeam from './SpecialTeamsAllStarTeam';
 
 interface AllData {
   passData: PlayerPassingData[];
@@ -522,7 +525,7 @@ export default function TopTeam() {
   }, [thresholds]);
 
   return (
-    <Grid container rowGap={{ xs: 0.5, sm: 1 }} sx={{ mb: 2 }}>
+    <Grid container spacing={2} columnSpacing={4} sx={{ mb: 1 }}>
       <Grid sx={{ display: 'flex', justifyContent: 'center' }} size={12}>
         <FormControl>
           <RadioGroup row name='first-or-second-radio-buttons-group' value={teamChoice} onChange={(x) => setTeamChoice(x.target.value)}>
@@ -538,272 +541,66 @@ export default function TopTeam() {
               <Typography variant='h6'>Offense</Typography>
             </Divider>
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Rookie</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={passerRookieData[0]} fetching={passersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherRookieData[0]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherRookieData[2]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverRookieData[0]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverRookieData[2]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverRookieData[3]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerRookieData[0]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerRookieData[2]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerRookieData[3]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerRookieData[6]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerRookieData[7]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Sophomore</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={passerSophData[0]} fetching={passersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherSophData[0]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherSophData[2]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverSophData[0]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverSophData[2]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverSophData[3]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerSophData[0]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerSophData[2]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerSophData[3]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerSophData[6]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerSophData[7]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Professional</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={passerProData[0]} fetching={passersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherProData[0]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherProData[2]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverProData[0]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverProData[2]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverProData[3]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerProData[0]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerProData[2]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerProData[3]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerProData[6]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerProData[7]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Veteran</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={passerVetData[0]} fetching={passersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherVetData[0]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherVetData[2]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverVetData[0]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverVetData[2]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverVetData[3]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerVetData[0]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerVetData[2]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerVetData[3]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerVetData[6]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerVetData[7]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
+          {['Rookie', 'Sophomore', 'Professional', 'Veteran'].map((tier) => (
+            <OffensiveAllStarTeam
+              key={tier}
+              tier={tier}
+              passerData={
+                tier === 'Rookie' ? passerRookieData : tier === 'Sophomore' ? passerSophData : tier === 'Professional' ? passerProData : passerVetData
+              }
+              rusherData={
+                tier === 'Rookie' ? rusherRookieData : tier === 'Sophomore' ? rusherSophData : tier === 'Professional' ? rusherProData : rusherVetData
+              }
+              receiverData={
+                tier === 'Rookie' ? receiverRookieData : tier === 'Sophomore' ? receiverSophData : tier === 'Professional' ? receiverProData : receiverVetData
+              }
+              blockerData={
+                tier === 'Rookie' ? blockerRookieData : tier === 'Sophomore' ? blockerSophData : tier === 'Professional' ? blockerProData : blockerVetData
+              }
+              fetching={passersFetching || rushersFetching || receiversFetching || blockersFetching}
+              gamesPlayed={gamesPlayed}
+              team={1}
+            />
+          ))}
           <Grid sx={{ pb: 0 }} size={12}>
             <Divider variant='middle'>
               <Typography variant='h6'>Defense</Typography>
             </Divider>
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Rookie</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={defenderRookieData[0]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[1]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[4]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[5]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[8]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[9]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[10]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[14]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[15]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[18]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[19]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Sophomore</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={defenderSophData[0]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[1]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[4]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[5]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[8]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[9]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[10]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[14]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[15]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[18]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[19]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Professional</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={defenderProData[0]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[1]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[4]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[5]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[8]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[9]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[10]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[14]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[15]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[18]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[19]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Veteran</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={defenderVetData[0]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[1]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[4]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[5]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[8]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[9]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[10]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[14]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[15]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[18]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[19]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
+          {['Rookie', 'Sophomore', 'Professional', 'Veteran'].map((tier) => (
+            <DefensiveAllStarTeam
+              key={tier}
+              tier={tier}
+              defenderData={
+                tier === 'Rookie' ? defenderRookieData : tier === 'Sophomore' ? defenderSophData : tier === 'Professional' ? defenderProData : defenderVetData
+              }
+              fetching={defendersFetching}
+              gamesPlayed={gamesPlayed}
+              team={1}
+            />
+          ))}
           <Grid sx={{ pb: 0 }} size={12}>
             <Divider variant='middle'>
               <Typography variant='h6'>Special Teams</Typography>
             </Divider>
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Rookie</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={kickerRookieData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={punterRookieData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={returnerRookieData[0]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Sophomore</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={kickerSophData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={punterSophData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={returnerSophData[0]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Professional</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={kickerProData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={punterProData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={returnerProData[0]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Veteran</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={kickerVetData[0]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={punterVetData[0]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={returnerVetData[0]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
+          {['Rookie', 'Sophomore', 'Professional', 'Veteran'].map((tier) => (
+            <SpecialTeamsAllStarTeam
+              tier={tier}
+              kickerData={
+                tier === 'Rookie' ? kickerRookieData : tier === 'Sophomore' ? kickerSophData : tier === 'Professional' ? kickerProData : kickerVetData
+              }
+              punterData={
+                tier === 'Rookie' ? punterRookieData : tier === 'Sophomore' ? punterSophData : tier === 'Professional' ? punterProData : punterVetData
+              }
+              returnerData={
+                tier === 'Rookie' ? returnerRookieData : tier === 'Sophomore' ? returnerSophData : tier === 'Professional' ? returnerProData : returnerVetData
+              }
+              fetching={kickersFetching || puntersFetching || returnersFetching}
+              gamesPlayed={gamesPlayed}
+              team={1}
+            />
+          ))}
         </>
       )}
       {teamChoice === 'second' && gamesPlayed && (
@@ -813,272 +610,66 @@ export default function TopTeam() {
               <Typography variant='h6'>Offense</Typography>
             </Divider>
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Rookie</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={passerRookieData[1]} fetching={passersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherRookieData[1]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherRookieData[3]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverRookieData[1]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverRookieData[4]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverRookieData[5]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerRookieData[1]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerRookieData[4]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerRookieData[5]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerRookieData[8]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerRookieData[9]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Sophomore</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={passerSophData[1]} fetching={passersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherSophData[1]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherSophData[3]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverSophData[1]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverSophData[4]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverSophData[5]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerSophData[1]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerSophData[4]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerSophData[5]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerSophData[8]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerSophData[9]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Professional</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={passerProData[1]} fetching={passersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherProData[1]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherProData[3]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverProData[1]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverProData[4]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverProData[5]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerProData[1]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerProData[4]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerProData[5]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerProData[8]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerProData[9]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Veteran</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={passerVetData[1]} fetching={passersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherVetData[1]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={rusherVetData[3]} fetching={rushersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverVetData[1]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverVetData[4]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={receiverVetData[5]} fetching={receiversFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerVetData[1]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerVetData[4]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerVetData[5]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerVetData[8]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={blockerVetData[9]} fetching={blockersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
+          {['Rookie', 'Sophomore', 'Professional', 'Veteran'].map((tier) => (
+            <OffensiveAllStarTeam
+              key={tier}
+              tier={tier}
+              passerData={
+                tier === 'Rookie' ? passerRookieData : tier === 'Sophomore' ? passerSophData : tier === 'Professional' ? passerProData : passerVetData
+              }
+              rusherData={
+                tier === 'Rookie' ? rusherRookieData : tier === 'Sophomore' ? rusherSophData : tier === 'Professional' ? rusherProData : rusherVetData
+              }
+              receiverData={
+                tier === 'Rookie' ? receiverRookieData : tier === 'Sophomore' ? receiverSophData : tier === 'Professional' ? receiverProData : receiverVetData
+              }
+              blockerData={
+                tier === 'Rookie' ? blockerRookieData : tier === 'Sophomore' ? blockerSophData : tier === 'Professional' ? blockerProData : blockerVetData
+              }
+              fetching={passersFetching || rushersFetching || receiversFetching || blockersFetching}
+              gamesPlayed={gamesPlayed}
+              team={2}
+            />
+          ))}
           <Grid sx={{ pb: 0 }} size={12}>
             <Divider variant='middle'>
               <Typography variant='h6'>Defense</Typography>
             </Divider>
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Rookie</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={defenderRookieData[2]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[3]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[6]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[7]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[11]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[12]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[13]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[16]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[17]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[20]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderRookieData[21]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Sophomore</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={defenderSophData[2]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[3]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[6]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[7]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[11]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[12]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[13]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[16]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[17]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[20]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderSophData[21]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Professional</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={defenderProData[2]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[3]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[6]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[7]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[11]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[12]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[13]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[16]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[17]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[20]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderProData[21]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Veteran</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={defenderVetData[2]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[3]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[6]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[7]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[11]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[12]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[13]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[16]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[17]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[20]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={defenderVetData[21]} fetching={defendersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
+          {['Rookie', 'Sophomore', 'Professional', 'Veteran'].map((tier) => (
+            <DefensiveAllStarTeam
+              key={tier}
+              tier={tier}
+              defenderData={
+                tier === 'Rookie' ? defenderRookieData : tier === 'Sophomore' ? defenderSophData : tier === 'Professional' ? defenderProData : defenderVetData
+              }
+              fetching={defendersFetching}
+              gamesPlayed={gamesPlayed}
+              team={2}
+            />
+          ))}
           <Grid sx={{ pb: 0 }} size={12}>
             <Divider variant='middle'>
               <Typography variant='h6'>Special Teams</Typography>
             </Divider>
           </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Rookie</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={kickerRookieData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={punterRookieData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={returnerRookieData[1]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Sophomore</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={kickerSophData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={punterSophData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={returnerSophData[1]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Professional</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={kickerProData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={punterProData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={returnerProData[1]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
-          <Grid
-            size={{
-              xs: 12,
-              md: 6,
-              xl: 3,
-            }}
-          >
-            <Stack spacing={{ xs: 0.5 }}>
-              <Divider variant='middle' textAlign={isSmallScreen ? 'center' : 'left'}>
-                <Typography variant='h6'>Veteran</Typography>
-              </Divider>
-              <AllStarTeamPlayer player={kickerVetData[1]} fetching={kickersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={punterVetData[1]} fetching={puntersFetching} gamesPlayed={gamesPlayed} />
-              <AllStarTeamPlayer player={returnerVetData[1]} fetching={returnersFetching} gamesPlayed={gamesPlayed} />
-            </Stack>
-          </Grid>
+          {['Rookie', 'Sophomore', 'Professional', 'Veteran'].map((tier) => (
+            <SpecialTeamsAllStarTeam
+              tier={tier}
+              kickerData={
+                tier === 'Rookie' ? kickerRookieData : tier === 'Sophomore' ? kickerSophData : tier === 'Professional' ? kickerProData : kickerVetData
+              }
+              punterData={
+                tier === 'Rookie' ? punterRookieData : tier === 'Sophomore' ? punterSophData : tier === 'Professional' ? punterProData : punterVetData
+              }
+              returnerData={
+                tier === 'Rookie' ? returnerRookieData : tier === 'Sophomore' ? returnerSophData : tier === 'Professional' ? returnerProData : returnerVetData
+              }
+              fetching={kickersFetching || puntersFetching || returnersFetching}
+              gamesPlayed={gamesPlayed}
+              team={2}
+            />
+          ))}
         </>
       )}
     </Grid>
