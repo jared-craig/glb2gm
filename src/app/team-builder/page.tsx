@@ -414,13 +414,6 @@ export default function TeamBuilder() {
   const playerColumns: GridColDef[] = !desktop
     ? [
         {
-          field: 'player_name',
-          headerName: 'Name',
-          width: 120,
-          pinnable: false,
-          editable: true,
-        },
-        {
           field: 'position',
           headerName: 'Position',
           width: 100,
@@ -548,6 +541,13 @@ export default function TeamBuilder() {
           width: 120,
           pinnable: false,
           valueGetter: (value, row) => getSalary(row),
+        },
+        {
+          field: 'player_name',
+          headerName: 'Note',
+          width: 120,
+          pinnable: false,
+          editable: true,
         },
         {
           field: 'actions',
@@ -588,13 +588,6 @@ export default function TeamBuilder() {
       ]
     : [
         {
-          field: 'player_name',
-          headerName: 'Name',
-          flex: 1,
-          pinnable: false,
-          editable: true,
-        },
-        {
           field: 'position',
           headerName: 'Position',
           flex: 0.5,
@@ -722,6 +715,13 @@ export default function TeamBuilder() {
           flex: 1,
           pinnable: false,
           valueGetter: (value, row) => getSalary(row),
+        },
+        {
+          field: 'player_name',
+          headerName: 'Note',
+          flex: 1,
+          pinnable: false,
+          editable: true,
         },
         {
           field: 'actions',
