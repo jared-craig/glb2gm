@@ -123,7 +123,7 @@ export default function PlayerBuilder() {
 
     const newSkills = Object.fromEntries(skillsEntries);
 
-    const traitsEntries = Object.entries(data.traits).filter(
+    let traitsEntries = Object.entries(data.traits).filter(
       ([key, value]) =>
         !(value as any).position_exclusions.includes(selectedPosition) && (Object.keys((value as any).skill_modifiers).length > 0 || key === 'natural')
     );
@@ -141,6 +141,22 @@ export default function PlayerBuilder() {
         return a[1].name.localeCompare(b[1].name);
       }
     });
+
+    traitsEntries = [
+      ...traitsEntries,
+      [
+        'other',
+        {
+          skill_modifiers: {},
+          conflicts: [],
+          position_descriptions: {},
+          position_exclusions: [],
+          salary_modifier: 0,
+          name: 'OTHER',
+          description: "<p>This reserves a slot for a trait that doesn't affect skill modifiers.</p>",
+        },
+      ],
+    ];
 
     const newTraits = Object.fromEntries(traitsEntries);
 
@@ -555,9 +571,9 @@ export default function PlayerBuilder() {
       stamina: playerObj.stamina,
       awareness: playerObj.awareness,
       confidence: playerObj.confidence,
-      trait1: data.traits[playerObj.trait1].name,
-      trait2: data.traits[playerObj.trait2].name,
-      trait3: data.traits[playerObj.trait3].name,
+      trait1: data.traits[playerObj.trait1]?.name ?? 'OTHER',
+      trait2: data.traits[playerObj.trait2]?.name ?? 'OTHER',
+      trait3: data.traits[playerObj.trait3]?.name ?? 'OTHER',
     };
   };
 
