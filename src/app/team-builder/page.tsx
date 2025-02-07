@@ -692,7 +692,7 @@ export default function TeamBuilder() {
         {
           field: 'contract',
           headerName: 'Contract',
-          flex: 0.5,
+          flex: 0.75,
           pinnable: false,
           editable: true,
           type: 'singleSelect',
