@@ -1,6 +1,29 @@
 import { Player } from '@/app/players/player';
 import { PlayerBuilderData } from '@/app/player-optimizer/page';
 import { NextRequest } from 'next/server';
+import { SALARIES } from '@/app/players/salaries';
+
+const getSalary = (traits: any, position: string, trait1: string, trait2: string, trait3: string): number => {
+  let salary = SALARIES[position] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
+  let modifier = 0;
+
+  const t1 = traits[trait1]?.salary_modifier ?? 0;
+  const t2 = traits[trait2]?.salary_modifier ?? 0;
+  const t3 = traits[trait3]?.salary_modifier ?? 0;
+  modifier = +t1! + +t2! + +t3!;
+
+  salary *= 1 + modifier;
+
+  if (salary > 5000000) {
+    salary = 25000 * Math.ceil(salary / 25000);
+  } else if (salary > 1000000) {
+    salary = 10000 * Math.ceil(salary / 10000);
+  } else {
+    salary = 5000 * Math.ceil(salary / 5000);
+  }
+
+  return salary;
+};
 
 const CalcCostSP = (filteredData: any, skill: string, playerData: Player, mod: number, level: number) => {
   const skillData = filteredData.skills[skill];
@@ -124,8 +147,9 @@ export async function POST(request: NextRequest) {
   const reqData: PostRequestProps = await request.json();
   const { position, attCombos, traitCombos, heightWeightCombos, data, filteredData, skillMins }: PostRequestProps = reqData;
 
-  let best: any = { sp: Number.NEGATIVE_INFINITY, cbr: Number.NEGATIVE_INFINITY };
+  let bestSp: any = { sp: Number.NEGATIVE_INFINITY, cbr: Number.NEGATIVE_INFINITY };
   let bestFailing: any = { sp: Number.NEGATIVE_INFINITY, cbr: Number.NEGATIVE_INFINITY };
+  let bestSalary: any = { sp: Number.NEGATIVE_INFINITY, cbr: Number.NEGATIVE_INFINITY, salary: Number.POSITIVE_INFINITY };
 
   const filteredDataSkillKeys = Object.keys(filteredData.skills);
 
@@ -199,12 +223,23 @@ export async function POST(request: NextRequest) {
         };
 
         if (skillPoints >= 0 && capBoosts >= 0) {
-          if (combo.sp === best.sp && combo.cbr > best.cbr) best = combo;
-          else if (combo.sp > best.sp) best = combo;
+          if (combo.sp === bestSp.sp && combo.cbr > bestSp.cbr) bestSp = combo;
+          else if (combo.sp > bestSp.sp) bestSp = combo;
         } else if (isBuild1Better(combo, bestFailing)) bestFailing = combo;
+
+        if (skillPoints >= 0 && capBoosts >= 0) {
+          const salary = getSalary(filteredData.traits, position, traitCombo[0], traitCombo[1], traitCombo[2]);
+          if (salary < bestSalary.salary) {
+            bestSalary = combo;
+            bestSalary.salary = salary;
+          } else if (salary <= bestSalary.salary && combo.sp > bestSalary.sp) {
+            bestSalary = combo;
+            bestSalary.salary = salary;
+          }
+        }
       }
     }
   }
 
-  return Response.json({ best, bestFailing, success: best.sp > Number.MIN_SAFE_INTEGER });
+  return Response.json({ bestSp, bestFailing, bestSalary, success: bestSp.sp > Number.MIN_SAFE_INTEGER });
 }
