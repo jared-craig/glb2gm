@@ -20,3 +20,11 @@ export const formatWithOrdinal = (number: number): string => {
   const ordinalSuffix = ordinals[lastDigit] || 'th';
   return number + ordinalSuffix;
 };
+
+export const generateGuid = () => {
+  return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/[x]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c == 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};

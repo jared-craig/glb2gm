@@ -7,6 +7,8 @@ import {
   Container,
   Divider,
   FormControl,
+  FormControlLabel,
+  FormGroup,
   InputLabel,
   LinearProgress,
   MenuItem,
@@ -14,11 +16,12 @@ import {
   SelectChangeEvent,
   Slider,
   Stack,
+  Switch,
   TextField,
   Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { Fragment, useEffect, useState } from 'react';
+import { ChangeEvent, Fragment, useEffect, useState } from 'react';
 import { getSkillMins } from '../player-optimizer/skillMins';
 import { SKILL_LOOKUP } from '../players/lookups';
 import { Player } from '../players/player';
@@ -54,10 +57,11 @@ const groupOrder: { [key: string]: string[] } = {
   P: ['Punting', 'Tackling', 'Physical', 'Mental'],
 };
 
-export default function PlayerBuilder() {
+export default function PlayerOptimizer() {
   const [data, setData] = useState<PlayerBuilderData>({ skills: null, traits: null });
   const [filteredData, setFilteredData] = useState<PlayerBuilderData>({ skills: null, traits: null });
   const [selectedPosition, setSelectedPosition] = useState<string>('');
+  const [mode, setMode] = useState<number>(0);
   const [basePlayer, setBasePlayer] = useState<Player>();
   const [player, setPlayer] = useState<Player>();
   const [remSkillPoints, setRemSkillPoints] = useState<number>(0);
@@ -245,25 +249,47 @@ export default function PlayerBuilder() {
     } else {
       const result = await res.json();
       if (result.success) {
-        optimizedPlayer.newPlayer = {
-          position: selectedPosition,
-          trait1: result.best[0],
-          trait2: result.best[1],
-          trait3: result.best[2],
-          height: result.best.height,
-          weight: result.best.weight,
-          strength: result.best.strength,
-          speed: result.best.speed,
-          agility: result.best.agility,
-          stamina: result.best.stamina,
-          awareness: result.best.awareness,
-          confidence: result.best.confidence,
-        };
-        optimizedPlayer.build = result.best.build;
-        optimizedPlayer.isPossibleCombo = true;
-        optimizedPlayer.remSkillPoints = result.best.sp;
-        optimizedPlayer.remCapBoosts = result.best.cbr;
-        optimizedPlayer.capBoostsSpent = result.best.cbs;
+        if (mode === 0) {
+          optimizedPlayer.newPlayer = {
+            position: selectedPosition,
+            trait1: result.bestSp[0],
+            trait2: result.bestSp[1],
+            trait3: result.bestSp[2],
+            height: result.bestSp.height,
+            weight: result.bestSp.weight,
+            strength: result.bestSp.strength,
+            speed: result.bestSp.speed,
+            agility: result.bestSp.agility,
+            stamina: result.bestSp.stamina,
+            awareness: result.bestSp.awareness,
+            confidence: result.bestSp.confidence,
+          };
+          optimizedPlayer.build = result.bestSp.build;
+          optimizedPlayer.isPossibleCombo = true;
+          optimizedPlayer.remSkillPoints = result.bestSp.sp;
+          optimizedPlayer.remCapBoosts = result.bestSp.cbr;
+          optimizedPlayer.capBoostsSpent = result.bestSp.cbs;
+        } else {
+          optimizedPlayer.newPlayer = {
+            position: selectedPosition,
+            trait1: result.bestSalary[0],
+            trait2: result.bestSalary[1],
+            trait3: result.bestSalary[2],
+            height: result.bestSalary.height,
+            weight: result.bestSalary.weight,
+            strength: result.bestSalary.strength,
+            speed: result.bestSalary.speed,
+            agility: result.bestSalary.agility,
+            stamina: result.bestSalary.stamina,
+            awareness: result.bestSalary.awareness,
+            confidence: result.bestSalary.confidence,
+          };
+          optimizedPlayer.build = result.bestSalary.build;
+          optimizedPlayer.isPossibleCombo = true;
+          optimizedPlayer.remSkillPoints = result.bestSalary.sp;
+          optimizedPlayer.remCapBoosts = result.bestSalary.cbr;
+          optimizedPlayer.capBoostsSpent = result.bestSalary.cbs;
+        }
       } else {
         optimizedPlayer.newPlayer = {
           position: selectedPosition,
@@ -438,6 +464,10 @@ export default function PlayerBuilder() {
 
   const handlePositionChange = (event: SelectChangeEvent) => {
     setSelectedPosition(event.target.value as string);
+  };
+
+  const handleModeSwitchChange = () => (event: ChangeEvent<HTMLInputElement>) => {
+    setMode(event.target.checked ? 1 : 0);
   };
 
   const handleOptimizeClick = async () => {
@@ -735,7 +765,7 @@ export default function PlayerBuilder() {
             {(!data.skills || !data.traits) && <LinearProgress />}
             {data.skills && data.traits && (
               <Box width={350} mt={1}>
-                <Stack direction='row' sx={{ justifyContent: 'space-between', mb: 1 }}>
+                <Stack direction='column' sx={{ justifyContent: 'space-between', mb: 1 }}>
                   <FormControl sx={{ minWidth: { xs: '100%', sm: 350 } }} size='small'>
                     <InputLabel id='position-select-label'>Position</InputLabel>
                     <Select
@@ -941,10 +971,19 @@ export default function PlayerBuilder() {
               </Box>
             </>
           )}
-          {!isPossibleCombo && skillMins && <Typography sx={{ color: 'red', mb: 1 }}>No possible combos found</Typography>}
+          {!isPossibleCombo && skillMins && (
+            <Typography sx={{ color: 'red', mb: 1, typography: { xs: 'body2', lg: 'body1' } }}>No possible combos found</Typography>
+          )}
           {selectedPosition && skillMins && basePlayer && (
             <>
               <Stack spacing={1} sx={{ maxWidth: '350px' }}>
+                <FormGroup>
+                  <Stack direction='row' spacing={1} sx={{ alignItems: 'center', justifyContent: 'center', my: 1 }}>
+                    <Typography variant='body2'>SP Optimization</Typography>
+                    <FormControlLabel control={<Switch checked={mode === 1} onChange={handleModeSwitchChange()} size='small' color='default' />} label='' />
+                    <Typography variant='body2'>Salary Optimization</Typography>
+                  </Stack>
+                </FormGroup>
                 <Button
                   variant='contained'
                   size='small'

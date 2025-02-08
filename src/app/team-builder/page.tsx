@@ -38,20 +38,13 @@ import SaveTeamDialog from './SaveTeamDialog';
 import DeleteTeamDialog from './DeleteTeamDialog';
 import UpdateTeamDialog from './UpdateTeamDialog';
 import { toast } from 'react-toastify';
+import { generateGuid } from '../helpers';
 
 declare module '@mui/x-data-grid-premium' {
   interface ToolbarPropsOverrides {
     setPlayers: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
     setRowModesModel: (newModel: (oldModel: GridRowModesModel) => GridRowModesModel) => void;
   }
-}
-
-function generateGuid() {
-  return 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(/[x]/g, function (c) {
-    const r = (Math.random() * 16) | 0,
-      v = c == 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
 }
 
 export default function TeamBuilder() {
