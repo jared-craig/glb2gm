@@ -128,8 +128,8 @@ const isBuild1Better = (build1: any, build2: any): boolean => {
   if (build1.sp <= build2.sp && build1.cbr <= build2.cbr) return false;
   if (build1.sp > build2.sp && build1.cbr > build2.cbr) return true;
 
-  const build1Value = build1.sp - Math.abs(build1.cbr) * 2500;
-  const build2Value = build2.sp - Math.abs(build2.cbr) * 2500;
+  const build1Value = build1.sp - (build1.cbr >= 0 ? 0 : Math.abs(build1.cbr) * 5000);
+  const build2Value = build2.sp - (build2.cbr >= 0 ? 0 : Math.abs(build2.cbr) * 5000);
   return build1Value > build2Value;
 };
 
