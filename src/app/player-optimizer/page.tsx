@@ -550,7 +550,9 @@ export default function PlayerOptimizer() {
 
     setOptimizedBuild({
       ...readifyPlayer(buildResult.newPlayer),
-      Salary: getSalary().toLocaleString(),
+      Salary: getTraitsSalary([buildResult.newPlayer.trait1, buildResult.newPlayer.trait2, buildResult.newPlayer.trait3]).toLocaleString(),
+      'Remaining SP': buildResult.remSkillPoints,
+      'Remaining Caps:': buildResult.remCapBoosts,
       ...readifyBuild(buildResult.build),
     });
     setBuild(buildResult.build);
