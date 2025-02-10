@@ -354,12 +354,12 @@ export default function PlayerBuilder() {
           ? 220000
           : 90500
         : trait1.includes('prodigy') || trait2.includes('prodigy') || trait3.includes('prodigy')
-          ? isMaxLevelPlayer
-            ? 216000
-            : 88000
-          : isMaxLevelPlayer
-            ? 210000
-            : 85000
+        ? isMaxLevelPlayer
+          ? 216000
+          : 88000
+        : isMaxLevelPlayer
+        ? 210000
+        : 85000
     );
   }, [filteredData, remAttributes, heightInput, weightInput, trait1, trait2, trait3, isMaxLevelPlayer]);
 
@@ -441,8 +441,8 @@ export default function PlayerBuilder() {
 
               {selectedPosition && filteredData.traits && (
                 <>
-                  <Box sx={{ width: 350, mb: 2 }}>
-                    <Grid container spacing={1} sx={{ alignItems: 'center', mb: 1 }}>
+                  <Box sx={{ width: 350 }}>
+                    <Grid container spacing={{ xs: 0, sm: 1 }} sx={{ alignItems: 'center' }}>
                       <Grid size={3}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Height:</Typography>
                       </Grid>
@@ -455,7 +455,7 @@ export default function PlayerBuilder() {
                           max={POSITION_DATA[selectedPosition].max_height}
                           value={heightInput}
                           onChange={(e, value) => setHeightInput(typeof value === 'number' ? value : value[0])}
-                          sx={{ width: '150px' }}
+                          sx={{ width: '95%' }}
                         />
                       </Grid>
                       <Grid size={3}>
@@ -473,14 +473,14 @@ export default function PlayerBuilder() {
                           max={weightInputMax}
                           value={weightInput}
                           onChange={(e, value) => setWeightInput(typeof value === 'number' ? value : value[0])}
-                          sx={{ width: '150px' }}
+                          sx={{ width: '95%' }}
                         />
                       </Grid>
                       <Grid size={3}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>{`${weightInput} lbs.`}</Typography>
                       </Grid>
                     </Grid>
-                    <Grid container spacing={1} sx={{ mb: 2, mr: { xs: 0, lg: 4 }, alignItems: 'center' }}>
+                    <Grid container spacing={{ xs: 0, sm: 1 }} sx={{ mb: 2, mr: { xs: 0, lg: 4 }, alignItems: 'center' }}>
                       <Grid size={12}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Attribute Points: {remAttributes}</Typography>
                       </Grid>
@@ -699,18 +699,18 @@ export default function PlayerBuilder() {
               )}
             </Grid>
             {selectedPosition && filteredData.skills && filteredData.traits && Object.keys(skillDistribution).length > 0 && (
-              <Grid container size={{ xs: 12, xl: 9 }} spacing={1} sx={{ alignItems: 'center' }}>
-                <Grid size={{ xs: 12, sm: 4 }} sx={{ mt: 1 }}>
+              <Grid container size={{ xs: 12, xl: 9 }} spacing={{ xs: 0, sm: 1 }} sx={{ alignItems: 'center' }}>
+                <Grid size={{ xs: 12, sm: 4 }}>
                   <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
                     <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Starter Build</Typography>
-                    <Switch checked={isMaxLevelPlayer} onChange={handleMaxLevelSwitchChange} size='small' />
+                    <Switch checked={isMaxLevelPlayer} onChange={handleMaxLevelSwitchChange} size='small' color='default' />
                     <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>End Build</Typography>
                   </Stack>
                 </Grid>
-                <Grid size={{ xs: 6, sm: 4 }} sx={{ mt: 1 }}>
+                <Grid size={{ xs: 6, sm: 4 }} sx={{ my: 1 }}>
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Skill Points: {remSkillPoints}</Typography>
                 </Grid>
-                <Grid size={{ xs: 6, sm: 4 }} sx={{ mt: 1 }}>
+                <Grid size={{ xs: 6, sm: 4 }} sx={{ my: 1 }}>
                   <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Cap Boosts: {remCapBoosts}</Typography>
                 </Grid>
                 {groupOrder[selectedPosition].map((group) => (
@@ -719,7 +719,7 @@ export default function PlayerBuilder() {
                       <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>
                         <strong>{group}</strong>
                       </Typography>
-                      <Divider sx={{ my: 1 }} />
+                      <Divider sx={{ my: { xs: 0.5, sm: 1 } }} />
                     </Grid>
                     {Object.entries(data.skills)
                       .filter(([key, value]) => (value as any).group === group && (value as any).positions.includes(selectedPosition))
