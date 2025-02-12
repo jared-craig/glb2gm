@@ -2,6 +2,7 @@
 
 import {
   Box,
+  Button,
   Container,
   Divider,
   FormControl,
@@ -313,6 +314,34 @@ export default function PlayerBuilder() {
 
   const handleMaxLevelSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setIsMaxLevelPlayer(event.target.checked);
+  };
+
+  const handleCopyClick = async () => {
+    const skills: any = {};
+    Object.keys(skillDistribution).forEach((x) => (skills[x] = skillDistribution[x].currentLevel));
+
+    const player = {
+      Position: selectedPosition,
+      Height: `${Math.floor(heightInput / 12)}' ${heightInput % 12}''`,
+      Weight: `${weightInput} lbs.`,
+      Strength: strength,
+      Speed: speed,
+      Agility: agility,
+      Stamina: stamina,
+      Awareness: awareness,
+      Confidence: confidence,
+      Trait1: trait1,
+      Trait2: trait2,
+      Trait3: trait3,
+      Salary: getSalary().toLocaleString(),
+      Build: isMaxLevelPlayer ? 'End' : 'Start',
+      'Remaining SP': remSkillPoints,
+      'Remaining Caps': remCapBoosts,
+      ...skills,
+    };
+
+    await navigator.clipboard.writeText(JSON.stringify(player, null, 2));
+    alert('Build copied to your clipboard.');
   };
 
   useEffect(() => {
@@ -692,6 +721,11 @@ export default function PlayerBuilder() {
                       </Grid>
                       <Grid size={12} sx={{ mt: 1 }}>
                         <Typography sx={{ typography: { xs: 'body2', lg: 'body1' } }}>Medium Salary: {getSalary().toLocaleString()}</Typography>
+                      </Grid>
+                      <Grid size={12}>
+                        <Button variant='contained' size='small' onClick={() => handleCopyClick()} sx={{ minWidth: '350px' }}>
+                          Copy Build to Clipboard
+                        </Button>
                       </Grid>
                     </Grid>
                   </Box>
