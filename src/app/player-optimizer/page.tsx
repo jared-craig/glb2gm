@@ -1074,7 +1074,7 @@ export default function PlayerOptimizer() {
                     * Optimizer does its best to suggest the most optimized build.
                   </Typography>
                   <Typography variant='caption' color='secondary'>
-                    It's virutally impossible to go through every single combination. Optimizer refines the build through iterations.
+                    It's virtually impossible to go through every single combination. Optimizer refines the build through iterations.
                   </Typography>
                   <Typography variant='caption' color='secondary'>
                     If something feels off, run the optimizer again or contact MKC through Discord.
