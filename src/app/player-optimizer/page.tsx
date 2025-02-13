@@ -1068,6 +1068,19 @@ export default function PlayerOptimizer() {
                   </Fragment>
                 ))}
               </Grid>
+              <Grid size={12} sx={{ mt: 1 }}>
+                <Stack>
+                  <Typography variant='caption' color='secondary'>
+                    * Optimizer does its best to suggest the most optimized build.
+                  </Typography>
+                  <Typography variant='caption' color='secondary'>
+                    It's virutally impossible to go through every single combination. Optimizer refines the build through iterations.
+                  </Typography>
+                  <Typography variant='caption' color='secondary'>
+                    If something feels off, run the optimizer again or contact MKC through Discord.
+                  </Typography>
+                </Stack>
+              </Grid>
             </>
           )}
         </>
