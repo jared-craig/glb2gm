@@ -666,16 +666,16 @@ export const getTemplates = (position: string): Template[] => {
     {
       position: 'HB',
       templateName: 'Power',
-      height: 66,
-      weight: 220,
+      height: 76,
+      weight: 260,
       strength: 10,
       speed: 1,
       agility: 10,
       stamina: 10,
-      awareness: 3,
-      confidence: 1,
+      awareness: 1,
+      confidence: 3,
       trait1: 'superstar_glam',
-      trait2: 'egotist',
+      trait2: 'hidden_potential',
       trait3: 'hb_rushing_back',
       skills: {
         start: {
