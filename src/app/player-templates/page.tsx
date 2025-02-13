@@ -127,7 +127,12 @@ export default function PlayerTemplates() {
                     </Typography>
                     <FormControlLabel
                       control={
-                        <Switch checked={endGamesChecked[temp.templateName] ?? true} onChange={handleEndGameSwitchChange(temp.templateName)} size='small' />
+                        <Switch
+                          checked={endGamesChecked[temp.templateName] ?? true}
+                          onChange={handleEndGameSwitchChange(temp.templateName)}
+                          size='small'
+                          color='default'
+                        />
                       }
                       label='End Build'
                       sx={{ mr: 0 }}
