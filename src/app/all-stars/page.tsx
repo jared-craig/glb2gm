@@ -15,8 +15,7 @@ import {
   getReturningGmRating,
   getRushingGmRating,
 } from '../stats/statCalculations';
-import { Divider, FormControl, FormControlLabel, Radio, RadioGroup, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
-import AllStarTeamPlayer from './AllStarTeamPlayer';
+import { Divider, FormControl, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
 import { PlayerDefensiveData } from '../stats/defensive/playerDefensiveData';
 import { PlayerBlockingData } from '../stats/blocking/playerBlockingData';
 import { PlayerKickingData } from '../stats/kicking/playerKickingData';
@@ -48,9 +47,6 @@ interface Thresholds {
 }
 
 export default function TopTeam() {
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
   const [gamesPlayed, setGamesPlayed] = useState<number>();
   const [thresholds, setThresholds] = useState<Thresholds>();
   const [teamChoice, setTeamChoice] = useState<string>('first');
@@ -586,6 +582,7 @@ export default function TopTeam() {
           </Grid>
           {['Rookie', 'Sophomore', 'Professional', 'Veteran'].map((tier) => (
             <SpecialTeamsAllStarTeam
+              key={tier}
               tier={tier}
               kickerData={
                 tier === 'Rookie' ? kickerRookieData : tier === 'Sophomore' ? kickerSophData : tier === 'Professional' ? kickerProData : kickerVetData
@@ -655,6 +652,7 @@ export default function TopTeam() {
           </Grid>
           {['Rookie', 'Sophomore', 'Professional', 'Veteran'].map((tier) => (
             <SpecialTeamsAllStarTeam
+              key={tier}
               tier={tier}
               kickerData={
                 tier === 'Rookie' ? kickerRookieData : tier === 'Sophomore' ? kickerSophData : tier === 'Professional' ? kickerProData : kickerVetData
