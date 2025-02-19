@@ -431,7 +431,7 @@ export default function PlayerPassingStats() {
           return desktop ? 'desktop-text' : 'mobile-text';
         }}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran', 'All Tiers'] } }}
+        slotProps={{ toolbar: { tier, tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran', 'All Tiers'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           pagination: { paginationModel: { pageSize: 12 } },
