@@ -8,14 +8,18 @@ import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getReceivingDropsPerReception, getReceivingGmRating } from '../statCalculations';
 
-export default function PlayerReceivingStats() {
+interface PlayerReceivingStatsProps {
+  tier: string;
+  tierFilter: (tier: string) => void;
+}
+
+export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivingStatsProps) {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerReceivingData[]>([]);
   const [rows, setRows] = useState<PlayerReceivingData[]>([]);
-  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/receiving');
@@ -381,7 +385,7 @@ export default function PlayerReceivingStats() {
           return desktop ? 'desktop-text' : 'mobile-text';
         }}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
+        slotProps={{ toolbar: { tier, tierFilter, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           pagination: { paginationModel: { pageSize: 12 } },

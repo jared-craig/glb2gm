@@ -8,14 +8,18 @@ import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getKickingGmRating } from '../statCalculations';
 
-export default function PlayerPassingStats() {
+interface PlayerKickingStatsProps {
+  tier: string;
+  tierFilter: (tier: string) => void;
+}
+
+export default function PlayerKickingStats({ tier, tierFilter }: PlayerKickingStatsProps) {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerKickingData[]>([]);
   const [rows, setRows] = useState<PlayerKickingData[]>([]);
-  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/kicking');
@@ -243,7 +247,7 @@ export default function PlayerPassingStats() {
           return desktop ? 'desktop-text' : 'mobile-text';
         }}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
+        slotProps={{ toolbar: { tier, tierFilter, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           pagination: { paginationModel: { pageSize: 12 } },

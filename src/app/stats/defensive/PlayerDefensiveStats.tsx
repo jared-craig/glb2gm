@@ -8,14 +8,18 @@ import Link from 'next/link';
 import { getDefensiveGmRating } from '../statCalculations';
 import { PlayerDefensiveData } from './playerDefensiveData';
 
-export default function PlayerRushingStats() {
+interface PlayerDefensiveStatsProps {
+  tier: string;
+  tierFilter: (tier: string) => void;
+}
+
+export default function PlayerDefensiveStats({ tier, tierFilter }: PlayerDefensiveStatsProps) {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerDefensiveData[]>([]);
   const [rows, setRows] = useState<PlayerDefensiveData[]>([]);
-  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/defensive');
@@ -319,7 +323,7 @@ export default function PlayerRushingStats() {
           return desktop ? 'desktop-text' : 'mobile-text';
         }}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
+        slotProps={{ toolbar: { tier, tierFilter, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           pagination: { paginationModel: { pageSize: 12 } },

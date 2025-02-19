@@ -8,14 +8,18 @@ import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getBlockingGmRating } from '../statCalculations';
 
-export default function PlayerRushingStats() {
+interface PlayerRushingStatsProps {
+  tier: string;
+  tierFilter: (tier: string) => void;
+}
+
+export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingStatsProps) {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerBlockingData[]>([]);
   const [rows, setRows] = useState<PlayerBlockingData[]>([]);
-  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/blocking');
@@ -214,7 +218,7 @@ export default function PlayerRushingStats() {
           return desktop ? 'desktop-text' : 'mobile-text';
         }}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
+        slotProps={{ toolbar: { tier, tierFilter, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           filter: {

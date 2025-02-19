@@ -13,8 +13,9 @@ import PlayerReturningStats from './returning/PlayerReturningStats';
 
 export default function Stats() {
   const [value, setValue] = useState(0);
+  const [tier, setTier] = useState<string>('Veteran');
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
@@ -30,14 +31,14 @@ export default function Stats() {
         <Tab label='Punting' />
         <Tab label='Returning' />
       </Tabs>
-      {value === 0 && <PlayerPassingStats />}
-      {value === 1 && <PlayerRushingStats />}
-      {value === 2 && <PlayerReceivingStats />}
-      {value === 3 && <PlayerDefensiveStats />}
-      {value === 4 && <PlayerBlockingStats />}
-      {value === 5 && <PlayerKickingStats />}
-      {value === 6 && <PlayerPuntingStats />}
-      {value === 7 && <PlayerReturningStats />}
+      {value === 0 && <PlayerPassingStats tier={tier} tierFilter={setTier} />}
+      {value === 1 && <PlayerRushingStats tier={tier} tierFilter={setTier} />}
+      {value === 2 && <PlayerReceivingStats tier={tier} tierFilter={setTier} />}
+      {value === 3 && <PlayerDefensiveStats tier={tier} tierFilter={setTier} />}
+      {value === 4 && <PlayerBlockingStats tier={tier} tierFilter={setTier} />}
+      {value === 5 && <PlayerKickingStats tier={tier} tierFilter={setTier} />}
+      {value === 6 && <PlayerPuntingStats tier={tier} tierFilter={setTier} />}
+      {value === 7 && <PlayerReturningStats tier={tier} tierFilter={setTier} />}
     </Box>
   );
 }
