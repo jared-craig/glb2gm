@@ -8,14 +8,18 @@ import CustomGridToolbar from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getPuntingGmRating } from '../statCalculations';
 
-export default function PlayerPassingStats() {
+interface PlayerPuntingStatsProps {
+  tier: string;
+  tierFilter: (tier: string) => void;
+}
+
+export default function PlayerPuntingStats({ tier, tierFilter }: PlayerPuntingStatsProps) {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerPuntingData[]>([]);
   const [rows, setRows] = useState<PlayerPuntingData[]>([]);
-  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/punting');
@@ -252,7 +256,7 @@ export default function PlayerPassingStats() {
           return desktop ? 'desktop-text' : 'mobile-text';
         }}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
+        slotProps={{ toolbar: { tier, tierFilter, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           pagination: { paginationModel: { pageSize: 12 } },
