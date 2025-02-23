@@ -76,5 +76,16 @@ export const getRecord = (games: GameData[], teamId: number): { wins: number; lo
 };
 
 export const getTopTeamRank = (tier: string): number => {
-  return tier === 'Professional' ? 8.0 : 10.0;
+  switch(tier) {
+    case 'Rookie':
+      return 10.0;
+    case 'Sophomore':
+      return 8.0;
+    case 'Professional':
+      return 8.0;
+    case 'Veteran':
+      return 10.0;
+    default:
+      return 10.0;
+  }
 };
