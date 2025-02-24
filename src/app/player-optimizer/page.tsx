@@ -1079,7 +1079,7 @@ export default function PlayerOptimizer() {
             <>
               <Stack spacing={1} sx={{ maxWidth: '350px' }}>
                 <FormGroup>
-                  <Stack direction='row' spacing={1} sx={{ alignItems: 'center', my: 1 }}>
+                  <Stack direction='row' spacing={1} sx={{ alignItems: 'center', mt: 1 }}>
                     <Typography variant='body2'>SP Optimization</Typography>
                     <FormControlLabel
                       control={<Switch checked={salaryMode} onChange={handleSalaryModeSwitchChange()} size='small' color='default' />}
@@ -1089,7 +1089,7 @@ export default function PlayerOptimizer() {
                   </Stack>
                 </FormGroup>
                 <FormGroup>
-                  <Stack direction='row' spacing={1} sx={{ alignItems: 'center', my: 1 }}>
+                  <Stack direction='row' spacing={1} sx={{ alignItems: 'center', mb: 1 }}>
                     <FormControlLabel control={<Switch checked={highPrecision} onChange={handleHighPrecisionSwitchChange()} size='small' />} label='' />
                     <Typography variant='body2'>High Precision (~2x slower)</Typography>
                   </Stack>
