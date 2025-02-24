@@ -3,10 +3,8 @@
 import { Container, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
 import ForumIcon from '@mui/icons-material/Forum';
-import { useUser } from '@auth0/nextjs-auth0';
 
 export default function Home() {
-  const { user } = useUser();
   return (
     <Container maxWidth='xl'>
       <Stack spacing={0.5}>
