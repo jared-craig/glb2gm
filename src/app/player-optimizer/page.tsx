@@ -501,6 +501,7 @@ export default function PlayerOptimizer() {
   const handleOptimizeClick = async () => {
     if (!skillMins || !basePlayer) return;
 
+    setLogs([]);
     setIsOptimizing(true);
     setIsPossibleCombo(true);
     setBuild(undefined);
@@ -511,7 +512,24 @@ export default function PlayerOptimizer() {
     let newPlayer = { ...basePlayer, trait1, trait2, trait3, height, weight };
     let buildResult: OptimizedPlayer;
 
-    setLogs((prev) => [...prev, { message: `Prioritizing ${!salaryMode ? 'SP' : 'Salary'}${highPrecision ? ' with High Precision' : ''}`, color: 'info' }]);
+    if (lockHeight) setLogs((prev) => [...prev, { message: `Height locked: ${Math.floor(height / 12)}' ${height % 12}''`, color: 'info' }]);
+    if (lockWeight) setLogs((prev) => [...prev, { message: `Weight locked: ${weight} lbs.`, color: 'info' }]);
+    if (lockTrait1 || lockTrait2 || lockTrait3)
+      setLogs((prev) => [
+        ...prev,
+        {
+          message: `Traits locked: ${lockTrait1 ? data.traits[trait1]?.name : ''} ${lockTrait2 ? data.traits[trait2]?.name : ''} ${
+            lockTrait3 ? data.traits[trait3]?.name : ''
+          }`,
+          color: 'info',
+        },
+      ]);
+
+    setLogs((prev) => [
+      ...prev,
+      { message: `Max Salary: ${(+maxSalaryInput).toLocaleString()}`, color: 'info' },
+      { message: `Prioritizing ${!salaryMode ? 'SP' : 'Salary'}${highPrecision ? ' with High Precision' : ''}`, color: 'info' },
+    ]);
 
     if (highPrecision) {
       setOptimizeBuffer(13);
@@ -637,7 +655,6 @@ export default function PlayerOptimizer() {
     setIsOptimizing(false);
     setOptimizeProgress(0);
     setOptimizeBuffer(13);
-    setLogs([]);
   };
 
   const handleSkillMinChange = (key: string, event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1176,6 +1193,17 @@ export default function PlayerOptimizer() {
                   </Grid>
                 </Grid>
               </Grid>
+              {logs.length > 0 && (
+                <ScrollToBottom className='scroller'>
+                  <Stack direction='column'>
+                    {logs.map((log, i) => (
+                      <Typography key={i} variant='caption' color={log.color}>
+                        {log.message}
+                      </Typography>
+                    ))}
+                  </Stack>
+                </ScrollToBottom>
+              )}
             </>
           )}
         </>
