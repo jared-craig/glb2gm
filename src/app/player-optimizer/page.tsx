@@ -32,6 +32,7 @@ import LinearProgressWithLabel from '../components/LinearProgressWithLabel';
 import Link from 'next/link';
 import { OptimizedPlayer } from './optimizedPlayer';
 import { POSITION_DATA } from '../players/positionData';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 export interface PlayerBuilderData {
   skills: any;
@@ -61,7 +62,8 @@ export default function PlayerOptimizer() {
   const [data, setData] = useState<PlayerBuilderData>({ skills: null, traits: null });
   const [filteredData, setFilteredData] = useState<PlayerBuilderData>({ skills: null, traits: null });
   const [selectedPosition, setSelectedPosition] = useState<string>('');
-  const [mode, setMode] = useState<number>(0);
+  const [salaryMode, setSalaryMode] = useState<boolean>(false);
+  const [highPrecision, setHighPrecision] = useState<boolean>(false);
   const [basePlayer, setBasePlayer] = useState<Player>();
   const [player, setPlayer] = useState<Player>();
   const [remSkillPoints, setRemSkillPoints] = useState<number>(0);
@@ -98,6 +100,8 @@ export default function PlayerOptimizer() {
   const [lockTrait1, setLockTrait1] = useState(false);
   const [lockTrait2, setLockTrait2] = useState(false);
   const [lockTrait3, setLockTrait3] = useState(false);
+
+  const [logs, setLogs] = useState<any[]>([]);
 
   const fetchData = async () => {
     setAttCombos(getPossibleAttributes());
@@ -213,6 +217,8 @@ export default function PlayerOptimizer() {
         break;
     }
 
+    setLogs((prev) => [...prev, { message: `Optimizing...`, color: 'info' }]);
+
     const reqBody: any = {
       position: selectedPosition,
       attCombos: at,
@@ -249,7 +255,7 @@ export default function PlayerOptimizer() {
     } else {
       const result = await res.json();
       if (result.success) {
-        if (mode === 0) {
+        if (!salaryMode) {
           optimizedPlayer.newPlayer = {
             position: selectedPosition,
             trait1: result.bestSp[0],
@@ -312,6 +318,24 @@ export default function PlayerOptimizer() {
         optimizedPlayer.capBoostsSpent = result.bestFailing.cbs;
       }
     }
+
+    const traitsSalary = getTraitsSalary([optimizedPlayer.newPlayer.trait1, optimizedPlayer.newPlayer.trait2, optimizedPlayer.newPlayer.trait3]);
+
+    setLogs((prev) => [
+      ...prev,
+      {
+        message: `SP: ${optimizedPlayer.remSkillPoints.toLocaleString()}`,
+        color: optimizedPlayer.remSkillPoints >= 0 ? 'secondary' : 'warning',
+      },
+      {
+        message: `Caps: ${optimizedPlayer.remCapBoosts}`,
+        color: optimizedPlayer.remCapBoosts >= 0 ? 'secondary' : 'warning',
+      },
+      {
+        message: `Salary: ${traitsSalary.toLocaleString()}`,
+        color: traitsSalary <= +maxSalaryInput ? 'secondary' : 'warning',
+      },
+    ]);
 
     return optimizedPlayer;
   };
@@ -466,8 +490,12 @@ export default function PlayerOptimizer() {
     setSelectedPosition(event.target.value as string);
   };
 
-  const handleModeSwitchChange = () => (event: ChangeEvent<HTMLInputElement>) => {
-    setMode(event.target.checked ? 1 : 0);
+  const handleSalaryModeSwitchChange = () => (event: ChangeEvent<HTMLInputElement>) => {
+    setSalaryMode(event.target.checked);
+  };
+
+  const handleHighPrecisionSwitchChange = () => (event: ChangeEvent<HTMLInputElement>) => {
+    setHighPrecision(event.target.checked);
   };
 
   const handleOptimizeClick = async () => {
@@ -480,73 +508,117 @@ export default function PlayerOptimizer() {
     setLockTrait2(false);
     setLockTrait3(false);
 
-    let newPlayer = { ...basePlayer };
+    let newPlayer = { ...basePlayer, trait1, trait2, trait3, height, weight };
+    let buildResult: OptimizedPlayer;
 
-    setOptimizeBuffer(13);
-    let buildResult = await buildPlayer('at', newPlayer);
-    if (buildResult.newPlayer === undefined) {
-      setIsOptimizing(false);
-      setOptimizeProgress(0);
+    setLogs((prev) => [...prev, { message: `Prioritizing ${!salaryMode ? 'SP' : 'Salary'}${highPrecision ? ' with High Precision' : ''}`, color: 'info' }]);
+
+    if (highPrecision) {
       setOptimizeBuffer(13);
-      return;
+      buildResult = await buildPlayer('at', newPlayer);
+      if (buildResult.newPlayer === undefined) {
+        setIsOptimizing(false);
+        setOptimizeProgress(0);
+        setOptimizeBuffer(13);
+        setLogs([]);
+        return;
+      }
+
+      setOptimizeBuffer(15);
+      setOptimizeProgress(13);
+      buildResult = await buildPlayer('tr', buildResult.newPlayer);
+      setOptimizeBuffer(17);
+      setOptimizeProgress(15);
+      if (!lockHeight || !lockWeight) buildResult = await buildPlayer('hw', buildResult.newPlayer);
+      setOptimizeBuffer(30);
+      setOptimizeProgress(17);
+
+      buildResult = await buildPlayer('at', buildResult.newPlayer);
+      setOptimizeBuffer(32);
+      setOptimizeProgress(30);
+      if (!lockHeight || !lockWeight) buildResult = await buildPlayer('hw', buildResult.newPlayer);
+      setOptimizeBuffer(34);
+      setOptimizeProgress(32);
+      buildResult = await buildPlayer('tr', buildResult.newPlayer);
+      setOptimizeBuffer(36);
+      setOptimizeProgress(34);
+
+      if (!lockHeight || !lockWeight) buildResult = await buildPlayer('hw', buildResult.newPlayer);
+      setOptimizeBuffer(49);
+      setOptimizeProgress(36);
+      buildResult = await buildPlayer('at', buildResult.newPlayer);
+      setOptimizeBuffer(51);
+      setOptimizeProgress(49);
+      buildResult = await buildPlayer('tr', buildResult.newPlayer);
+      setOptimizeBuffer(53);
+      setOptimizeProgress(51);
+
+      if (!lockHeight || !lockWeight) buildResult = await buildPlayer('hw', buildResult.newPlayer);
+      setOptimizeBuffer(55);
+      setOptimizeProgress(53);
+      if (!lockHeight || !lockWeight) buildResult = await buildPlayer('tr', buildResult.newPlayer);
+      setOptimizeBuffer(68);
+      setOptimizeProgress(55);
+      buildResult = await buildPlayer('at', buildResult.newPlayer);
+      setOptimizeBuffer(70);
+      setOptimizeProgress(68);
+
+      buildResult = await buildPlayer('tr', buildResult.newPlayer);
+      setOptimizeBuffer(72);
+      setOptimizeProgress(70);
+      if (!lockHeight || !lockWeight) buildResult = await buildPlayer('hw', buildResult.newPlayer);
+      setOptimizeBuffer(84);
+      setOptimizeProgress(72);
+      buildResult = await buildPlayer('at', buildResult.newPlayer);
+      setOptimizeBuffer(86);
+      setOptimizeProgress(84);
+
+      buildResult = await buildPlayer('tr', buildResult.newPlayer);
+      setOptimizeBuffer(98);
+      setOptimizeProgress(86);
+      buildResult = await buildPlayer('at', buildResult.newPlayer);
+      setOptimizeBuffer(100);
+      setOptimizeProgress(98);
+      if (!lockHeight || !lockWeight) buildResult = await buildPlayer('hw', buildResult.newPlayer);
+      setOptimizeProgress(100);
+    } else {
+      setOptimizeBuffer(25);
+      buildResult = await buildPlayer('at', newPlayer);
+      if (buildResult.newPlayer === undefined) {
+        setIsOptimizing(false);
+        setOptimizeProgress(0);
+        setOptimizeBuffer(13);
+        setLogs([]);
+        return;
+      }
+      setOptimizeBuffer(29);
+      setOptimizeProgress(25);
+      buildResult = await buildPlayer('tr', buildResult.newPlayer);
+      setOptimizeBuffer(33);
+      setOptimizeProgress(29);
+      if (!lockHeight || !lockWeight) buildResult = await buildPlayer('hw', buildResult.newPlayer);
+      setOptimizeBuffer(59);
+      setOptimizeProgress(33);
+
+      buildResult = await buildPlayer('at', buildResult.newPlayer);
+      setOptimizeBuffer(63);
+      setOptimizeProgress(59);
+      if (!lockHeight || !lockWeight) buildResult = await buildPlayer('hw', buildResult.newPlayer);
+      setOptimizeBuffer(67);
+      setOptimizeProgress(63);
+      buildResult = await buildPlayer('tr', buildResult.newPlayer);
+      setOptimizeBuffer(71);
+      setOptimizeProgress(67);
+
+      if (!lockHeight || !lockWeight) buildResult = await buildPlayer('hw', buildResult.newPlayer);
+      setOptimizeBuffer(97);
+      setOptimizeProgress(71);
+      buildResult = await buildPlayer('at', buildResult.newPlayer);
+      setOptimizeBuffer(100);
+      setOptimizeProgress(97);
+      buildResult = await buildPlayer('tr', buildResult.newPlayer);
+      setOptimizeProgress(100);
     }
-    setOptimizeBuffer(15);
-    setOptimizeProgress(13);
-    buildResult = await buildPlayer('tr', buildResult.newPlayer);
-    setOptimizeBuffer(17);
-    setOptimizeProgress(15);
-    buildResult = await buildPlayer('hw', buildResult.newPlayer);
-    setOptimizeBuffer(30);
-    setOptimizeProgress(17);
-
-    buildResult = await buildPlayer('at', buildResult.newPlayer);
-    setOptimizeBuffer(32);
-    setOptimizeProgress(30);
-    buildResult = await buildPlayer('hw', buildResult.newPlayer);
-    setOptimizeBuffer(34);
-    setOptimizeProgress(32);
-    buildResult = await buildPlayer('tr', buildResult.newPlayer);
-    setOptimizeBuffer(36);
-    setOptimizeProgress(34);
-
-    buildResult = await buildPlayer('hw', buildResult.newPlayer);
-    setOptimizeBuffer(49);
-    setOptimizeProgress(36);
-    buildResult = await buildPlayer('at', buildResult.newPlayer);
-    setOptimizeBuffer(51);
-    setOptimizeProgress(49);
-    buildResult = await buildPlayer('tr', buildResult.newPlayer);
-    setOptimizeBuffer(53);
-    setOptimizeProgress(51);
-
-    buildResult = await buildPlayer('hw', buildResult.newPlayer);
-    setOptimizeBuffer(55);
-    setOptimizeProgress(53);
-    buildResult = await buildPlayer('tr', buildResult.newPlayer);
-    setOptimizeBuffer(68);
-    setOptimizeProgress(55);
-    buildResult = await buildPlayer('at', buildResult.newPlayer);
-    setOptimizeBuffer(70);
-    setOptimizeProgress(68);
-
-    buildResult = await buildPlayer('tr', buildResult.newPlayer);
-    setOptimizeBuffer(72);
-    setOptimizeProgress(70);
-    buildResult = await buildPlayer('hw', buildResult.newPlayer);
-    setOptimizeBuffer(84);
-    setOptimizeProgress(72);
-    buildResult = await buildPlayer('at', buildResult.newPlayer);
-    setOptimizeBuffer(86);
-    setOptimizeProgress(84);
-
-    buildResult = await buildPlayer('tr', buildResult.newPlayer);
-    setOptimizeBuffer(98);
-    setOptimizeProgress(86);
-    buildResult = await buildPlayer('at', buildResult.newPlayer);
-    setOptimizeBuffer(100);
-    setOptimizeProgress(98);
-    buildResult = await buildPlayer('hw', buildResult.newPlayer);
-    setOptimizeProgress(100);
 
     setOptimizedBuild({
       ...readifyPlayer(buildResult.newPlayer),
@@ -565,6 +637,7 @@ export default function PlayerOptimizer() {
     setIsOptimizing(false);
     setOptimizeProgress(0);
     setOptimizeBuffer(13);
+    setLogs([]);
   };
 
   const handleSkillMinChange = (key: string, event: React.ChangeEvent<HTMLInputElement>) => {
@@ -760,6 +833,15 @@ export default function PlayerOptimizer() {
             </Typography>
           </Stack>
           <LinearProgressWithLabel variant='buffer' value={optimizeProgress} valueBuffer={optimizeBuffer} />
+          <ScrollToBottom className='scroller'>
+            <Stack direction='column'>
+              {logs.map((log, i) => (
+                <Typography key={i} variant='caption' color={log.color}>
+                  {log.message}
+                </Typography>
+              ))}
+            </Stack>
+          </ScrollToBottom>
         </>
       ) : (
         <>
@@ -980,10 +1062,19 @@ export default function PlayerOptimizer() {
             <>
               <Stack spacing={1} sx={{ maxWidth: '350px' }}>
                 <FormGroup>
-                  <Stack direction='row' spacing={1} sx={{ alignItems: 'center', justifyContent: 'center', my: 1 }}>
+                  <Stack direction='row' spacing={1} sx={{ alignItems: 'center', my: 1 }}>
                     <Typography variant='body2'>SP Optimization</Typography>
-                    <FormControlLabel control={<Switch checked={mode === 1} onChange={handleModeSwitchChange()} size='small' color='default' />} label='' />
+                    <FormControlLabel
+                      control={<Switch checked={salaryMode} onChange={handleSalaryModeSwitchChange()} size='small' color='default' />}
+                      label=''
+                    />
                     <Typography variant='body2'>Salary Optimization</Typography>
+                  </Stack>
+                </FormGroup>
+                <FormGroup>
+                  <Stack direction='row' spacing={1} sx={{ alignItems: 'center', my: 1 }}>
+                    <FormControlLabel control={<Switch checked={highPrecision} onChange={handleHighPrecisionSwitchChange()} size='small' />} label='' />
+                    <Typography variant='body2'>High Precision (~2x slower)</Typography>
                   </Stack>
                 </FormGroup>
                 <Button
