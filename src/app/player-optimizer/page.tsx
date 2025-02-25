@@ -116,7 +116,7 @@ export default function PlayerOptimizer() {
   const filterAndSortSkills = () => {
     if (!selectedPosition || !data.skills) return;
 
-    const skillsEntries = Object.entries(data.skills).filter(([key, value]) => (value as any).positions.includes(selectedPosition));
+    const skillsEntries = Object.entries(data.skills).filter(([, value]) => (value as any).positions.includes(selectedPosition));
 
     skillsEntries.sort((a: any, b: any) => {
       const groupIndexA = groupOrder[selectedPosition].indexOf(a[1].group);
@@ -179,7 +179,7 @@ export default function PlayerOptimizer() {
     let at: any[] = [];
     let tr: any[] = [];
 
-    let filteredHW = heightWeightCombos.filter((x: any) => (!lockHeight || x.height === +height) && (!lockWeight || x.weight === +weight));
+    const filteredHW = heightWeightCombos.filter((x: any) => (!lockHeight || x.height === +height) && (!lockWeight || x.weight === +weight));
 
     switch (optimize) {
       case 'hw':
@@ -236,7 +236,7 @@ export default function PlayerOptimizer() {
       body: JSON.stringify(reqBody),
     });
 
-    let optimizedPlayer: OptimizedPlayer = {
+    const optimizedPlayer: OptimizedPlayer = {
       newPlayer: undefined,
       build: undefined,
       isPossibleCombo: undefined,
@@ -387,7 +387,7 @@ export default function PlayerOptimizer() {
   };
 
   const getMinSalary = (position: string): number => {
-    let salary = SALARIES[position] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
+    const salary = SALARIES[position] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
 
     if (salary > 5000000) {
       return 25000 * Math.ceil(salary / 25000);
@@ -414,7 +414,7 @@ export default function PlayerOptimizer() {
     let salary = SALARIES[selectedPosition] * 0.52 * ((2 + Math.pow(25, 1.135)) / 2);
     let modifier = 0;
 
-    let expensiveTraits: any[] = [];
+    const expensiveTraits: any[] = [];
 
     filterConflicts(
       Object.entries(filteredData.traits).sort(([, aValue]: any, [, bValue]: any) => bValue.salary_modifier - aValue.salary_modifier),
@@ -509,7 +509,7 @@ export default function PlayerOptimizer() {
     setLockTrait2(false);
     setLockTrait3(false);
 
-    let newPlayer = { ...basePlayer, trait1, trait2, trait3, height, weight };
+    const newPlayer = { ...basePlayer, trait1, trait2, trait3, height, weight };
     let buildResult: OptimizedPlayer;
 
     if (lockHeight) setLogs((prev) => [...prev, { message: `Height locked: ${Math.floor(height / 12)}' ${height % 12}''`, color: 'info' }]);
@@ -1127,7 +1127,7 @@ export default function PlayerOptimizer() {
                       <Divider sx={{ my: 1 }} />
                     </Grid>
                     {Object.entries(data.skills)
-                      .filter(([key, value]) => (value as any).group === group && (value as any).positions.includes(selectedPosition))
+                      .filter(([, value]) => (value as any).group === group && (value as any).positions.includes(selectedPosition))
                       .sort((a: any, b: any) => {
                         const groupIndexA = groupOrder[selectedPosition].indexOf(a[1].group);
                         const groupIndexB = groupOrder[selectedPosition].indexOf(b[1].group);
@@ -1138,7 +1138,7 @@ export default function PlayerOptimizer() {
                           return a[1].priority - b[1].priority;
                         }
                       })
-                      .map(([key, value]) => (
+                      .map(([key]) => (
                         <Fragment key={key}>
                           <Grid size={{ xs: 8, lg: 3 }} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <Typography sx={{ typography: { xs: 'body2' } }}>{SKILL_LOOKUP[key]}</Typography>
@@ -1183,7 +1183,7 @@ export default function PlayerOptimizer() {
                   </Typography>
                   <Grid size={12}>
                     <Typography variant='caption' color='secondary'>
-                      It's virtually impossible to go through every single combination. Optimizer refines the build through iterations.
+                      It&apos;s virtually impossible to go through every single combination. Optimizer refines the build through iterations.
                     </Typography>
                   </Grid>
                   <Grid size={12}>

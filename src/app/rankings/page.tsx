@@ -101,7 +101,7 @@ export default function PlayerPassingStats() {
         break;
     }
 
-    let bonus =
+    const bonus =
       bonusFactor * topTeamWins +
       (bonusFactor / 10.0) * topTeamLosses -
       (bonusFactor / 2.0) * badTeamLosses +
@@ -424,7 +424,7 @@ export default function PlayerPassingStats() {
         pagination
         pageSizeOptions={[12, 24, 50, 100]}
         density='compact'
-        getRowHeight={({ id, densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
+        getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
         disableRowSelectionOnClick
         disableDensitySelector
         getCellClassName={() => {

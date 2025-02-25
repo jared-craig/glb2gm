@@ -1,6 +1,6 @@
 'use client';
 
-import { DataGridPremium, GridColDef, GridRenderCellParams, GridRowModel } from '@mui/x-data-grid-premium';
+import { DataGridPremium, GridColDef, GridRenderCellParams } from '@mui/x-data-grid-premium';
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerPuntingData } from './playerPuntingData';
@@ -249,7 +249,7 @@ export default function PlayerPuntingStats({ tier, tierFilter }: PlayerPuntingSt
         pagination
         pageSizeOptions={[12, 24, 50, 100]}
         density='compact'
-        getRowHeight={({ id, densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
+        getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
         disableRowSelectionOnClick
         disableDensitySelector
         getCellClassName={() => {

@@ -32,7 +32,7 @@ const pages = [
 export default function HeaderBar() {
   const router = useRouter();
 
-  const { user, isLoading, error } = useUser();
+  const { user, isLoading } = useUser();
 
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 

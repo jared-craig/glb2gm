@@ -94,7 +94,7 @@ export default function PlayerBuilder() {
   const FindBaseLevel = (skill: string) => {
     let level = 0;
     let spspent = 0;
-    let spmax = trait1 === 'natural' || trait2 === 'natural' || trait3 === 'natural' ? 1000 : 500;
+    const spmax = trait1 === 'natural' || trait2 === 'natural' || trait3 === 'natural' ? 1000 : 500;
     while (spspent < spmax) {
       level += 1;
       spspent += CalcCostSP(skill, 1, level);
@@ -105,7 +105,7 @@ export default function PlayerBuilder() {
   const FindMaxLevel = (skill: string): number => {
     if (!filteredData.skills[skill]) return 100;
 
-    var maxlevel = 33;
+    let maxlevel = 33;
     maxlevel -= Math.pow(strength, 1.3) * (filteredData.skills[skill].attributes.strength || 0);
     maxlevel -= Math.pow(agility, 1.3) * (filteredData.skills[skill].attributes.agility || 0);
     maxlevel -= Math.pow(awareness, 1.3) * (filteredData.skills[skill].attributes.awareness || 0);
@@ -171,7 +171,7 @@ export default function PlayerBuilder() {
   const filterAndSortSkills = () => {
     if (!selectedPosition || !data.skills) return;
 
-    const skillsEntries: [string, any][] = Object.entries(data.skills).filter(([key, value]) => (value as any).positions.includes(selectedPosition));
+    const skillsEntries: [string, any][] = Object.entries(data.skills).filter(([, value]) => (value as any).positions.includes(selectedPosition));
 
     skillsEntries.sort((a: any, b: any) => {
       const groupIndexA = groupOrder[selectedPosition].indexOf(a[1].group);
@@ -186,7 +186,7 @@ export default function PlayerBuilder() {
 
     const newSkills = Object.fromEntries(skillsEntries);
 
-    const traitsEntries: [string, any][] = Object.entries(data.traits).filter(([key, value]) => !(value as any).position_exclusions.includes(selectedPosition));
+    const traitsEntries: [string, any][] = Object.entries(data.traits).filter(([, value]) => !(value as any).position_exclusions.includes(selectedPosition));
 
     traitsEntries.sort((a: any, b: any) => {
       if (a[1].name === 'Superstar') {
@@ -756,7 +756,7 @@ export default function PlayerBuilder() {
                       <Divider sx={{ my: { xs: 0.5, sm: 1 } }} />
                     </Grid>
                     {Object.entries(data.skills)
-                      .filter(([key, value]) => (value as any).group === group && (value as any).positions.includes(selectedPosition))
+                      .filter(([, value]) => (value as any).group === group && (value as any).positions.includes(selectedPosition))
                       .sort((a: any, b: any) => {
                         const groupIndexA = groupOrder[selectedPosition].indexOf(a[1].group);
                         const groupIndexB = groupOrder[selectedPosition].indexOf(b[1].group);
@@ -767,7 +767,7 @@ export default function PlayerBuilder() {
                           return a[1].priority - b[1].priority;
                         }
                       })
-                      .map(([key, value]) => (
+                      .map(([key]) => (
                         <Fragment key={key}>
                           <Grid size={{ xs: 8, lg: 2 }}>
                             <Typography sx={{ typography: { xs: 'caption', lg: 'body2' } }}>{SKILL_LOOKUP[key]}</Typography>

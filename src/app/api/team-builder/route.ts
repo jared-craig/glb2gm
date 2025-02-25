@@ -18,7 +18,7 @@ export async function GET() {
       },
     });
     return Response.json(allTeamBuilderData.map((x) => ({ ...x, players: x.TeamBuilderPlayers })));
-  } catch (error) {
+  } catch {
     return Response.json([]);
   }
 }
@@ -105,7 +105,7 @@ export async function DELETE(req: Request) {
         id: reqData.id,
       },
     });
-    const transaction = await prisma.$transaction([deletePlayers, deleteTeam]);
+    await prisma.$transaction([deletePlayers, deleteTeam]);
     return new Response(null, { status: 200 });
   } catch (error) {
     throw error;

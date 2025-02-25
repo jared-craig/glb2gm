@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const traitData = await prisma.traits.findMany();
     return Response.json(traitData);
-  } catch (error) {
+  } catch {
     return Response.json([]);
   }
 }
