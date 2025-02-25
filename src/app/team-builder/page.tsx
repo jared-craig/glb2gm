@@ -95,7 +95,7 @@ export default function TeamBuilder() {
   const saveTeam = async () => {
     const teamToSave: TeamBuilderTeam = {
       id: generateGuid(),
-      user_email: user?.email!,
+      user_email: user?.email ?? '',
       team_name: teamNameSaveInput,
       players: (players as TeamBuilderPlayer[]).map((x) => ({ ...x, id: generateGuid(), is_new: false })),
     };
@@ -123,7 +123,7 @@ export default function TeamBuilder() {
     if (!team) return;
     const teamToSave: TeamBuilderTeam = {
       id: team.id,
-      user_email: user?.email!,
+      user_email: user?.email ?? '',
       team_name: teamNameUpdateInput,
       players: (players as TeamBuilderPlayer[]).map((x) => ({ ...x, is_new: false })),
     };
@@ -396,7 +396,7 @@ export default function TeamBuilder() {
 
   const handleRowOrderChange = async (params: GridRowOrderChangeParams) => {
     setDataGridLoading(true);
-    let newRows = await updateRowPosition(params.oldIndex, params.targetIndex, players as TeamBuilderPlayer[]);
+    const newRows = await updateRowPosition(params.oldIndex, params.targetIndex, players as TeamBuilderPlayer[]);
 
     setPlayers(newRows.map((row: any, i: number) => ({ ...row, order_index: i })));
     setTimeout(() => {

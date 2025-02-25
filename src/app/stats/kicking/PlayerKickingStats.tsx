@@ -240,7 +240,7 @@ export default function PlayerKickingStats({ tier, tierFilter }: PlayerKickingSt
         pagination
         pageSizeOptions={[12, 24, 50, 100]}
         density='compact'
-        getRowHeight={({ id, densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
+        getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
         disableRowSelectionOnClick
         disableDensitySelector
         getCellClassName={() => {

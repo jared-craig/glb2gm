@@ -13,7 +13,7 @@ export default function TeamRandomizer() {
   const [capRemaining, setCapRemaining] = useState<number>(150000000);
   const [players, setPlayers] = useState<TeamRandomizerPlayer[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [optimalTeamComp, setOptimalTeamComp] = useState<any>({
+  const [optimalTeamComp] = useState<any>({
     QB: { min: 1, max: 1, maxStars: 1, traitOptions: [], starPower: 50 },
     FB: { min: 2, max: 2, maxStars: 1, traitOptions: [], starPower: 1 },
     HB: { min: 1, max: 1, maxStars: 1, traitOptions: [], starPower: 100 },

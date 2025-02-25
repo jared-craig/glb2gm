@@ -101,7 +101,7 @@ export default function Matchup() {
       (x) => (x.team_one_id === team1?.id && x.team_two_id === team2?.id) || (x.team_one_id === team2?.id && x.team_two_id === team1?.id)
     );
 
-    const { teamOneCommonGames, teamTwoCommonGames } = findCommonOpponentGames(team1?.id!, team2?.id!, teamOneGameData, teamTwoGameData);
+    const { teamOneCommonGames, teamTwoCommonGames } = findCommonOpponentGames(team1?.id ?? -1, team2?.id ?? -1, teamOneGameData, teamTwoGameData);
 
     setTeamOne(team1);
     setTeamTwo(team2);
@@ -133,8 +133,8 @@ export default function Matchup() {
       teamOneTeamOneTopGamesSum && teamOneTeamTwoTopGamesSum
         ? sumArray([teamOneTeamOneTopGamesSum, teamOneTeamTwoTopGamesSum])
         : teamOneTeamOneTopGamesSum
-          ? teamOneTeamOneTopGamesSum
-          : teamOneTeamTwoTopGamesSum;
+        ? teamOneTeamOneTopGamesSum
+        : teamOneTeamTwoTopGamesSum;
 
     if (!teamOneTopTenGames) {
       setTopTenTeamOneGames(null);
@@ -159,8 +159,8 @@ export default function Matchup() {
       teamTwoTeamOneTopGamesSum && teamTwoTeamTwoTopGamesSum
         ? sumArray([teamTwoTeamOneTopGamesSum, teamTwoTeamTwoTopGamesSum])
         : teamTwoTeamOneTopGamesSum
-          ? teamTwoTeamOneTopGamesSum
-          : teamTwoTeamTwoTopGamesSum;
+        ? teamTwoTeamOneTopGamesSum
+        : teamTwoTeamTwoTopGamesSum;
 
     if (!teamTwoTopTenGames) {
       setTopTenTeamTwoGames(null);
@@ -200,8 +200,8 @@ export default function Matchup() {
       }
     });
 
-    let teamOneCommonGames: GameData[] = [];
-    let teamTwoCommonGames: GameData[] = [];
+    const teamOneCommonGames: GameData[] = [];
+    const teamTwoCommonGames: GameData[] = [];
 
     team1Games.forEach((game) => {
       const opponentId = game.team_one_id === team1Id ? game.team_two_id : game.team_one_id;
@@ -232,8 +232,8 @@ export default function Matchup() {
       teamOneTeamOneCommonGamesSum && teamOneTeamTwoCommonGamesSum
         ? sumArray([teamOneTeamOneCommonGamesSum, teamOneTeamTwoCommonGamesSum])
         : teamOneTeamOneCommonGamesSum
-          ? teamOneTeamOneCommonGamesSum
-          : teamOneTeamTwoCommonGamesSum;
+        ? teamOneTeamOneCommonGamesSum
+        : teamOneTeamTwoCommonGamesSum;
 
     teamOneCommonTenGames['wins'] = teamOneTeamOneRecord.wins + teamOneTeamTwoRecord.wins;
     teamOneCommonTenGames['losses'] = teamOneTeamOneRecord.losses + teamOneTeamTwoRecord.losses;
@@ -253,8 +253,8 @@ export default function Matchup() {
       teamTwoTeamOneCommonGamesSum && teamTwoTeamTwoCommonGamesSum
         ? sumArray([teamTwoTeamOneCommonGamesSum, teamTwoTeamTwoCommonGamesSum])
         : teamTwoTeamOneCommonGamesSum
-          ? teamTwoTeamOneCommonGamesSum
-          : teamTwoTeamTwoCommonGamesSum;
+        ? teamTwoTeamOneCommonGamesSum
+        : teamTwoTeamTwoCommonGamesSum;
 
     teamTwoCommonTenGames['wins'] = teamTwoOneRecord.wins + teamTwoTeamTwoRecord.wins;
     teamTwoCommonTenGames['losses'] = teamTwoOneRecord.losses + teamTwoTeamTwoRecord.losses;

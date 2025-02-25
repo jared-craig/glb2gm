@@ -186,7 +186,7 @@ export default function PlayerTemplates() {
                       <Fragment key={build}>
                         {Object.entries(buildValue)
                           .filter(
-                            ([skill, skillValue]) =>
+                            ([, skillValue]) =>
                               (temp.templateName in endGamesChecked && !endGamesChecked[temp.templateName] ? build === 'start' : build === 'end') &&
                               skillValue > 0
                           )

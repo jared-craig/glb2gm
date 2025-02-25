@@ -8,7 +8,7 @@ const getRandomPlayer = (optimalTeamComp: any) => {
   const cumulativeWeights: number[] = [];
   let totalWeight = 0;
 
-  Object.entries(optimalTeamComp).forEach(([key, value]: any) => {
+  Object.entries(optimalTeamComp).forEach(([, value]: any) => {
     const weight = value.starPower;
     totalWeight += weight;
     cumulativeWeights.push(totalWeight);
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
   let cap = 150000000;
 
-  let newPlayers: TeamRandomizerPlayer[] = [
+  const newPlayers: TeamRandomizerPlayer[] = [
     {
       id: generateGuid(),
       position: 'C',
@@ -350,7 +350,7 @@ export async function POST(request: NextRequest) {
     },
   ];
 
-  for (let np of newPlayers) {
+  for (const np of newPlayers) {
     const trait1 = shuffleTraits(traits)
       .filter((x) => (np.contract === 'Low' ? x.salary_modifier <= 0 : optimalTeamComp[np.position].maxStars <= 0 ? !x.trait_key.includes('superstar') : true))
       .find((x) => !x.position_exclusions.includes(np.position))?.trait_key;
@@ -399,7 +399,7 @@ export async function POST(request: NextRequest) {
         x.trait_key !== trait2
     )?.trait_key;
 
-    let newStar = {
+    const newStar = {
       id: generateGuid(),
       position: starPosition,
       contract: 'Medium',
@@ -453,7 +453,7 @@ export async function POST(request: NextRequest) {
         x.trait_key !== trait1 &&
         x.trait_key !== trait2
     )?.trait_key;
-    let newNormie = {
+    const newNormie = {
       id: generateGuid(),
       position: normiePosition,
       contract: 'Medium',

@@ -65,7 +65,7 @@ const FindBaseLevel = (filteredData: any, skill: string, player: Player) => {
 
   let level = 0;
   let spspent = 0;
-  let spmax = player.trait1 === 'natural' || player.trait2 === 'natural' || player.trait3 === 'natural' ? 1000 : 500;
+  const spmax = player.trait1 === 'natural' || player.trait2 === 'natural' || player.trait3 === 'natural' ? 1000 : 500;
 
   while (spspent < spmax) {
     level += 1;
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
   for (const hwCombo of heightWeightCombos) {
     for (const attCombo of attCombos) {
       for (const traitCombo of traitCombos) {
-        let player: Player = {
+        const player: Player = {
           position: position,
           weight: hwCombo.weight,
           height: hwCombo.height,
@@ -180,8 +180,8 @@ export async function POST(request: NextRequest) {
         }
 
         let capBoosts = 7;
-        let capBoostsSpent: { [key: string]: number } = {};
-        let suggestedBuild: { [key: string]: number } = {};
+        const capBoostsSpent: { [key: string]: number } = {};
+        const suggestedBuild: { [key: string]: number } = {};
 
         for (const key of filteredDataSkillKeys) {
           suggestedBuild[key] = FindBaseLevel(filteredData, key, player);

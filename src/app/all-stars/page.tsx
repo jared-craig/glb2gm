@@ -104,7 +104,7 @@ export default function TopTeam() {
     }));
   };
 
-  const comparePlayers = (a: any, b: any, getRatingFn: Function, tieBreakerFn: Function): number => {
+  const comparePlayers = (a: any, b: any, getRatingFn: (a: any) => number, tieBreakerFn: (a: any, b: any) => number): number => {
     const ratingDiff = getRatingFn(b) - getRatingFn(a);
     if (ratingDiff === 0) return tieBreakerFn(a, b);
     return ratingDiff;
