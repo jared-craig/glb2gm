@@ -6,7 +6,7 @@ import { Container, LinearProgress, Paper, Stack, Table, TableBody, TableCell, T
 import Grid from '@mui/material/Grid2';
 import Link from 'next/link';
 import { GameData } from '@/app/games/gameData';
-import { sumArray, extractTeamData, getRecord, getTopTeamRank } from '@/app/teams/teamHelpers';
+import { sumArray, extractTeamData, getRecord, getTopTeams } from '@/app/teams/teamHelpers';
 import { formatWithOrdinal, getRankColor } from '@/app/helpers';
 
 export default function TeamDetails(props: { params: Promise<{ teamId: string }> }) {
@@ -41,16 +41,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
 
     allTeams.forEach((teamData) => {
       const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.id || x.team_two_id === teamData.id);
-      let topTeams: TeamData[] = [];
-      if (teamData.tier === 'Professional') {
-        topTeams = [...allTeams].filter(
-          (x) =>
-            (x.tier === teamData.tier && x.tier_rank <= getTopTeamRank(teamData.tier) && x.id !== teamData.id) ||
-            (x.tier === 'Veteran' && (x.global_rank <= teamData.global_rank || x.global_rank <= 10.0) && x.id !== teamData.id)
-        );
-      } else {
-        topTeams = [...allTeams].filter((x) => x.tier === teamData.tier && x.tier_rank <= getTopTeamRank(teamData.tier) && x.id !== teamData.id);
-      }
+      let topTeams: TeamData[] = getTopTeams(teamData, allTeams);
 
       const teamOneTopTeamGames = [...allTeamGames].filter((x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id));
       const teamOneRecord = getRecord(teamOneTopTeamGames, teamData.id);

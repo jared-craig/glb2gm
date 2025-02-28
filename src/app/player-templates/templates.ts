@@ -1185,7 +1185,9 @@ export const getTemplates = (position: string): Template[] => {
         },
       },
       abilities: {
-        start: {},
+        start: {
+          prime_time: 3,
+        },
         end: {
           prime_time: 3,
           first_step: 3,

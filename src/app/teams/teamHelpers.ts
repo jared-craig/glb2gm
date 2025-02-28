@@ -1,4 +1,5 @@
 import { GameData } from '../games/gameData';
+import { TeamData } from './teamData';
 
 export const extractTeamData = (originalObject: any, keyword: string) => {
   const newObject: any = {};
@@ -76,7 +77,7 @@ export const getRecord = (games: GameData[], teamId: number): { wins: number; lo
 };
 
 export const getTopTeamRank = (tier: string): number => {
-  switch(tier) {
+  switch (tier) {
     case 'Rookie':
       return 10.0;
     case 'Sophomore':
@@ -88,4 +89,31 @@ export const getTopTeamRank = (tier: string): number => {
     default:
       return 10.0;
   }
+};
+
+export const getTopTeams = (currentTeam: TeamData, data: TeamData[]): TeamData[] => {
+  let topTeams: TeamData[] = [];
+  if (currentTeam.tier === 'Professional') {
+    topTeams = [...data].filter(
+      (x) =>
+        ((x.tier === currentTeam.tier && x.tier_rank <= getTopTeamRank(currentTeam.tier)) ||
+          (x.tier === 'Veteran' && (x.global_rank <= currentTeam.global_rank || x.global_rank <= 12.0))) &&
+        x.id !== currentTeam.id
+    );
+  } else {
+    topTeams = [...data].filter((x) => x.tier === currentTeam.tier && x.tier_rank <= getTopTeamRank(currentTeam.tier) && x.id !== currentTeam.id);
+  }
+  return topTeams;
+};
+
+export const getNotTopTeams = (currentTeam: TeamData, data: TeamData[]): TeamData[] => {
+  let notTopTeams: TeamData[] = [];
+  if (currentTeam.tier === 'Veteran') {
+    notTopTeams = [...data].filter(
+      (x) => ((x.tier === currentTeam.tier && x.tier_rank > getTopTeamRank(currentTeam.tier)) || x.tier === 'Professional') && x.id !== currentTeam.id
+    );
+  } else {
+    notTopTeams = [...data].filter((x) => x.tier === currentTeam.tier && x.tier_rank > getTopTeamRank(currentTeam.tier) && x.id !== currentTeam.id);
+  }
+  return notTopTeams;
 };

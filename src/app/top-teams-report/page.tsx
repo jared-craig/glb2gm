@@ -5,7 +5,7 @@ import { Container, Divider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { TeamData } from '@/app/teams/teamData';
 import { GameData } from '@/app/games/gameData';
-import { extractTeamData, getRecord, getTopTeamRank, sumArray } from '@/app/teams/teamHelpers';
+import { extractTeamData, getRecord, getTopTeams, sumArray } from '@/app/teams/teamHelpers';
 import StatSection from './StatSection';
 
 export default function TopTeamsReport() {
@@ -34,16 +34,7 @@ export default function TopTeamsReport() {
     let extraTeamData: any[] = [];
     data.forEach((teamData) => {
       const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.id || x.team_two_id === teamData.id);
-      let topTeams: TeamData[] = [];
-      if (teamData.tier === 'Professional') {
-        topTeams = [...data].filter(
-          (x) =>
-            (x.tier === teamData.tier && x.tier_rank <= getTopTeamRank(teamData.tier) && x.id !== teamData.id) ||
-            (x.tier === 'Veteran' && (x.global_rank <= teamData.global_rank || x.global_rank <= 10.0) && x.id !== teamData.id)
-        );
-      } else {
-        topTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank <= getTopTeamRank(teamData.tier) && x.id !== teamData.id);
-      }
+      let topTeams: TeamData[] = getTopTeams(teamData, data);
 
       const teamOneTopTeamGames = [...allTeamGames].filter((x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id));
       const teamOneRecord = getRecord(teamOneTopTeamGames, teamData.id);
