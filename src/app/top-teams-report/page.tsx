@@ -34,7 +34,7 @@ export default function TopTeamsReport() {
     let extraTeamData: any[] = [];
     data.forEach((teamData) => {
       const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.id || x.team_two_id === teamData.id);
-      let topTeams: TeamData[] = getTopTeams(teamData, data);
+      const topTeams: TeamData[] = getTopTeams(teamData, data);
 
       const teamOneTopTeamGames = [...allTeamGames].filter((x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id));
       const teamOneRecord = getRecord(teamOneTopTeamGames, teamData.id);
