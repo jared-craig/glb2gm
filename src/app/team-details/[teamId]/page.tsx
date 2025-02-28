@@ -41,7 +41,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
 
     allTeams.forEach((teamData) => {
       const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.id || x.team_two_id === teamData.id);
-      let topTeams: TeamData[] = getTopTeams(teamData, allTeams);
+      const topTeams: TeamData[] = getTopTeams(teamData, allTeams);
 
       const teamOneTopTeamGames = [...allTeamGames].filter((x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id));
       const teamOneRecord = getRecord(teamOneTopTeamGames, teamData.id);
