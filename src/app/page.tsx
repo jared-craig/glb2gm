@@ -106,7 +106,7 @@ export default function Home() {
         </Stack>
         <Typography variant='body2'>
           Join the GLB2 Academy Discord{' '}
-          <Link href='https://discord.gg/3dNcAhxmrx' target='_blank' style={{ color: 'inherit', textDecoration: 'inherit', padding: 0 }}>
+          <Link href='https://discord.gg/3dNcAhxmrx' target='_blank' rel='noopener' style={{ color: 'inherit', textDecoration: 'inherit', padding: 0 }}>
             <ForumIcon />
           </Link>
         </Typography>
@@ -115,7 +115,7 @@ export default function Home() {
         Developed by <strong>MadKingCraig</strong>
       </Typography>
       <Typography variant='caption' sx={{ position: 'fixed', bottom: '20px', right: '20px' }}>
-        <Link href={'https://www.patreon.com/MadKingCraig'} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+        <Link href={'https://www.patreon.com/MadKingCraig'} target='_blank' rel='noopener' style={{ color: 'inherit', textDecoration: 'inherit' }}>
           Support Me Through <strong>Patreon</strong>
         </Link>
       </Typography>

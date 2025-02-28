@@ -358,7 +358,7 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
                 {genericPlayerData.position} - {genericPlayerData.tier}
               </Typography>
               <Typography variant='caption'>Team: {genericPlayerData.team_name}</Typography>
-              <Link href={`https://glb2.warriorgeneral.com/game/player/${params.playerId}`} target='_blank' style={{ color: 'inherit' }}>
+              <Link href={`https://glb2.warriorgeneral.com/game/player/${params.playerId}`} target='_blank' rel='noopener' style={{ color: 'inherit' }}>
                 <Typography variant='caption'>GLB2 Link</Typography>
               </Link>
             </Stack>

@@ -844,7 +844,7 @@ export default function PlayerOptimizer() {
             <Typography variant='caption'>Thanks for using GLB2GM!</Typography>
             <Typography variant='caption'>
               Consider supporting me through{' '}
-              <Link href={'https://www.patreon.com/MadKingCraig'} target='_blank' style={{ color: 'inherit' }}>
+              <Link href={'https://www.patreon.com/MadKingCraig'} target='_blank' rel='noopener' style={{ color: 'inherit' }}>
                 Patreon
               </Link>
             </Typography>

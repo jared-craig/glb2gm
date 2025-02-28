@@ -44,7 +44,7 @@ export default function PlayerKickingStats({ tier, tierFilter }: PlayerKickingSt
           headerName: 'NAME',
           width: 140,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Link href={`/player-details/${params.row.player_id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <Link href={`/player-details/${params.row.player_id}`} target='_blank' rel='noopener' style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
             </Link>
           ),
@@ -144,6 +144,7 @@ export default function PlayerKickingStats({ tier, tierFilter }: PlayerKickingSt
               <Link
                 href={`/player-details/${params.row.player_id}`}
                 target='_blank'
+                rel='noopener'
                 style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
               >
                 <strong>{params.value}</strong>
