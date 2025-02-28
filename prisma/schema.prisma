@@ -9,7 +9,6 @@ datasource db {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model Passing {
-  id                    Int      @id(map: "PK_Passing")
   player_name           String   @db.NVarChar(Max)
   team_name             String   @db.NVarChar(Max)
   position              String   @db.NVarChar(50)
@@ -26,11 +25,13 @@ model Passing {
   touchdowns            Int
   tier                  String   @db.NVarChar(Max)
   updated_at            DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Passing_updated_at") @db.DateTime
+  season                Int
+  player_id             Int
+  id                    Int      @id(map: "PK_Passing") @default(autoincrement())
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model Rushing {
-  id                  Int      @id(map: "PK_Rushing")
   player_name         String   @db.NVarChar(Max)
   team_name           String   @db.NVarChar(Max)
   position            String   @db.NVarChar(50)
@@ -46,51 +47,12 @@ model Rushing {
   fumbles_lost        Int
   tier                String   @db.NVarChar(Max)
   updated_at          DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Rushing_updated_at") @db.DateTime
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model PassingTest {
-  id                    Int      @id(map: "PK_PassingTest")
-  player_name           String   @db.NVarChar(Max)
-  team_name             String   @db.NVarChar(Max)
-  position              String   @db.NVarChar(50)
-  games_played          Int
-  completions           Int
-  attempts              Int
-  yards                 Decimal  @db.Decimal(18, 1)
-  completion_percentage Decimal  @db.Decimal(18, 1)
-  yards_per_attempt     Decimal  @db.Decimal(18, 1)
-  hurries               Int
-  sacks                 Int
-  sack_yards            Decimal  @db.Decimal(18, 1)
-  interceptions         Int
-  touchdowns            Int
-  tier                  String   @db.NVarChar(Max)
-  updated_at            DateTime @default(now(), map: "DF_PassingTest_updated_at") @db.DateTime
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model RushingTest {
-  id                  Int      @id(map: "PK_RushingTest")
-  player_name         String   @db.NVarChar(Max)
-  team_name           String   @db.NVarChar(Max)
-  position            String   @db.NVarChar(50)
-  games_played        Int
-  rushes              Int
-  yards               Decimal  @db.Decimal(18, 1)
-  average             Decimal  @db.Decimal(18, 1)
-  touchdowns          Int
-  broken_tackles      Int
-  yards_after_contact Decimal  @db.Decimal(18, 1)
-  tackles_for_loss    Int
-  fumbles             Int
-  fumbles_lost        Int
-  tier                String   @db.NVarChar(Max)
-  updated_at          DateTime @default(now(), map: "DF_RushingTest_updated_at") @db.DateTime
+  season              Int
+  player_id           Int
+  id                  Int      @id(map: "PK_Rushing") @default(autoincrement())
 }
 
 model Receiving {
-  id                Int      @id(map: "PK_Receiving")
   player_name       String   @db.NVarChar(Max)
   team_name         String   @db.NVarChar(Max)
   position          String   @db.NVarChar(50)
@@ -106,29 +68,12 @@ model Receiving {
   fumbles_lost      Int
   tier              String   @db.NVarChar(Max)
   updated_at        DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Receiving_updated_at") @db.DateTime
-}
-
-model ReceivingTest {
-  id                Int      @id(map: "PK_ReceivingTest")
-  player_name       String   @db.NVarChar(Max)
-  team_name         String   @db.NVarChar(Max)
-  position          String   @db.NVarChar(50)
-  games_played      Int
-  targets           Int
-  receptions        Int
-  yards             Decimal  @db.Decimal(18, 1)
-  average           Decimal  @db.Decimal(18, 1)
-  yards_after_catch Decimal  @db.Decimal(18, 1)
-  touchdowns        Int
-  drops             Int
-  fumbles           Int
-  fumbles_lost      Int
-  tier              String   @db.NVarChar(Max)
-  updated_at        DateTime @default(now(), map: "DF_ReceivingTest_updated_at") @db.DateTime
+  season            Int
+  player_id         Int
+  id                Int      @id(map: "PK_Receiving") @default(autoincrement())
 }
 
 model Defensive {
-  id                   Int      @id(map: "PK_Defensive")
   player_name          String   @db.NVarChar(Max)
   team_name            String   @db.NVarChar(Max)
   position             String   @db.NVarChar(50)
@@ -154,39 +99,12 @@ model Defensive {
   interception_yards   Decimal  @db.Decimal(18, 1)
   tier                 String   @db.NVarChar(Max)
   updated_at           DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Defensive_updated_at") @db.DateTime
-}
-
-model DefensiveTest {
-  id                   Int      @id(map: "PK_DefensiveTest")
-  player_name          String   @db.NVarChar(Max)
-  team_name            String   @db.NVarChar(Max)
-  position             String   @db.NVarChar(50)
-  games_played         Int
-  tackles              Int
-  tackle_assists       Int
-  missed_tackles       Int
-  sticks               Int
-  forced_fumbles       Int
-  fumble_recoveries    Int
-  tackles_for_loss     Int
-  defensive_touchdowns Int
-  times_pancaked       Int
-  reverse_pancakes     Int
-  sacks                Decimal  @db.Decimal(18, 1)
-  sack_yards           Decimal  @db.Decimal(18, 1)
-  hurries              Int
-  targets              Int
-  receptions_allowed   Int
-  passes_defended      Int
-  passes_knocked_loose Int
-  interceptions        Int
-  interception_yards   Decimal  @db.Decimal(18, 1)
-  tier                 String   @db.NVarChar(Max)
-  updated_at           DateTime @default(now(), map: "DF_DefensiveTest_updated_at") @db.DateTime
+  season               Int
+  player_id            Int
+  id                   Int      @id(map: "PK_Defensive") @default(autoincrement())
 }
 
 model Blocking {
-  id               Int      @id(map: "PK_Blocking")
   player_name      String   @db.NVarChar(Max)
   team_name        String   @db.NVarChar(Max)
   position         String   @db.NVarChar(50)
@@ -198,25 +116,12 @@ model Blocking {
   sacks_allowed    Int
   tier             String   @db.NVarChar(Max)
   updated_at       DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Blocking_updated_at") @db.DateTime
-}
-
-model BlockingTest {
-  id               Int      @id(map: "PK_BlockingTest")
-  player_name      String   @db.NVarChar(Max)
-  team_name        String   @db.NVarChar(Max)
-  position         String   @db.NVarChar(50)
-  games_played     Int
-  plays            Int
-  pancakes         Int
-  reverse_pancaked Int
-  hurries_allowed  Int
-  sacks_allowed    Int
-  tier             String   @db.NVarChar(Max)
-  updated_at       DateTime @default(now(), map: "DF_BlockingTest_updated_at") @db.DateTime
+  season           Int
+  player_id        Int
+  id               Int      @id(map: "PK_Blocking") @default(autoincrement())
 }
 
 model Kicking {
-  id                             Int      @id(map: "PK_Kicking")
   player_name                    String   @db.NVarChar(Max)
   team_name                      String   @db.NVarChar(Max)
   position                       String   @db.NVarChar(50)
@@ -241,38 +146,12 @@ model Kicking {
   average                        Decimal  @db.Decimal(18, 1)
   tier                           String   @db.NVarChar(Max)
   updated_at                     DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Kicking_updated_at") @db.DateTime
-}
-
-model KickingTest {
-  id                             Int      @id(map: "PK_KickingTest")
-  player_name                    String   @db.NVarChar(Max)
-  team_name                      String   @db.NVarChar(Max)
-  position                       String   @db.NVarChar(50)
-  games_played                   Int
-  fg_made                        Int
-  fg_attempts                    Int
-  zero_to_nineteen_made          Int
-  zero_to_nineteen_attempts      Int
-  twenty_to_twenty_nine_made     Int
-  twenty_to_twenty_nine_attempts Int
-  thirty_to_thirty_nine_made     Int
-  thirty_to_thirty_nine_attempts Int
-  forty_to_forty_nine_made       Int
-  forty_to_forty_nine_attempts   Int
-  fifty_plus_made                Int
-  fifty_plus_attempts            Int
-  xp_made                        Int
-  xp_attempts                    Int
-  kickoffs                       Int
-  touchbacks                     Int
-  yards                          Decimal  @db.Decimal(18, 1)
-  average                        Decimal  @db.Decimal(18, 1)
-  tier                           String   @db.NVarChar(Max)
-  updated_at                     DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_KickingTest_updated_at") @db.DateTime
+  season                         Int
+  player_id                      Int
+  id                             Int      @id(map: "PK_Kicking") @default(autoincrement())
 }
 
 model Ladder {
-  id                      Int      @id(map: "PK_Ladder")
   team_name               String   @db.NVarChar(Max)
   league                  String   @db.NVarChar(Max)
   owner                   String   @db.NVarChar(Max)
@@ -307,42 +186,9 @@ model Ladder {
   defensive_fumbles_lost  Int
   tier                    String   @db.NVarChar(Max)
   updated_at              DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Ladder_updated_at") @db.DateTime
-}
-
-model LadderTest {
-  id                      Int      @id(map: "PK_LadderTest")
-  team_name               String   @db.NVarChar(Max)
-  league                  String   @db.NVarChar(Max)
-  owner                   String   @db.NVarChar(Max)
-  wins                    Int
-  losses                  Int
-  ties                    Int
-  global_rank             Int
-  tier_rank               Int
-  offensive_total_yards   Decimal  @db.Decimal(18, 1)
-  offensive_rushing_yards Decimal  @db.Decimal(18, 1)
-  offensive_rushes        Int
-  offensive_passing_yards Decimal  @db.Decimal(18, 1)
-  offensive_completions   Int
-  offensive_attempts      Int
-  offensive_sacks         Int
-  offensive_interceptions Int
-  offensive_punts         Int
-  offensive_fumbles       Int
-  offensive_fumbles_lost  Int
-  defensive_total_yards   Decimal  @db.Decimal(18, 1)
-  defensive_rushing_yards Decimal  @db.Decimal(18, 1)
-  defensive_rushes        Int
-  defensive_passing_yards Decimal  @db.Decimal(18, 1)
-  defensive_completions   Int
-  defensive_attempts      Int
-  defensive_sacks         Int
-  defensive_interceptions Int
-  defensive_punts         Int
-  defensive_fumbles       Int
-  defensive_fumbles_lost  Int
-  tier                    String   @db.NVarChar(Max)
-  updated_at              DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_LadderTest_updated_at") @db.DateTime
+  season                  Int
+  team_id                 Int
+  id                      Int      @id(map: "PK_Ladder") @default(autoincrement())
 }
 
 model Games {
@@ -375,6 +221,7 @@ model Games {
   team_one_fumbles_lost  Int
   team_two_fumbles_lost  Int
   updated_at             DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Games_updated_at") @db.DateTime
+  season                 Int
 }
 
 model Traits {
@@ -388,7 +235,6 @@ model Traits {
 }
 
 model Punting {
-  id            Int      @id(map: "PK_Punting")
   player_name   String   @db.NVarChar(Max)
   team_name     String   @db.NVarChar(Max)
   position      String   @db.NVarChar(50)
@@ -404,10 +250,12 @@ model Punting {
   inside_twenty Int
   tier          String   @db.NVarChar(Max)
   updated_at    DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Punting_updated_at") @db.DateTime
+  season        Int
+  player_id     Int
+  id            Int      @id(map: "PK_Punting") @default(autoincrement())
 }
 
 model Returning {
-  id            Int      @id(map: "PK_Returning")
   player_name   String   @db.NVarChar(Max)
   team_name     String   @db.NVarChar(Max)
   position      String   @db.NVarChar(50)
@@ -422,6 +270,9 @@ model Returning {
   pr_touchdowns Int
   tier          String   @db.NVarChar(Max)
   updated_at    DateTime @default(dbgenerated("CONVERT([datetime],(sysutcdatetime() AT TIME ZONE 'Central Standard Time'))"), map: "DF_Returning_updated_at") @db.DateTime
+  season        Int
+  player_id     Int
+  id            Int      @id(map: "PK_Returning") @default(autoincrement())
 }
 
 model TeamBuilderPlayers {

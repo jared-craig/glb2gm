@@ -98,10 +98,10 @@ export const getTopTeams = (currentTeam: TeamData, data: TeamData[]): TeamData[]
       (x) =>
         ((x.tier === currentTeam.tier && x.tier_rank <= getTopTeamRank(currentTeam.tier)) ||
           (x.tier === 'Veteran' && (x.global_rank <= currentTeam.global_rank || x.global_rank <= 12.0))) &&
-        x.id !== currentTeam.id
+        x.team_id !== currentTeam.team_id
     );
   } else {
-    topTeams = [...data].filter((x) => x.tier === currentTeam.tier && x.tier_rank <= getTopTeamRank(currentTeam.tier) && x.id !== currentTeam.id);
+    topTeams = [...data].filter((x) => x.tier === currentTeam.tier && x.tier_rank <= getTopTeamRank(currentTeam.tier) && x.team_id !== currentTeam.team_id);
   }
   return topTeams;
 };
@@ -110,10 +110,10 @@ export const getNotTopTeams = (currentTeam: TeamData, data: TeamData[]): TeamDat
   let notTopTeams: TeamData[] = [];
   if (currentTeam.tier === 'Veteran') {
     notTopTeams = [...data].filter(
-      (x) => ((x.tier === currentTeam.tier && x.tier_rank > getTopTeamRank(currentTeam.tier)) || x.tier === 'Professional') && x.id !== currentTeam.id
+      (x) => ((x.tier === currentTeam.tier && x.tier_rank > getTopTeamRank(currentTeam.tier)) || x.tier === 'Professional') && x.team_id !== currentTeam.team_id
     );
   } else {
-    notTopTeams = [...data].filter((x) => x.tier === currentTeam.tier && x.tier_rank > getTopTeamRank(currentTeam.tier) && x.id !== currentTeam.id);
+    notTopTeams = [...data].filter((x) => x.tier === currentTeam.tier && x.tier_rank > getTopTeamRank(currentTeam.tier) && x.team_id !== currentTeam.team_id);
   }
   return notTopTeams;
 };

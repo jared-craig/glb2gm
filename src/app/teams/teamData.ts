@@ -1,5 +1,6 @@
 export interface TeamData {
   id: number;
+  team_id: number;
   team_name: string;
   league: string;
   owner: string;

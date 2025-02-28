@@ -89,19 +89,19 @@ export default function Matchup() {
   const fetchTeams = async () => {
     if (!allTeams || !teamOneSelection || !teamTwoSelection) return;
     setFetching(true);
-    const teamOneGameRes = await fetch(`/api/games?teamId=${teamOneSelection.id}`);
+    const teamOneGameRes = await fetch(`/api/games?teamId=${teamOneSelection.team_id}`);
     const teamOneGameData: GameData[] = await teamOneGameRes.json();
-    const teamTwoGameRes = await fetch(`/api/games?teamId=${teamTwoSelection.id}`);
+    const teamTwoGameRes = await fetch(`/api/games?teamId=${teamTwoSelection.team_id}`);
     const teamTwoGameData: GameData[] = await teamTwoGameRes.json();
 
-    const team1 = allTeams.find((x: TeamData) => x.id === teamOneSelection.id);
-    const team2 = allTeams.find((x: TeamData) => x.id === teamTwoSelection.id);
+    const team1 = allTeams.find((x: TeamData) => x.team_id === teamOneSelection.team_id);
+    const team2 = allTeams.find((x: TeamData) => x.team_id === teamTwoSelection.team_id);
 
     const headToHeadGames = teamOneGameData.filter(
-      (x) => (x.team_one_id === team1?.id && x.team_two_id === team2?.id) || (x.team_one_id === team2?.id && x.team_two_id === team1?.id)
+      (x) => (x.team_one_id === team1?.team_id && x.team_two_id === team2?.team_id) || (x.team_one_id === team2?.team_id && x.team_two_id === team1?.team_id)
     );
 
-    const { teamOneCommonGames, teamTwoCommonGames } = findCommonOpponentGames(team1?.id ?? -1, team2?.id ?? -1, teamOneGameData, teamTwoGameData);
+    const { teamOneCommonGames, teamTwoCommonGames } = findCommonOpponentGames(team1?.team_id ?? -1, team2?.team_id ?? -1, teamOneGameData, teamTwoGameData);
 
     setTeamOne(team1);
     setTeamTwo(team2);
@@ -116,16 +116,24 @@ export default function Matchup() {
   const getTopTenGames = () => {
     if (!allTeams || !teamOne || !teamTwo || !allTeamOneGames || !allTeamTwoGames) return;
 
-    const teamOneTopTeams = [...allTeams].filter((x) => x.tier === teamOne.tier && x.tier_rank <= getTopTeamRank(teamOne.tier) && x.id !== teamOne.id);
-    const teamTwoTopTeams = [...allTeams].filter((x) => x.tier === teamTwo.tier && x.tier_rank <= getTopTeamRank(teamTwo.tier) && x.id !== teamTwo.id);
+    const teamOneTopTeams = [...allTeams].filter(
+      (x) => x.tier === teamOne.tier && x.tier_rank <= getTopTeamRank(teamOne.tier) && x.team_id !== teamOne.team_id
+    );
+    const teamTwoTopTeams = [...allTeams].filter(
+      (x) => x.tier === teamTwo.tier && x.tier_rank <= getTopTeamRank(teamTwo.tier) && x.team_id !== teamTwo.team_id
+    );
 
-    const teamOneTeamOneTopGames = [...allTeamOneGames].filter((x) => x.team_one_id === teamOne.id && teamOneTopTeams.some((y) => y.id === x.team_two_id));
-    const teamOneTeamOneRecord = getRecord(teamOneTeamOneTopGames, teamOne.id);
+    const teamOneTeamOneTopGames = [...allTeamOneGames].filter(
+      (x) => x.team_one_id === teamOne.team_id && teamOneTopTeams.some((y) => y.team_id === x.team_two_id)
+    );
+    const teamOneTeamOneRecord = getRecord(teamOneTeamOneTopGames, teamOne.team_id);
     const teamOneTeamOneTopGamesSum = sumArray(teamOneTeamOneTopGames.map((x) => extractTeamData(x, 'team_one_')));
     if (teamOneTeamOneTopGamesSum) teamOneTeamOneTopGamesSum['games'] = teamOneTeamOneTopGames.length;
 
-    const teamOneTeamTwoTopGames = [...allTeamOneGames].filter((x) => x.team_two_id === teamOne.id && teamOneTopTeams.some((y) => y.id === x.team_one_id));
-    const teamOneTeamTwoRecord = getRecord(teamOneTeamTwoTopGames, teamOne.id);
+    const teamOneTeamTwoTopGames = [...allTeamOneGames].filter(
+      (x) => x.team_two_id === teamOne.team_id && teamOneTopTeams.some((y) => y.team_id === x.team_one_id)
+    );
+    const teamOneTeamTwoRecord = getRecord(teamOneTeamTwoTopGames, teamOne.team_id);
     const teamOneTeamTwoTopGamesSum = sumArray(teamOneTeamTwoTopGames.map((x) => extractTeamData(x, 'team_two_')));
     if (teamOneTeamTwoTopGamesSum) teamOneTeamTwoTopGamesSum['games'] = teamOneTeamTwoTopGames.length;
 
@@ -145,13 +153,17 @@ export default function Matchup() {
     teamOneTopTenGames['losses'] = teamOneTeamOneRecord.losses + teamOneTeamTwoRecord.losses;
     teamOneTopTenGames['ties'] = teamOneTeamOneRecord.ties + teamOneTeamTwoRecord.ties;
 
-    const teamTwoTeamOneTopGames = [...allTeamTwoGames].filter((x) => x.team_one_id === teamTwo.id && teamTwoTopTeams.some((y) => y.id === x.team_two_id));
-    const teamTwoOneRecord = getRecord(teamTwoTeamOneTopGames, teamTwo.id);
+    const teamTwoTeamOneTopGames = [...allTeamTwoGames].filter(
+      (x) => x.team_one_id === teamTwo.team_id && teamTwoTopTeams.some((y) => y.team_id === x.team_two_id)
+    );
+    const teamTwoOneRecord = getRecord(teamTwoTeamOneTopGames, teamTwo.team_id);
     const teamTwoTeamOneTopGamesSum = sumArray(teamTwoTeamOneTopGames.map((x) => extractTeamData(x, 'team_one_')));
     if (teamTwoTeamOneTopGamesSum) teamTwoTeamOneTopGamesSum['games'] = teamTwoTeamOneTopGames.length;
 
-    const teamTwoTeamTwoTopGames = [...allTeamTwoGames].filter((x) => x.team_two_id === teamTwo.id && teamTwoTopTeams.some((y) => y.id === x.team_one_id));
-    const teamTwoTeamTwoRecord = getRecord(teamTwoTeamTwoTopGames, teamTwo.id);
+    const teamTwoTeamTwoTopGames = [...allTeamTwoGames].filter(
+      (x) => x.team_two_id === teamTwo.team_id && teamTwoTopTeams.some((y) => y.team_id === x.team_one_id)
+    );
+    const teamTwoTeamTwoRecord = getRecord(teamTwoTeamTwoTopGames, teamTwo.team_id);
     const teamTwoTeamTwoTopGamesSum = sumArray(teamTwoTeamTwoTopGames.map((x) => extractTeamData(x, 'team_two_')));
     if (teamTwoTeamTwoTopGamesSum) teamTwoTeamTwoTopGamesSum['games'] = teamTwoTeamTwoTopGames.length;
 
@@ -284,16 +296,16 @@ export default function Matchup() {
 
   useEffect(() => {
     if (allTeams && team1Id && team2Id) {
-      setTeamOneSelection(allTeams.find((x) => x.id === +team1Id)!);
-      setTeamTwoSelection(allTeams.find((x) => x.id === +team2Id)!);
+      setTeamOneSelection(allTeams.find((x) => x.team_id === +team1Id)!);
+      setTeamTwoSelection(allTeams.find((x) => x.team_id === +team2Id)!);
     }
   }, [allTeams, team1Id, team2Id]);
 
   useEffect(() => {
     const params = new URLSearchParams();
     if (teamOneSelection && teamTwoSelection) {
-      params.set('team1', teamOneSelection.id.toString());
-      params.set('team2', teamTwoSelection.id.toString());
+      params.set('team1', teamOneSelection.team_id.toString());
+      params.set('team2', teamTwoSelection.team_id.toString());
       router.push(pathname + '?' + params.toString());
     }
     fetchTeams();
@@ -838,8 +850,8 @@ export default function Matchup() {
                 <Box key={x.id} sx={{ py: 1 }}>
                   <Box>
                     <TeamStats
-                      team1={x.team_one_id === teamOne.id ? +x.team_one_points : +x.team_two_points}
-                      team2={x.team_one_id === teamOne.id ? +x.team_two_points : +x.team_one_points}
+                      team1={x.team_one_id === teamOne.team_id ? +x.team_one_points : +x.team_two_points}
+                      team2={x.team_one_id === teamOne.team_id ? +x.team_two_points : +x.team_one_points}
                       sort='desc'
                       label='Score'
                       textSize={{ xs: 'body1' }}
@@ -848,12 +860,12 @@ export default function Matchup() {
                   </Box>
                   <TeamStats
                     team1={
-                      x.team_one_id === teamOne.id
+                      x.team_one_id === teamOne.team_id
                         ? (+x.team_one_rushes / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
                         : (+x.team_two_rushes / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
                     }
                     team2={
-                      x.team_one_id === teamOne.id
+                      x.team_one_id === teamOne.team_id
                         ? (+x.team_two_rushes / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
                         : (+x.team_one_rushes / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
                     }
@@ -864,12 +876,12 @@ export default function Matchup() {
                   />
                   <TeamStats
                     team1={
-                      x.team_one_id === teamOne.id
+                      x.team_one_id === teamOne.team_id
                         ? ((+x.team_one_attempts + +x.team_one_sacks) / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
                         : ((+x.team_two_attempts + +x.team_one_sacks) / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
                     }
                     team2={
-                      x.team_one_id === teamOne.id
+                      x.team_one_id === teamOne.team_id
                         ? ((+x.team_two_attempts + +x.team_one_sacks) / (+x.team_two_rushes + +x.team_two_attempts + +x.team_two_sacks)) * 100.0
                         : ((+x.team_one_attempts + +x.team_one_sacks) / (+x.team_one_rushes + +x.team_one_attempts + +x.team_one_sacks)) * 100.0
                     }
@@ -879,24 +891,24 @@ export default function Matchup() {
                     decimals={1}
                   />
                   <TeamStats
-                    team1={x.team_one_id === teamOne.id ? +x.team_one_rushing_yards : +x.team_two_rushing_yards}
-                    team2={x.team_one_id === teamOne.id ? +x.team_two_rushing_yards : +x.team_one_rushing_yards}
+                    team1={x.team_one_id === teamOne.team_id ? +x.team_one_rushing_yards : +x.team_two_rushing_yards}
+                    team2={x.team_one_id === teamOne.team_id ? +x.team_two_rushing_yards : +x.team_one_rushing_yards}
                     sort='desc'
                     label='Rush Yards'
                     textSize={{ xs: 'body2' }}
                     decimals={1}
                   />
                   <TeamStats
-                    team1={x.team_one_id === teamOne.id ? +x.team_one_passing_yards : +x.team_two_passing_yards}
-                    team2={x.team_one_id === teamOne.id ? +x.team_two_passing_yards : +x.team_one_passing_yards}
+                    team1={x.team_one_id === teamOne.team_id ? +x.team_one_passing_yards : +x.team_two_passing_yards}
+                    team2={x.team_one_id === teamOne.team_id ? +x.team_two_passing_yards : +x.team_one_passing_yards}
                     sort='desc'
                     label='Pass Yards'
                     textSize={{ xs: 'body2' }}
                     decimals={1}
                   />
                   <TeamStats
-                    team1={x.team_one_id === teamOne.id ? +x.team_two_sacks : +x.team_one_sacks}
-                    team2={x.team_one_id === teamOne.id ? +x.team_one_sacks : +x.team_two_sacks}
+                    team1={x.team_one_id === teamOne.team_id ? +x.team_two_sacks : +x.team_one_sacks}
+                    team2={x.team_one_id === teamOne.team_id ? +x.team_one_sacks : +x.team_two_sacks}
                     sort='desc'
                     label='Sacks'
                     textSize={{ xs: 'body2' }}
@@ -904,10 +916,14 @@ export default function Matchup() {
                   />
                   <TeamStats
                     team1={
-                      x.team_one_id === teamOne.id ? +x.team_one_interceptions + +x.team_one_fumbles_lost : +x.team_two_interceptions + +x.team_two_fumbles_lost
+                      x.team_one_id === teamOne.team_id
+                        ? +x.team_one_interceptions + +x.team_one_fumbles_lost
+                        : +x.team_two_interceptions + +x.team_two_fumbles_lost
                     }
                     team2={
-                      x.team_one_id === teamOne.id ? +x.team_two_interceptions + +x.team_two_fumbles_lost : +x.team_one_interceptions + +x.team_one_fumbles_lost
+                      x.team_one_id === teamOne.team_id
+                        ? +x.team_two_interceptions + +x.team_two_fumbles_lost
+                        : +x.team_one_interceptions + +x.team_one_fumbles_lost
                     }
                     sort='asc'
                     label='Turnovers'

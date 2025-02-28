@@ -34,34 +34,26 @@ export default function Rankings() {
   const recordComparator: GridComparatorFn<string> = (v1, v2) => +v1.substring(0, v1.indexOf('-')) - +v2.substring(0, v2.indexOf('-'));
 
   const getBonusData = (teamData: TeamData): number => {
-    const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.id || x.team_two_id === teamData.id);
+    const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.team_id || x.team_two_id === teamData.team_id);
     const topTeams: TeamData[] = getTopTeams(teamData, data);
 
     const notTopTeams: TeamData[] = getNotTopTeams(teamData, data);
 
     const teamOneTopTeamWins = [...allTeamGames].filter(
-      (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points > x.team_two_points
+      (x) => x.team_one_id === teamData.team_id && topTeams.some((y) => y.team_id === x.team_two_id) && x.team_one_points > x.team_two_points
     );
     const teamTwoTopTeamWins = [...allTeamGames].filter(
-      (x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id) && x.team_one_points < x.team_two_points
+      (x) => x.team_two_id === teamData.team_id && topTeams.some((y) => y.team_id === x.team_one_id) && x.team_one_points < x.team_two_points
     );
-
-    // const teamOneTopTeamLosses = [...allTeamGames].filter(
-    //   (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points < x.team_two_points
-    // );
-    // const teamTwoTopTeamLosses = [...allTeamGames].filter(
-    //   (x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id) && x.team_one_points > x.team_two_points
-    // );
 
     const teamOneBadTeamLosses = [...allTeamGames].filter(
-      (x) => x.team_one_id === teamData.id && notTopTeams.some((y) => y.id === x.team_two_id) && x.team_one_points < x.team_two_points
+      (x) => x.team_one_id === teamData.team_id && notTopTeams.some((y) => y.team_id === x.team_two_id) && x.team_one_points < x.team_two_points
     );
     const teamTwoBadTeamLosses = [...allTeamGames].filter(
-      (x) => x.team_two_id === teamData.id && notTopTeams.some((y) => y.id === x.team_one_id) && x.team_one_points > x.team_two_points
+      (x) => x.team_two_id === teamData.team_id && notTopTeams.some((y) => y.team_id === x.team_one_id) && x.team_one_points > x.team_two_points
     );
 
     const topTeamWins = teamOneTopTeamWins.length + teamTwoTopTeamWins.length;
-    // const topTeamLosses = teamOneTopTeamLosses.length + teamTwoTopTeamLosses.length;
     const badTeamLosses = teamOneBadTeamLosses.length + teamTwoBadTeamLosses.length;
 
     const pointDiff = teamData.offensive_points - teamData.defensive_points;
@@ -95,7 +87,7 @@ export default function Rankings() {
           headerName: 'TEAM',
           width: 140,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Link href={`/team-details/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <Link href={`/team-details/${params.row.team_id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
             </Link>
           ),
@@ -248,7 +240,7 @@ export default function Rankings() {
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Stack sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               <Link
-                href={`/team-details/${params.row.id}`}
+                href={`/team-details/${params.row.team_id}`}
                 target='_blank'
                 style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
               >
