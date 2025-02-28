@@ -95,12 +95,12 @@ export default function TopTeam() {
   const matchById = (array1: any[], array2: any[], statToPull: string, propToAdd: string) => {
     const map = new Map();
     for (const item2 of array2) {
-      map.set(item2.id, item2[statToPull]);
+      map.set(item2.player_id, item2[statToPull]);
     }
 
     return array1.map((item1) => ({
       ...item1,
-      [propToAdd]: map.get(item1.id) || item1[propToAdd],
+      [propToAdd]: map.get(item1.player_id) || item1[propToAdd],
     }));
   };
 
