@@ -75,14 +75,14 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
       puntingRes.json(),
       returningRes.json(),
     ]);
-    const passing = passData.find((x: PlayerData) => x.id === +params.playerId);
-    const rushing = rushData.find((x: PlayerData) => x.id === +params.playerId);
-    const receiving = receivingData.find((x: PlayerData) => x.id === +params.playerId);
-    const blocking = blockingData.find((x: PlayerData) => x.id === +params.playerId);
-    const defensive = defensiveData.find((x: PlayerData) => x.id === +params.playerId);
-    const kicking = kickingData.find((x: PlayerData) => x.id === +params.playerId);
-    const punting = puntingData.find((x: PlayerData) => x.id === +params.playerId);
-    const returning = returningData.find((x: PlayerData) => x.id === +params.playerId);
+    const passing = passData.find((x: PlayerData) => x.player_id === +params.playerId);
+    const rushing = rushData.find((x: PlayerData) => x.player_id === +params.playerId);
+    const receiving = receivingData.find((x: PlayerData) => x.player_id === +params.playerId);
+    const blocking = blockingData.find((x: PlayerData) => x.player_id === +params.playerId);
+    const defensive = defensiveData.find((x: PlayerData) => x.player_id === +params.playerId);
+    const kicking = kickingData.find((x: PlayerData) => x.player_id === +params.playerId);
+    const punting = puntingData.find((x: PlayerData) => x.player_id === +params.playerId);
+    const returning = returningData.find((x: PlayerData) => x.player_id === +params.playerId);
 
     const gamesPlayed = Math.max(...passData.map((x: PlayerData) => x.games_played));
     setGamesPlayed(gamesPlayed);
@@ -145,163 +145,183 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
     if (!genericPlayerData || !tierData) return [];
     switch (stat) {
       case 'passing_yards':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.yards })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: x.yards })).sort((a, b) => b.sortValue - a.sortValue);
       case 'passing_yards_per_game':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.yards / genericPlayerData.games_played })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.passing]
+          .map((x) => ({ player_id: x.player_id, sortValue: x.yards / genericPlayerData.games_played }))
+          .sort((a, b) => b.sortValue - a.sortValue);
       case 'passing_yards_per_attempt':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.yards / x.attempts })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: x.yards / x.attempts })).sort((a, b) => b.sortValue - a.sortValue);
       case 'passing_attempts':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.attempts })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: x.attempts })).sort((a, b) => b.sortValue - a.sortValue);
       case 'passing_completions':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.completions })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: x.completions })).sort((a, b) => b.sortValue - a.sortValue);
       case 'passing_completion_percentage':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.completion_percentage })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: x.completion_percentage })).sort((a, b) => b.sortValue - a.sortValue);
       case 'passing_touchdowns':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.touchdowns })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: x.touchdowns })).sort((a, b) => b.sortValue - a.sortValue);
       case 'passing_touchdowns_per_attempt':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.touchdowns / x.attempts })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: x.touchdowns / x.attempts })).sort((a, b) => b.sortValue - a.sortValue);
       case 'passing_interceptions':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.interceptions })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: x.interceptions })).sort((a, b) => a.sortValue - b.sortValue);
       case 'passing_interceptions_per_attempt':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.interceptions / x.attempts })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.passing]
+          .map((x) => ({ player_id: x.player_id, sortValue: x.interceptions / x.attempts }))
+          .sort((a, b) => a.sortValue - b.sortValue);
       case 'passing_touchdowns_to_interceptions':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.touchdowns / x.interceptions })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.passing]
+          .map((x) => ({ player_id: x.player_id, sortValue: x.touchdowns / x.interceptions }))
+          .sort((a, b) => b.sortValue - a.sortValue);
       case 'passing_sacks':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.sacks })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: x.sacks })).sort((a, b) => a.sortValue - b.sortValue);
       case 'passing_sacks_per_dropback':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.sacks / (x.sacks + x.attempts) })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.passing]
+          .map((x) => ({ player_id: x.player_id, sortValue: x.sacks / (x.sacks + x.attempts) }))
+          .sort((a, b) => a.sortValue - b.sortValue);
       case 'passing_hurries':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.hurries })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: x.hurries })).sort((a, b) => a.sortValue - b.sortValue);
       case 'passing_hurries_per_attempt':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: x.hurries / x.attempts })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: x.hurries / x.attempts })).sort((a, b) => a.sortValue - b.sortValue);
       case 'passing_gm_rating':
-        return [...tierData.passing].map((x) => ({ id: x.id, sortValue: getPassingGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.passing].map((x) => ({ player_id: x.player_id, sortValue: getPassingGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
       case 'rushing_yards':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.yards })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.yards })).sort((a, b) => b.sortValue - a.sortValue);
       case 'rushing_yards_per_game':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.yards / genericPlayerData.games_played })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.rushing]
+          .map((x) => ({ player_id: x.player_id, sortValue: x.yards / genericPlayerData.games_played }))
+          .sort((a, b) => b.sortValue - a.sortValue);
       case 'rushing_yards_per_carry':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.yards / x.rushes })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.yards / x.rushes })).sort((a, b) => b.sortValue - a.sortValue);
       case 'rushing_touchdowns':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.touchdowns })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.touchdowns })).sort((a, b) => b.sortValue - a.sortValue);
       case 'rushing_touchdowns_per_carry':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.touchdowns / x.rushes })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.touchdowns / x.rushes })).sort((a, b) => b.sortValue - a.sortValue);
       case 'rushing_broken_tackles':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.broken_tackles })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.broken_tackles })).sort((a, b) => b.sortValue - a.sortValue);
       case 'rushing_broken_tackles_per_carry':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.broken_tackles / x.rushes })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.broken_tackles / x.rushes })).sort((a, b) => b.sortValue - a.sortValue);
       case 'rushing_yards_after_contact':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.yards_after_contact })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.yards_after_contact })).sort((a, b) => b.sortValue - a.sortValue);
       case 'rushing_tackles_for_loss':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.tackles_for_loss })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.tackles_for_loss })).sort((a, b) => a.sortValue - b.sortValue);
       case 'rushing_tackles_for_loss_per_carry':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.tackles_for_loss / x.rushes })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.rushing]
+          .map((x) => ({ player_id: x.player_id, sortValue: x.tackles_for_loss / x.rushes }))
+          .sort((a, b) => a.sortValue - b.sortValue);
       case 'rushing_fumbles':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.fumbles })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.fumbles })).sort((a, b) => a.sortValue - b.sortValue);
       case 'rushing_fumbles_per_carry':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.fumbles / x.rushes })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.fumbles / x.rushes })).sort((a, b) => a.sortValue - b.sortValue);
       case 'rushing_fumbles_lost':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.fumbles_lost })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.fumbles_lost })).sort((a, b) => a.sortValue - b.sortValue);
       case 'rushing_fumbles_lost_per_carry':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: x.fumbles_lost / x.rushes })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: x.fumbles_lost / x.rushes })).sort((a, b) => a.sortValue - b.sortValue);
       case 'rushing_gm_rating':
-        return [...tierData.rushing].map((x) => ({ id: x.id, sortValue: getRushingGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.rushing].map((x) => ({ player_id: x.player_id, sortValue: getRushingGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
       case 'receiving_yards':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.yards })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.receiving].map((x) => ({ player_id: x.player_id, sortValue: x.yards })).sort((a, b) => b.sortValue - a.sortValue);
       case 'receiving_yards_per_reception':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.yards / x.receptions })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.receiving].map((x) => ({ player_id: x.player_id, sortValue: x.yards / x.receptions })).sort((a, b) => b.sortValue - a.sortValue);
       case 'receiving_touchdowns':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.touchdowns })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.receiving].map((x) => ({ player_id: x.player_id, sortValue: x.touchdowns })).sort((a, b) => b.sortValue - a.sortValue);
       case 'receiving_touchdowns_per_reception':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.touchdowns / x.receptions })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.receiving]
+          .map((x) => ({ player_id: x.player_id, sortValue: x.touchdowns / x.receptions }))
+          .sort((a, b) => b.sortValue - a.sortValue);
       case 'receiving_yards_after_catch':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.yards_after_catch / x.receptions })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.receiving]
+          .map((x) => ({ player_id: x.player_id, sortValue: x.yards_after_catch / x.receptions }))
+          .sort((a, b) => b.sortValue - a.sortValue);
       case 'receiving_targets':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.targets })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.receiving].map((x) => ({ player_id: x.player_id, sortValue: x.targets })).sort((a, b) => b.sortValue - a.sortValue);
       case 'receiving_receptions':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.receptions })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.receiving].map((x) => ({ player_id: x.player_id, sortValue: x.receptions })).sort((a, b) => b.sortValue - a.sortValue);
       case 'receiving_drops':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.drops })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.receiving].map((x) => ({ player_id: x.player_id, sortValue: x.drops })).sort((a, b) => a.sortValue - b.sortValue);
       case 'receiving_drops_per_target':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.drops / x.targets })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.receiving].map((x) => ({ player_id: x.player_id, sortValue: x.drops / x.targets })).sort((a, b) => a.sortValue - b.sortValue);
       case 'receiving_fumbles':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.fumbles })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.receiving].map((x) => ({ player_id: x.player_id, sortValue: x.fumbles })).sort((a, b) => a.sortValue - b.sortValue);
       case 'receiving_fumbles_per_reception':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.fumbles / x.receptions })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.receiving].map((x) => ({ player_id: x.player_id, sortValue: x.fumbles / x.receptions })).sort((a, b) => a.sortValue - b.sortValue);
       case 'receiving_fumbles_lost':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.fumbles_lost })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.receiving].map((x) => ({ player_id: x.player_id, sortValue: x.fumbles_lost })).sort((a, b) => a.sortValue - b.sortValue);
       case 'receiving_fumbles_lost_per_reception':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: x.fumbles_lost / x.receptions })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.receiving]
+          .map((x) => ({ player_id: x.player_id, sortValue: x.fumbles_lost / x.receptions }))
+          .sort((a, b) => a.sortValue - b.sortValue);
       case 'receiving_gm_rating':
-        return [...tierData.receiving].map((x) => ({ id: x.id, sortValue: getReceivingGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.receiving].map((x) => ({ player_id: x.player_id, sortValue: getReceivingGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
       case 'defensive_tackles':
-        return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: x.tackles })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.defensive].map((x) => ({ player_id: x.player_id, sortValue: x.tackles })).sort((a, b) => b.sortValue - a.sortValue);
       case 'defensive_missed_tackles':
-        return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: x.missed_tackles })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.defensive].map((x) => ({ player_id: x.player_id, sortValue: x.missed_tackles })).sort((a, b) => a.sortValue - b.sortValue);
       case 'defensive_tackle_percentage':
         return [...tierData.defensive]
-          .map((x) => ({ id: x.id, sortValue: x.tackles / (x.tackles + x.missed_tackles) }))
+          .map((x) => ({ player_id: x.player_id, sortValue: x.tackles / (x.tackles + x.missed_tackles) }))
           .sort((a, b) => b.sortValue - a.sortValue);
       case 'defensive_sticks':
-        return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: x.sticks })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.defensive].map((x) => ({ player_id: x.player_id, sortValue: x.sticks })).sort((a, b) => b.sortValue - a.sortValue);
       case 'defensive_stick_percentage':
-        return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: x.sticks / x.tackles })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.defensive].map((x) => ({ player_id: x.player_id, sortValue: x.sticks / x.tackles })).sort((a, b) => b.sortValue - a.sortValue);
       case 'defensive_sacks':
-        return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: x.sacks })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.defensive].map((x) => ({ player_id: x.player_id, sortValue: x.sacks })).sort((a, b) => b.sortValue - a.sortValue);
       case 'defensive_interceptions':
-        return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: x.interceptions })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.defensive].map((x) => ({ player_id: x.player_id, sortValue: x.interceptions })).sort((a, b) => b.sortValue - a.sortValue);
       case 'defensive_gm_rating':
-        return [...tierData.defensive].map((x) => ({ id: x.id, sortValue: getDefensiveGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.defensive].map((x) => ({ player_id: x.player_id, sortValue: getDefensiveGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
       case 'blocking_pancakes':
-        return [...tierData.blocking].map((x) => ({ id: x.id, sortValue: x.pancakes })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.blocking].map((x) => ({ player_id: x.player_id, sortValue: x.pancakes })).sort((a, b) => b.sortValue - a.sortValue);
       case 'blocking_reverse_pancaked':
-        return [...tierData.blocking].map((x) => ({ id: x.id, sortValue: x.reverse_pancaked })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.blocking].map((x) => ({ player_id: x.player_id, sortValue: x.reverse_pancaked })).sort((a, b) => a.sortValue - b.sortValue);
       case 'blocking_hurries_allowed':
-        return [...tierData.blocking].map((x) => ({ id: x.id, sortValue: x.hurries_allowed })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.blocking].map((x) => ({ player_id: x.player_id, sortValue: x.hurries_allowed })).sort((a, b) => a.sortValue - b.sortValue);
       case 'blocking_sacks_allowed':
-        return [...tierData.blocking].map((x) => ({ id: x.id, sortValue: x.sacks_allowed })).sort((a, b) => a.sortValue - b.sortValue);
+        return [...tierData.blocking].map((x) => ({ player_id: x.player_id, sortValue: x.sacks_allowed })).sort((a, b) => a.sortValue - b.sortValue);
       case 'blocking_gm_rating':
-        return [...tierData.blocking].map((x) => ({ id: x.id, sortValue: getBlockingGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.blocking].map((x) => ({ player_id: x.player_id, sortValue: getBlockingGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
       case 'kicking_fg_attempts':
-        return [...tierData.kicking].map((x) => ({ id: x.id, sortValue: x.fg_attempts })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.kicking].map((x) => ({ player_id: x.player_id, sortValue: x.fg_attempts })).sort((a, b) => b.sortValue - a.sortValue);
       case 'kicking_fg_made':
-        return [...tierData.kicking].map((x) => ({ id: x.id, sortValue: x.fg_made })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.kicking].map((x) => ({ player_id: x.player_id, sortValue: x.fg_made })).sort((a, b) => b.sortValue - a.sortValue);
       case 'kicking_fg_percentage':
-        return [...tierData.kicking].map((x) => ({ id: x.id, sortValue: x.fg_made / x.fg_attempts })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.kicking].map((x) => ({ player_id: x.player_id, sortValue: x.fg_made / x.fg_attempts })).sort((a, b) => b.sortValue - a.sortValue);
       case 'kicking_50_attempts':
-        return [...tierData.kicking].map((x) => ({ id: x.id, sortValue: x.fifty_plus_attempts })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.kicking].map((x) => ({ player_id: x.player_id, sortValue: x.fifty_plus_attempts })).sort((a, b) => b.sortValue - a.sortValue);
       case 'kicking_50_made':
-        return [...tierData.kicking].map((x) => ({ id: x.id, sortValue: x.fifty_plus_made })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.kicking].map((x) => ({ player_id: x.player_id, sortValue: x.fifty_plus_made })).sort((a, b) => b.sortValue - a.sortValue);
       case 'kicking_touchbacks':
-        return [...tierData.kicking].map((x) => ({ id: x.id, sortValue: x.touchbacks })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.kicking].map((x) => ({ player_id: x.player_id, sortValue: x.touchbacks })).sort((a, b) => b.sortValue - a.sortValue);
       case 'kicking_kickoffs':
-        return [...tierData.kicking].map((x) => ({ id: x.id, sortValue: x.kickoffs })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.kicking].map((x) => ({ player_id: x.player_id, sortValue: x.kickoffs })).sort((a, b) => b.sortValue - a.sortValue);
       case 'kicking_touchback_ratio':
-        return [...tierData.kicking].map((x) => ({ id: x.id, sortValue: x.touchbacks / x.kickoffs })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.kicking].map((x) => ({ player_id: x.player_id, sortValue: x.touchbacks / x.kickoffs })).sort((a, b) => b.sortValue - a.sortValue);
       case 'kicking_gm_rating':
-        return [...tierData.kicking].map((x) => ({ id: x.id, sortValue: getKickingGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.kicking].map((x) => ({ player_id: x.player_id, sortValue: getKickingGmRating(x) })).sort((a, b) => b.sortValue - a.sortValue);
       case 'punting_punts':
-        return [...tierData.punting].map((x) => ({ id: x.id, sortValue: x.punts })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.punting].map((x) => ({ player_id: x.player_id, sortValue: x.punts })).sort((a, b) => b.sortValue - a.sortValue);
       case 'punting_average':
-        return [...tierData.punting].map((x) => ({ id: x.id, sortValue: x.average })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.punting].map((x) => ({ player_id: x.player_id, sortValue: x.average })).sort((a, b) => b.sortValue - a.sortValue);
       case 'punting_hangtime':
-        return [...tierData.punting].map((x) => ({ id: x.id, sortValue: x.hangtime })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.punting].map((x) => ({ player_id: x.player_id, sortValue: x.hangtime })).sort((a, b) => b.sortValue - a.sortValue);
       case 'punting_inside_twenty':
-        return [...tierData.punting].map((x) => ({ id: x.id, sortValue: x.inside_twenty })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.punting].map((x) => ({ player_id: x.player_id, sortValue: x.inside_twenty })).sort((a, b) => b.sortValue - a.sortValue);
       case 'returning_kr_yards':
-        return [...tierData.returning].map((x) => ({ id: x.id, sortValue: x.kr_yards })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.returning].map((x) => ({ player_id: x.player_id, sortValue: x.kr_yards })).sort((a, b) => b.sortValue - a.sortValue);
       case 'returning_kr_yards_per_return':
-        return [...tierData.returning].map((x) => ({ id: x.id, sortValue: x.kr_yards / x.krs })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.returning].map((x) => ({ player_id: x.player_id, sortValue: x.kr_yards / x.krs })).sort((a, b) => b.sortValue - a.sortValue);
       case 'returning_kr_touchdowns':
-        return [...tierData.returning].map((x) => ({ id: x.id, sortValue: x.kr_touchdowns })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.returning].map((x) => ({ player_id: x.player_id, sortValue: x.kr_touchdowns })).sort((a, b) => b.sortValue - a.sortValue);
       case 'returning_pr_yards':
-        return [...tierData.returning].map((x) => ({ id: x.id, sortValue: x.pr_yards })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.returning].map((x) => ({ player_id: x.player_id, sortValue: x.pr_yards })).sort((a, b) => b.sortValue - a.sortValue);
       case 'returning_pr_yards_per_return':
-        return [...tierData.returning].map((x) => ({ id: x.id, sortValue: x.pr_yards / x.prs })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.returning].map((x) => ({ player_id: x.player_id, sortValue: x.pr_yards / x.prs })).sort((a, b) => b.sortValue - a.sortValue);
       case 'returning_pr_touchdowns':
-        return [...tierData.returning].map((x) => ({ id: x.id, sortValue: x.pr_touchdowns })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.returning].map((x) => ({ player_id: x.player_id, sortValue: x.pr_touchdowns })).sort((a, b) => b.sortValue - a.sortValue);
       case 'returning_total_touchdowns':
-        return [...tierData.returning].map((x) => ({ id: x.id, sortValue: x.kr_touchdowns + x.pr_touchdowns })).sort((a, b) => b.sortValue - a.sortValue);
+        return [...tierData.returning]
+          .map((x) => ({ player_id: x.player_id, sortValue: x.kr_touchdowns + x.pr_touchdowns }))
+          .sort((a, b) => b.sortValue - a.sortValue);
       default:
         return null;
     }
@@ -314,9 +334,9 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
     let rank = 1;
     let previousSortValue = null;
     for (let i = 0; i <= sortedTier.length; i++) {
-      const { id, sortValue } = sortedTier[i];
+      const { player_id, sortValue } = sortedTier[i];
       if (sortValue !== previousSortValue) rank = i + 1;
-      if (id === genericPlayerData.id) return formatWithOrdinal(rank);
+      if (player_id === genericPlayerData.player_id) return formatWithOrdinal(rank);
       previousSortValue = sortValue;
     }
     return 'N/A';

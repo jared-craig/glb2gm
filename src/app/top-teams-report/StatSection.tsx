@@ -52,7 +52,7 @@ export default function StatSection({ stat, title, filteredData }: StatSectionPa
           <Grid size={6}>
             <Typography variant='body2' noWrap>
               <Link
-                href={`/team-details/${teamData.id}`}
+                href={`/team-details/${teamData.team_id}`}
                 style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
               >
                 {teamData.team_name}

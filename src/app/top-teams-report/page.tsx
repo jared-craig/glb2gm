@@ -33,15 +33,15 @@ export default function TopTeamsReport() {
 
     let extraTeamData: any[] = [];
     data.forEach((teamData) => {
-      const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.id || x.team_two_id === teamData.id);
+      const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.team_id || x.team_two_id === teamData.team_id);
       const topTeams: TeamData[] = getTopTeams(teamData, data);
 
-      const teamOneTopTeamGames = [...allTeamGames].filter((x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id));
-      const teamOneRecord = getRecord(teamOneTopTeamGames, teamData.id);
+      const teamOneTopTeamGames = [...allTeamGames].filter((x) => x.team_one_id === teamData.team_id && topTeams.some((y) => y.team_id === x.team_two_id));
+      const teamOneRecord = getRecord(teamOneTopTeamGames, teamData.team_id);
       const teamOneTopGamesSum = sumArray(teamOneTopTeamGames.map((x) => extractTeamData(x, 'team_one_')));
       if (teamOneTopGamesSum) teamOneTopGamesSum['games'] = teamOneTopTeamGames.length;
-      const teamTwoTopTeamGames = [...allTeamGames].filter((x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id));
-      const teamTwoRecord = getRecord(teamTwoTopTeamGames, teamData.id);
+      const teamTwoTopTeamGames = [...allTeamGames].filter((x) => x.team_two_id === teamData.team_id && topTeams.some((y) => y.team_id === x.team_one_id));
+      const teamTwoRecord = getRecord(teamTwoTopTeamGames, teamData.team_id);
       const teamTwoTopGamesSum = sumArray(teamTwoTopTeamGames.map((x) => extractTeamData(x, 'team_two_')));
       if (teamTwoTopGamesSum) teamTwoTopGamesSum['games'] = teamTwoTopTeamGames.length;
 
@@ -61,7 +61,7 @@ export default function TopTeamsReport() {
       extraTeamData = [
         ...extraTeamData,
         {
-          id: teamData.id,
+          team_id: teamData.team_id,
           team_name: teamData.team_name,
           tier: teamData.tier,
           topTeamGames,

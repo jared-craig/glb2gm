@@ -25,7 +25,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
     const data: TeamData[] = await res.json();
     const gamesRes = await fetch(`/api/games`);
     const gamesData: GameData[] = await gamesRes.json();
-    const currentTeam = data.find((x: TeamData) => x.id === +params.teamId);
+    const currentTeam = data.find((x: TeamData) => x.team_id === +params.teamId);
     setTierData(data.filter((x: TeamData) => x.tier === currentTeam?.tier));
     setLeagueData(data.filter((x: TeamData) => x.league === currentTeam?.league));
     setTeamData(currentTeam);
@@ -40,15 +40,15 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
     let extraTeamData: any[] = [];
 
     allTeams.forEach((teamData) => {
-      const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.id || x.team_two_id === teamData.id);
+      const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.team_id || x.team_two_id === teamData.team_id);
       const topTeams: TeamData[] = getTopTeams(teamData, allTeams);
 
-      const teamOneTopTeamGames = [...allTeamGames].filter((x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id));
-      const teamOneRecord = getRecord(teamOneTopTeamGames, teamData.id);
+      const teamOneTopTeamGames = [...allTeamGames].filter((x) => x.team_one_id === teamData.team_id && topTeams.some((y) => y.team_id === x.team_two_id));
+      const teamOneRecord = getRecord(teamOneTopTeamGames, teamData.team_id);
       const teamOneTopGamesSum = sumArray(teamOneTopTeamGames.map((x) => extractTeamData(x, 'team_one_')));
       if (teamOneTopGamesSum) teamOneTopGamesSum['games'] = teamOneTopTeamGames.length;
-      const teamTwoTopTeamGames = [...allTeamGames].filter((x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id));
-      const teamTwoRecord = getRecord(teamTwoTopTeamGames, teamData.id);
+      const teamTwoTopTeamGames = [...allTeamGames].filter((x) => x.team_two_id === teamData.team_id && topTeams.some((y) => y.team_id === x.team_one_id));
+      const teamTwoRecord = getRecord(teamTwoTopTeamGames, teamData.team_id);
       const teamTwoTopGamesSum = sumArray(teamTwoTopTeamGames.map((x) => extractTeamData(x, 'team_two_')));
       if (teamTwoTopGamesSum) teamTwoTopGamesSum['games'] = teamTwoTopTeamGames.length;
 
@@ -68,14 +68,14 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
       extraTeamData = [
         ...extraTeamData,
         {
-          id: teamData.id,
+          team_id: teamData.team_id,
           team_name: teamData.team_name,
           tier: teamData.tier,
           topTeamGames,
         },
       ];
     });
-    setTopTeamGames(extraTeamData.find((x) => x.id === teamData.id)?.topTeamGames);
+    setTopTeamGames(extraTeamData.find((x) => x.team_id === teamData.team_id)?.topTeamGames);
     setTopTeamsForRanks(extraTeamData.filter((x) => x.tier === teamData.tier && x.topTeamGames?.games / gamesPlayed >= 0.33));
   };
 
@@ -230,19 +230,19 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
   const getTierRank = (stat: string, dir: string): string => {
     if (!teamData || !tierData) return 'N/A';
     const sortedTier = sortTierData(stat, dir);
-    return formatWithOrdinal(sortedTier.map((x) => x.id).indexOf(teamData.id) + 1);
+    return formatWithOrdinal(sortedTier.map((x) => x.team_id).indexOf(teamData.team_id) + 1);
   };
 
   const getLeagueRank = (stat: string, dir: string): string => {
     if (!teamData || !leagueData) return 'N/A';
     const sortedLeague = sortLeagueData(stat, dir);
-    return formatWithOrdinal(sortedLeague.map((x) => x.id).indexOf(teamData.id) + 1);
+    return formatWithOrdinal(sortedLeague.map((x) => x.team_id).indexOf(teamData.team_id) + 1);
   };
 
   const getTopTeamsRank = (stat: string, dir: string): string => {
     if (!teamData || !topTeamsForRanks) return 'N/A';
     const sortedTopTeamsData = sortTopTeamsData(stat, dir);
-    return formatWithOrdinal(sortedTopTeamsData.map((x) => x.id).indexOf(teamData.id) + 1);
+    return formatWithOrdinal(sortedTopTeamsData.map((x) => x.team_id).indexOf(teamData.team_id) + 1);
   };
 
   useEffect(() => {
@@ -525,7 +525,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
               </Table>
             </TableContainer>
           </Grid>
-          {topTeamGames && topTeamsForRanks && topTeamsForRanks.some((x) => x.id === teamData.id) && (
+          {topTeamGames && topTeamsForRanks && topTeamsForRanks.some((x) => x.team_id === teamData.team_id) && (
             <>
               <Grid size={12}>
                 <Typography variant='h6'>
