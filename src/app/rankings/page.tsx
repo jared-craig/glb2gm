@@ -87,7 +87,7 @@ export default function Rankings() {
           headerName: 'TEAM',
           width: 140,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Link href={`/team-details/${params.row.team_id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <Link href={`/team-details/${params.row.team_id}`} target='_blank' rel='noopener' style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
             </Link>
           ),
@@ -242,6 +242,7 @@ export default function Rankings() {
               <Link
                 href={`/team-details/${params.row.team_id}`}
                 target='_blank'
+                rel='noopener'
                 style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
               >
                 <strong>{params.value}</strong>
