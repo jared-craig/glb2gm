@@ -8,9 +8,9 @@ import Link from 'next/link';
 import { TeamData } from '../teams/teamData';
 import { getTeamGmRating } from '../stats/statCalculations';
 import { GameData } from '../games/gameData';
-import { getTopTeamRank } from '../teams/teamHelpers';
+import { getNotTopTeams, getTopTeams } from '../teams/teamHelpers';
 
-export default function PlayerPassingStats() {
+export default function Rankings() {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
@@ -18,7 +18,7 @@ export default function PlayerPassingStats() {
   const [data, setData] = useState<TeamData[]>([]);
   const [allGamesData, setAllGamesData] = useState<GameData[]>([]);
   const [rows, setRows] = useState<TeamData[]>([]);
-  const [tier, setTier] = useState<string>('All Tiers');
+  const [tier, setTier] = useState<string>('Veteran');
 
   const fetchData = async () => {
     const res = await fetch('/api/teams');
@@ -27,7 +27,7 @@ export default function PlayerPassingStats() {
     const gamesData: GameData[] = await gamesRes.json();
     setData(data);
     setAllGamesData(gamesData);
-    setRows(tier !== 'All Tiers' ? data.filter((x: TeamData) => x.tier === tier) : data);
+    setRows(data.filter((x: TeamData) => x.tier === tier));
     setFetched(true);
   };
 
@@ -35,27 +35,9 @@ export default function PlayerPassingStats() {
 
   const getBonusData = (teamData: TeamData): number => {
     const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.id || x.team_two_id === teamData.id);
-    let topTeams: TeamData[] = [];
-    if (teamData.tier === 'Professional') {
-      topTeams = [...data].filter(
-        (x) =>
-          (x.tier === teamData.tier && x.tier_rank <= 8.0 && x.id !== teamData.id) ||
-          (x.tier === 'Veteran' && (x.global_rank <= teamData.global_rank || x.global_rank <= 12.0) && x.id !== teamData.id)
-      );
-    } else {
-      topTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank <= getTopTeamRank(teamData.tier) && x.id !== teamData.id);
-    }
+    let topTeams: TeamData[] = getTopTeams(teamData, data);
 
-    let notTopTeams: TeamData[] = [];
-    if (teamData.tier === 'Professional') {
-      notTopTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank > getTopTeamRank(teamData.tier) && x.id !== teamData.id);
-    } else if (teamData.tier === 'Veteran') {
-      notTopTeams = [...data].filter(
-        (x) => (x.tier === teamData.tier && x.tier_rank > getTopTeamRank(teamData.tier) && x.id !== teamData.id) || x.tier === 'Professional'
-      );
-    } else {
-      notTopTeams = [...data].filter((x) => x.tier === teamData.tier && x.tier_rank > getTopTeamRank(teamData.tier) && x.id !== teamData.id);
-    }
+    let notTopTeams: TeamData[] = getNotTopTeams(teamData, data);
 
     const teamOneTopTeamWins = [...allTeamGames].filter(
       (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points > x.team_two_points
@@ -64,12 +46,12 @@ export default function PlayerPassingStats() {
       (x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id) && x.team_one_points < x.team_two_points
     );
 
-    const teamOneTopTeamLosses = [...allTeamGames].filter(
-      (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points < x.team_two_points
-    );
-    const teamTwoTopTeamLosses = [...allTeamGames].filter(
-      (x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id) && x.team_one_points > x.team_two_points
-    );
+    // const teamOneTopTeamLosses = [...allTeamGames].filter(
+    //   (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points < x.team_two_points
+    // );
+    // const teamTwoTopTeamLosses = [...allTeamGames].filter(
+    //   (x) => x.team_two_id === teamData.id && topTeams.some((y) => y.id === x.team_one_id) && x.team_one_points > x.team_two_points
+    // );
 
     const teamOneBadTeamLosses = [...allTeamGames].filter(
       (x) => x.team_one_id === teamData.id && notTopTeams.some((y) => y.id === x.team_two_id) && x.team_one_points < x.team_two_points
@@ -79,34 +61,21 @@ export default function PlayerPassingStats() {
     );
 
     const topTeamWins = teamOneTopTeamWins.length + teamTwoTopTeamWins.length;
-    const topTeamLosses = teamOneTopTeamLosses.length + teamTwoTopTeamLosses.length;
+    // const topTeamLosses = teamOneTopTeamLosses.length + teamTwoTopTeamLosses.length;
     const badTeamLosses = teamOneBadTeamLosses.length + teamTwoBadTeamLosses.length;
 
     const pointDiff = teamData.offensive_points - teamData.defensive_points;
     const yardDiff = teamData.offensive_total_yards - teamData.defensive_total_yards;
 
-    let bonusFactor = 1.0;
-    switch (teamData.tier) {
-      case 'Rookie':
-        bonusFactor = 20.0;
-        break;
-      case 'Sophomore':
-        bonusFactor = 40.0;
-        break;
-      case 'Professional':
-        bonusFactor = 60.0;
-        break;
-      case 'Veteran':
-        bonusFactor = 100.0;
-        break;
-    }
+    let bonusFactor = 100.0;
+
+    const gamesPlayed = teamData.wins + teamData.losses + teamData.ties;
 
     const bonus =
-      bonusFactor * topTeamWins +
-      (bonusFactor / 10.0) * topTeamLosses -
-      (bonusFactor / 2.0) * badTeamLosses +
-      Math.round(pointDiff / 100.0) +
-      Math.round(yardDiff / 1000.0);
+      bonusFactor * topTeamWins -
+      (bonusFactor / 10.0) * badTeamLosses +
+      Math.round(((pointDiff / 100.0) * 10.0) / gamesPlayed) +
+      Math.round(yardDiff / 1000.0 / gamesPlayed);
 
     return bonus;
   };
@@ -116,7 +85,7 @@ export default function PlayerPassingStats() {
   }, []);
 
   useEffect(() => {
-    setRows(tier !== 'All Tiers' ? data.filter((x: TeamData) => x.tier === tier) : data);
+    setRows(data.filter((x: TeamData) => x.tier === tier));
   }, [tier]);
 
   const columns: GridColDef[] = !desktop
@@ -126,7 +95,7 @@ export default function PlayerPassingStats() {
           headerName: 'TEAM',
           width: 140,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Link href={`/team-details/${params.row.id}`} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <Link href={`/team-details/${params.row.id}`} target='_blank' style={{ color: 'inherit', textDecoration: 'inherit' }}>
               <strong>{params.value}</strong>
             </Link>
           ),
@@ -280,6 +249,7 @@ export default function PlayerPassingStats() {
             <Stack sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               <Link
                 href={`/team-details/${params.row.id}`}
+                target='_blank'
                 style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
               >
                 <strong>{params.value}</strong>
@@ -431,7 +401,7 @@ export default function PlayerPassingStats() {
           return desktop ? 'desktop-text' : 'mobile-text';
         }}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tier, tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran', 'All Tiers'] } }}
+        slotProps={{ toolbar: { tier, tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
           pagination: { paginationModel: { pageSize: 12 } },
