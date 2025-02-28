@@ -35,9 +35,9 @@ export default function Rankings() {
 
   const getBonusData = (teamData: TeamData): number => {
     const allTeamGames = allGamesData.filter((x) => x.team_one_id === teamData.id || x.team_two_id === teamData.id);
-    let topTeams: TeamData[] = getTopTeams(teamData, data);
+    const topTeams: TeamData[] = getTopTeams(teamData, data);
 
-    let notTopTeams: TeamData[] = getNotTopTeams(teamData, data);
+    const notTopTeams: TeamData[] = getNotTopTeams(teamData, data);
 
     const teamOneTopTeamWins = [...allTeamGames].filter(
       (x) => x.team_one_id === teamData.id && topTeams.some((y) => y.id === x.team_two_id) && x.team_one_points > x.team_two_points
@@ -67,7 +67,7 @@ export default function Rankings() {
     const pointDiff = teamData.offensive_points - teamData.defensive_points;
     const yardDiff = teamData.offensive_total_yards - teamData.defensive_total_yards;
 
-    let bonusFactor = 100.0;
+    const bonusFactor = 100.0;
 
     const gamesPlayed = teamData.wins + teamData.losses + teamData.ties;
 
