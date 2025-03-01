@@ -240,7 +240,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
   };
 
   const getTopTeamsRank = (stat: string, dir: string): string => {
-    if (!teamData || !topTeamsForRanks) return 'N/A';
+    if (!teamData || !topTeamsForRanks || !topTeamsForRanks.some((x) => x.team_id === teamData.team_id)) return 'N/A';
     const sortedTopTeamsData = sortTopTeamsData(stat, dir);
     return formatWithOrdinal(sortedTopTeamsData.map((x) => x.team_id).indexOf(teamData.team_id) + 1);
   };
@@ -525,7 +525,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
               </Table>
             </TableContainer>
           </Grid>
-          {topTeamGames && topTeamsForRanks && topTeamsForRanks.some((x) => x.team_id === teamData.team_id) && (
+          {topTeamGames && topTeamsForRanks && (
             <>
               <Grid size={12}>
                 <Typography variant='h6'>
