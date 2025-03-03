@@ -823,7 +823,7 @@ export default function PlayerOptimizer() {
   }, [trait1, trait2, trait3]);
 
   useEffect(() => {
-    let possibleTraitCombos = allPossibleTraits;
+    let possibleTraitCombos = [...allPossibleTraits];
     if (lockTrait1) {
       possibleTraitCombos = possibleTraitCombos.filter((x: any) => x.some((y: any) => y === trait1));
     }
