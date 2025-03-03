@@ -27,6 +27,7 @@ const pages = [
   'Top Teams Report',
   'Matchup',
   'Team Builder',
+  'Team Randomizer',
 ];
 
 export default function HeaderBar() {
@@ -73,6 +74,9 @@ export default function HeaderBar() {
         break;
       case 'Team Builder':
         router.push('/team-builder');
+        break;
+      case 'Team Randomizer':
+        router.push('/team-randomizer');
         break;
     }
   };
