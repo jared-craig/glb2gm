@@ -11,7 +11,6 @@ export interface PlayerPassingData extends PlayerData {
   sack_yards: number;
   interceptions: number;
   touchdowns: number;
-  tier: string;
   rush_yards: number;
   rush_touchdowns: number;
 }

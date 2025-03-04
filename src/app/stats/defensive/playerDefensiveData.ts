@@ -20,5 +20,4 @@ export interface PlayerDefensiveData extends PlayerData {
   passes_knocked_loose: number;
   interceptions: number;
   interception_yards: number;
-  tier: string;
 }

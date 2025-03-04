@@ -4,16 +4,20 @@ import { DataGridPremium, GridColDef, GridRenderCellParams, GridRowModel } from 
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerRushingData } from './playerRushingData';
-import CustomGridToolbar from '@/app/components/CustomGridToolBar';
+import { CustomGridToolbarWithTierAndSeason } from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getRushingGmRating } from '../statCalculations';
 
 interface PlayerRushingStatsProps {
   tier: string;
   tierFilter: (tier: string) => void;
+  tierOptions: string[];
+  season: string;
+  seasonFilter: (season: string) => void;
+  seasonOptions: string[];
 }
 
-export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingStatsProps) {
+export default function PlayerRushingStats({ tier, tierFilter, tierOptions, season, seasonFilter, seasonOptions }: PlayerRushingStatsProps) {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
@@ -25,7 +29,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
     const res = await fetch('/api/rushing');
     const data = await res.json();
     setData(data);
-    setRows(data.filter((x: PlayerRushingData) => x.tier === tier));
+    setRows(data.filter((x: PlayerRushingData) => x.tier === tier && x.season === +season));
     setFetched(true);
   };
 
@@ -34,8 +38,12 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
   }, []);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerRushingData) => x.tier === tier));
+    setRows(data.filter((x: PlayerRushingData) => x.tier === tier && x.season === +season));
   }, [tier]);
+
+  useEffect(() => {
+    setRows(data.filter((x: PlayerRushingData) => x.tier === tier && x.season === +season));
+  }, [season]);
 
   const columns: GridColDef[] = !desktop
     ? [
@@ -79,7 +87,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(+row.yards / +row.games_played).toFixed(1);
           },
           disableColumnMenu: true,
@@ -106,7 +114,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return +(row.rushes / row.touchdowns).toFixed(2);
           },
           disableColumnMenu: true,
@@ -125,7 +133,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return +(row.broken_tackles / row.rushes).toFixed(2);
           },
           disableColumnMenu: true,
@@ -160,7 +168,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return getRushingGmRating(row);
           },
           disableColumnMenu: true,
@@ -211,7 +219,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(+row.yards / +row.games_played).toFixed(1);
           },
         },
@@ -235,7 +243,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return +(row.rushes / row.touchdowns).toFixed(2);
           },
         },
@@ -252,7 +260,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return +(row.broken_tackles / row.rushes).toFixed(2);
           },
         },
@@ -290,7 +298,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return getRushingGmRating(row);
           },
         },
@@ -298,35 +306,32 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <DataGridPremium
-        rows={rows ?? []}
-        columns={columns}
-        loading={rows.length <= 0 && !fetched}
-        sortingOrder={['desc', 'asc']}
-        pagination
-        pageSizeOptions={[12, 24, 50, 100]}
-        density='compact'
-        getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
-        disableRowSelectionOnClick
-        disableDensitySelector
-        getCellClassName={() => {
-          return desktop ? 'desktop-text' : 'mobile-text';
-        }}
-        slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tier, tierFilter, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
-        initialState={{
-          sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
-          filter: {
-            filterModel: {
-              items: [{ field: 'rushes', operator: '>=', value: '10' }],
+      {data.length > 0 && (
+        <DataGridPremium
+          rows={rows ?? []}
+          columns={columns}
+          loading={rows.length <= 0 && !fetched}
+          sortingOrder={['desc', 'asc']}
+          pagination
+          pageSizeOptions={[12, 24, 50, 100]}
+          density='compact'
+          getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
+          disableRowSelectionOnClick
+          disableDensitySelector
+          getCellClassName={() => {
+            return desktop ? 'desktop-text' : 'mobile-text';
+          }}
+          slots={{ toolbar: CustomGridToolbarWithTierAndSeason }}
+          slotProps={{ toolbar: { tier, tierFilter, tierOptions, season, seasonFilter, seasonOptions } }}
+          initialState={{
+            sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
+            pagination: { paginationModel: { pageSize: 12 } },
+            pinnedColumns: {
+              left: ['player_name'],
             },
-          },
-          pagination: { paginationModel: { pageSize: 12 } },
-          pinnedColumns: {
-            left: ['player_name'],
-          },
-        }}
-      />
+          }}
+        />
+      )}
     </Box>
   );
 }

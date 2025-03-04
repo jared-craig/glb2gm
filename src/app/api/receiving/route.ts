@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
     where: {
       position: positions !== null ? { in: positions } : undefined,
       tier: tiers !== null ? { in: tiers } : undefined,
-      season: process.env.CURRENT_SEASON ? +process.env.CURRENT_SEASON : undefined,
     },
     orderBy: [
       {

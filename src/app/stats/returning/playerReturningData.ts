@@ -9,5 +9,4 @@ export interface PlayerReturningData extends PlayerData {
   pr_yards: number;
   pr_average: number;
   pr_touchdowns: number;
-  tier: string;
 }

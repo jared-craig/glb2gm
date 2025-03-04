@@ -159,22 +159,30 @@ export default function TopTeam() {
   };
 
   const fetchData = async () => {
-    const passRes = await fetch('/api/passing');
-    const passData: PlayerPassingData[] = await passRes.json();
-    const rushRes = await fetch('/api/rushing');
-    const rushData: PlayerRushingData[] = await rushRes.json();
-    const recRes = await fetch('/api/receiving');
-    const recData: PlayerReceivingData[] = await recRes.json();
-    const defRes = await fetch('/api/defensive');
-    const defData: PlayerDefensiveData[] = await defRes.json();
-    const blockRes = await fetch('/api/blocking');
-    const blockData: PlayerBlockingData[] = await blockRes.json();
-    const kickRes = await fetch('/api/kicking');
-    const kickData: PlayerKickingData[] = await kickRes.json();
-    const puntRes = await fetch('/api/punting');
-    const puntData: PlayerPuntingData[] = await puntRes.json();
-    const returnRes = await fetch('/api/returning');
-    const returnData: PlayerReturningData[] = await returnRes.json();
+    const passData: PlayerPassingData[] = await fetch('/api/passing')
+      .then((res) => res.json())
+      .then((data) => data.filter((x: PlayerPassingData) => x.season === +(process.env.CURRENT_SEASON ?? '0')));
+    const rushData: PlayerRushingData[] = await fetch('/api/rushing')
+      .then((res) => res.json())
+      .then((data) => data.filter((x: PlayerRushingData) => x.season === +(process.env.CURRENT_SEASON ?? '0')));
+    const recData: PlayerReceivingData[] = await fetch('/api/receiving')
+      .then((res) => res.json())
+      .then((data) => data.filter((x: PlayerReceivingData) => x.season === +(process.env.CURRENT_SEASON ?? '0')));
+    const defData: PlayerDefensiveData[] = await fetch('/api/defensive')
+      .then((res) => res.json())
+      .then((data) => data.filter((x: PlayerDefensiveData) => x.season === +(process.env.CURRENT_SEASON ?? '0')));
+    const blockData: PlayerBlockingData[] = await fetch('/api/blocking')
+      .then((res) => res.json())
+      .then((data) => data.filter((x: PlayerBlockingData) => x.season === +(process.env.CURRENT_SEASON ?? '0')));
+    const kickData: PlayerKickingData[] = await fetch('/api/kicking')
+      .then((res) => res.json())
+      .then((data) => data.filter((x: PlayerKickingData) => x.season === +(process.env.CURRENT_SEASON ?? '0')));
+    const puntData: PlayerPuntingData[] = await fetch('/api/punting')
+      .then((res) => res.json())
+      .then((data) => data.filter((x: PlayerPuntingData) => x.season === +(process.env.CURRENT_SEASON ?? '0')));
+    const returnData: PlayerReturningData[] = await fetch('/api/returning')
+      .then((res) => res.json())
+      .then((data) => data.filter((x: PlayerReturningData) => x.season === +(process.env.CURRENT_SEASON ?? '0')));
 
     setGamesPlayed(Math.max(...passData.map((x) => x.games_played)));
 

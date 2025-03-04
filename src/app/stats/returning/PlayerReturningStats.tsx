@@ -4,16 +4,20 @@ import { DataGridPremium, GridColDef, GridRenderCellParams, GridRowModel } from 
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerReturningData } from './playerReturningData';
-import CustomGridToolbar from '@/app/components/CustomGridToolBar';
+import { CustomGridToolbarWithTierAndSeason } from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getReturningGmRating } from '../statCalculations';
 
 interface PlayerReturningStatsProps {
   tier: string;
   tierFilter: (tier: string) => void;
+  tierOptions: string[];
+  season: string;
+  seasonFilter: (season: string) => void;
+  seasonOptions: string[];
 }
 
-export default function PlayerReturningStats({ tier, tierFilter }: PlayerReturningStatsProps) {
+export default function PlayerReturningStats({ tier, tierFilter, tierOptions, season, seasonFilter, seasonOptions }: PlayerReturningStatsProps) {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
@@ -25,7 +29,7 @@ export default function PlayerReturningStats({ tier, tierFilter }: PlayerReturni
     const res = await fetch('/api/returning');
     const data = await res.json();
     setData(data);
-    setRows(data.filter((x: PlayerReturningData) => x.tier === tier));
+    setRows(data.filter((x: PlayerReturningData) => x.tier === tier && x.season === +season));
     setFetched(true);
   };
 
@@ -34,8 +38,12 @@ export default function PlayerReturningStats({ tier, tierFilter }: PlayerReturni
   }, []);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerReturningData) => x.tier === tier));
+    setRows(data.filter((x: PlayerReturningData) => x.tier === tier && x.season === +season));
   }, [tier]);
+
+  useEffect(() => {
+    setRows(data.filter((x: PlayerReturningData) => x.tier === tier && x.season === +season));
+  }, [season]);
 
   const columns: GridColDef[] = !desktop
     ? [
@@ -119,7 +127,7 @@ export default function PlayerReturningStats({ tier, tierFilter }: PlayerReturni
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return getReturningGmRating(row);
           },
           disableColumnMenu: true,
@@ -204,7 +212,7 @@ export default function PlayerReturningStats({ tier, tierFilter }: PlayerReturni
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return getReturningGmRating(row);
           },
         },
@@ -212,30 +220,32 @@ export default function PlayerReturningStats({ tier, tierFilter }: PlayerReturni
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <DataGridPremium
-        rows={rows ?? []}
-        columns={columns}
-        loading={rows.length <= 0 && !fetched}
-        sortingOrder={['desc', 'asc']}
-        pagination
-        pageSizeOptions={[12, 24, 50, 100]}
-        density='compact'
-        getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
-        disableRowSelectionOnClick
-        disableDensitySelector
-        getCellClassName={() => {
-          return desktop ? 'desktop-text' : 'mobile-text';
-        }}
-        slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tier, tierFilter, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
-        initialState={{
-          sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
-          pagination: { paginationModel: { pageSize: 12 } },
-          pinnedColumns: {
-            left: ['player_name'],
-          },
-        }}
-      />
+      {data.length > 0 && (
+        <DataGridPremium
+          rows={rows ?? []}
+          columns={columns}
+          loading={rows.length <= 0 && !fetched}
+          sortingOrder={['desc', 'asc']}
+          pagination
+          pageSizeOptions={[12, 24, 50, 100]}
+          density='compact'
+          getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
+          disableRowSelectionOnClick
+          disableDensitySelector
+          getCellClassName={() => {
+            return desktop ? 'desktop-text' : 'mobile-text';
+          }}
+          slots={{ toolbar: CustomGridToolbarWithTierAndSeason }}
+          slotProps={{ toolbar: { tier, tierFilter, tierOptions, season, seasonFilter, seasonOptions } }}
+          initialState={{
+            sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
+            pagination: { paginationModel: { pageSize: 12 } },
+            pinnedColumns: {
+              left: ['player_name'],
+            },
+          }}
+        />
+      )}
     </Box>
   );
 }

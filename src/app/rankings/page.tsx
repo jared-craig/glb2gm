@@ -3,7 +3,7 @@
 import { DataGridPremium, GridColDef, GridComparatorFn, GridRenderCellParams } from '@mui/x-data-grid-premium';
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
-import CustomGridToolbar from '@/app/components/CustomGridToolBar';
+import { CustomGridToolbarWithTier } from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { TeamData } from '../teams/teamData';
 import { getTeamGmRating } from '../stats/statCalculations';
@@ -393,7 +393,7 @@ export default function Rankings() {
         getCellClassName={() => {
           return desktop ? 'desktop-text' : 'mobile-text';
         }}
-        slots={{ toolbar: CustomGridToolbar }}
+        slots={{ toolbar: CustomGridToolbarWithTier }}
         slotProps={{ toolbar: { tier, tierFilter: setTier, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
         initialState={{
           sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },

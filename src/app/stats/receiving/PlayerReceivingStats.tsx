@@ -4,16 +4,20 @@ import { DataGridPremium, GridColDef, GridRenderCellParams, GridRowModel } from 
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerReceivingData } from './playerReceivingData';
-import CustomGridToolbar from '@/app/components/CustomGridToolBar';
+import { CustomGridToolbarWithTierAndSeason } from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getReceivingDropsPerReception, getReceivingGmRating } from '../statCalculations';
 
 interface PlayerReceivingStatsProps {
   tier: string;
   tierFilter: (tier: string) => void;
+  tierOptions: string[];
+  season: string;
+  seasonFilter: (season: string) => void;
+  seasonOptions: string[];
 }
 
-export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivingStatsProps) {
+export default function PlayerReceivingStats({ tier, tierFilter, tierOptions, season, seasonFilter, seasonOptions }: PlayerReceivingStatsProps) {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
@@ -25,7 +29,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
     const res = await fetch('/api/receiving');
     const data = await res.json();
     setData(data);
-    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier));
+    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season));
     setFetched(true);
   };
 
@@ -34,8 +38,12 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
   }, []);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier));
+    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season));
   }, [tier]);
+
+  useEffect(() => {
+    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season));
+  }, [season]);
 
   const columns: GridColDef[] = !desktop
     ? [
@@ -79,7 +87,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(+row.yards / +row.games_played).toFixed(1);
           },
           disableColumnMenu: true,
@@ -114,7 +122,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +((row.receptions / row.targets) * 100.0).toFixed(1);
           },
           valueFormatter: (value) => `${value}%`,
@@ -126,7 +134,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(row.yards / row.targets).toFixed(2);
           },
           disableColumnMenu: true,
@@ -137,7 +145,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(row.receptions / row.touchdowns).toFixed(2);
           },
           disableColumnMenu: true,
@@ -148,7 +156,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(row.targets / row.touchdowns).toFixed(2);
           },
           disableColumnMenu: true,
@@ -175,7 +183,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return getReceivingDropsPerReception(row);
           },
           disableColumnMenu: true,
@@ -202,7 +210,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return getReceivingGmRating(row);
           },
           disableColumnMenu: true,
@@ -253,7 +261,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(+row.yards / +row.games_played).toFixed(1);
           },
         },
@@ -284,7 +292,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +((row.receptions / row.targets) * 100.0).toFixed(1);
           },
           valueFormatter: (value) => `${value}%`,
@@ -295,7 +303,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(row.yards / row.targets).toFixed(2);
           },
         },
@@ -305,7 +313,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(row.receptions / row.touchdowns).toFixed(2);
           },
         },
@@ -315,7 +323,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(row.targets / row.touchdowns).toFixed(2);
           },
         },
@@ -339,7 +347,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return getReceivingDropsPerReception(row);
           },
         },
@@ -363,7 +371,7 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return getReceivingGmRating(row);
           },
         },
@@ -371,30 +379,32 @@ export default function PlayerReceivingStats({ tier, tierFilter }: PlayerReceivi
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <DataGridPremium
-        rows={rows ?? []}
-        columns={columns}
-        loading={rows.length <= 0 && !fetched}
-        sortingOrder={['desc', 'asc']}
-        pagination
-        pageSizeOptions={[12, 24, 50, 100]}
-        density='compact'
-        getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
-        disableRowSelectionOnClick
-        disableDensitySelector
-        getCellClassName={() => {
-          return desktop ? 'desktop-text' : 'mobile-text';
-        }}
-        slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tier, tierFilter, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
-        initialState={{
-          sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
-          pagination: { paginationModel: { pageSize: 12 } },
-          pinnedColumns: {
-            left: ['player_name'],
-          },
-        }}
-      />
+      {data.length > 0 && (
+        <DataGridPremium
+          rows={rows ?? []}
+          columns={columns}
+          loading={rows.length <= 0 && !fetched}
+          sortingOrder={['desc', 'asc']}
+          pagination
+          pageSizeOptions={[12, 24, 50, 100]}
+          density='compact'
+          getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
+          disableRowSelectionOnClick
+          disableDensitySelector
+          getCellClassName={() => {
+            return desktop ? 'desktop-text' : 'mobile-text';
+          }}
+          slots={{ toolbar: CustomGridToolbarWithTierAndSeason }}
+          slotProps={{ toolbar: { tier, tierFilter, tierOptions, season, seasonFilter, seasonOptions } }}
+          initialState={{
+            sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
+            pagination: { paginationModel: { pageSize: 12 } },
+            pinnedColumns: {
+              left: ['player_name'],
+            },
+          }}
+        />
+      )}
     </Box>
   );
 }
