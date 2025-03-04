@@ -16,7 +16,7 @@ export default function Stats() {
   const [tier, setTier] = useState<string>('Veteran');
   const tierOptions = ['Rookie', 'Sophomore', 'Professional', 'Veteran'];
   const [season, setSeason] = useState<string>(process.env.CURRENT_SEASON ?? '0');
-  const seasonOptions = ['80', '81'];
+  const seasonOptions = ['75', '76', '77', '78', '79', '80', '81'];
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
