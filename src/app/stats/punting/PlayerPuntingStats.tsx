@@ -52,7 +52,12 @@ export default function PlayerPuntingStats({ tier, tierFilter, tierOptions, seas
           headerName: 'NAME',
           width: 140,
           renderCell: (params: GridRenderCellParams<any, string>) => (
-            <Link href={`/player-details/${params.row.player_id}`} target='_blank' rel='noopener' style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <Link
+              href={`/player-details/${params.row.player_id}/${season}`}
+              target='_blank'
+              rel='noopener'
+              style={{ color: 'inherit', textDecoration: 'inherit' }}
+            >
               <strong>{params.value}</strong>
             </Link>
           ),
@@ -154,7 +159,7 @@ export default function PlayerPuntingStats({ tier, tierFilter, tierOptions, seas
           renderCell: (params: GridRenderCellParams<any, string>) => (
             <Stack sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               <Link
-                href={`/player-details/${params.row.player_id}`}
+                href={`/player-details/${params.row.player_id}/${season}`}
                 target='_blank'
                 rel='noopener'
                 style={{ color: 'inherit', textDecoration: 'inherit', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}

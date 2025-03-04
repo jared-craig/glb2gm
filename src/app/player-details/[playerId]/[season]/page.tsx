@@ -47,8 +47,8 @@ const THRESHOLDS = {
   DEFENSIVE_GAMES_PLAYED: 0.75,
 };
 
-export default function PlayerDetails(props: { params: Promise<{ playerId: string }> }) {
-  const params = use(props.params);
+export default function PlayerDetails(props: { params: Promise<{ playerId: string; season: string }> }) {
+  const { playerId, season } = use(props.params);
   const [tierData, setTierData] = useState<any>();
   const [playerData, setPlayerData] = useState<any>();
   const [genericPlayerData, setGenericPlayerData] = useState<PlayerData>();
@@ -58,37 +58,37 @@ export default function PlayerDetails(props: { params: Promise<{ playerId: strin
     const [passData, rushData, receivingData, blockingData, defensiveData, kickingData, puntingData, returningData] = await Promise.all([
       fetch('/api/passing')
         .then((x) => x.json())
-        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+        .then((x) => x.filter((y: PlayerData) => y.season === +season)),
       fetch('/api/rushing')
         .then((x) => x.json())
-        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+        .then((x) => x.filter((y: PlayerData) => y.season === +season)),
       fetch('/api/receiving')
         .then((x) => x.json())
-        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+        .then((x) => x.filter((y: PlayerData) => y.season === +season)),
       fetch('/api/blocking')
         .then((x) => x.json())
-        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+        .then((x) => x.filter((y: PlayerData) => y.season === +season)),
       fetch('/api/defensive')
         .then((x) => x.json())
-        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+        .then((x) => x.filter((y: PlayerData) => y.season === +season)),
       fetch('/api/kicking')
         .then((x) => x.json())
-        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+        .then((x) => x.filter((y: PlayerData) => y.season === +season)),
       fetch('/api/punting')
         .then((x) => x.json())
-        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+        .then((x) => x.filter((y: PlayerData) => y.season === +season)),
       fetch('/api/returning')
         .then((x) => x.json())
-        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+        .then((x) => x.filter((y: PlayerData) => y.season === +season)),
     ]);
-    const passing = passData.find((x: PlayerData) => x.player_id === +params.playerId);
-    const rushing = rushData.find((x: PlayerData) => x.player_id === +params.playerId);
-    const receiving = receivingData.find((x: PlayerData) => x.player_id === +params.playerId);
-    const blocking = blockingData.find((x: PlayerData) => x.player_id === +params.playerId);
-    const defensive = defensiveData.find((x: PlayerData) => x.player_id === +params.playerId);
-    const kicking = kickingData.find((x: PlayerData) => x.player_id === +params.playerId);
-    const punting = puntingData.find((x: PlayerData) => x.player_id === +params.playerId);
-    const returning = returningData.find((x: PlayerData) => x.player_id === +params.playerId);
+    const passing = passData.find((x: PlayerData) => x.player_id === +playerId);
+    const rushing = rushData.find((x: PlayerData) => x.player_id === +playerId);
+    const receiving = receivingData.find((x: PlayerData) => x.player_id === +playerId);
+    const blocking = blockingData.find((x: PlayerData) => x.player_id === +playerId);
+    const defensive = defensiveData.find((x: PlayerData) => x.player_id === +playerId);
+    const kicking = kickingData.find((x: PlayerData) => x.player_id === +playerId);
+    const punting = puntingData.find((x: PlayerData) => x.player_id === +playerId);
+    const returning = returningData.find((x: PlayerData) => x.player_id === +playerId);
 
     const gamesPlayed = Math.max(...passData.map((x: PlayerData) => x.games_played));
     setGamesPlayed(gamesPlayed);
@@ -364,7 +364,8 @@ export default function PlayerDetails(props: { params: Promise<{ playerId: strin
                 {genericPlayerData.position} - {genericPlayerData.tier}
               </Typography>
               <Typography variant='caption'>Team: {genericPlayerData.team_name}</Typography>
-              <Link href={`https://glb2.warriorgeneral.com/game/player/${params.playerId}`} target='_blank' rel='noopener' style={{ color: 'inherit' }}>
+              <Typography variant='caption'>Season: {season}</Typography>
+              <Link href={`https://glb2.warriorgeneral.com/game/player/${playerId}`} target='_blank' rel='noopener' style={{ color: 'inherit' }}>
                 <Typography variant='caption'>GLB2 Link</Typography>
               </Link>
             </Stack>
