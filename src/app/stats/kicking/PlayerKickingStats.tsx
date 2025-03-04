@@ -7,7 +7,6 @@ import { PlayerKickingData } from './playerKickingData';
 import { CustomGridToolbarWithTierAndSeason } from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getKickingGmRating } from '../statCalculations';
-import { DataArray } from '@mui/icons-material';
 
 interface PlayerKickingStatsProps {
   tier: string;
