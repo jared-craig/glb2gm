@@ -5,10 +5,9 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
-  const tiers = params.get('tiers')?.split(',');
   const allTeamData = await prisma.ladder.findMany({
     where: {
-      tier: tiers !== null ? { in: tiers } : undefined,
+      season: process.env.CURRENT_SEASON ? +process.env.CURRENT_SEASON : undefined,
     },
     orderBy: [
       {

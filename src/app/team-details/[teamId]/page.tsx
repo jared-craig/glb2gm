@@ -23,7 +23,7 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
   const fetchData = async () => {
     const res = await fetch('/api/teams');
     const data: TeamData[] = await res.json();
-    const gamesRes = await fetch(`/api/games`);
+    const gamesRes = await fetch('/api/games');
     const gamesData: GameData[] = await gamesRes.json();
     const currentTeam = data.find((x: TeamData) => x.team_id === +params.teamId);
     setTierData(data.filter((x: TeamData) => x.tier === currentTeam?.tier));

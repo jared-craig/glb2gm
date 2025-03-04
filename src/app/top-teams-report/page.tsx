@@ -17,7 +17,7 @@ export default function TopTeamsReport() {
   const fetchData = async () => {
     const res = await fetch('/api/teams');
     const data: TeamData[] = await res.json();
-    const gamesRes = await fetch(`/api/games`);
+    const gamesRes = await fetch('/api/games');
     const gamesData: GameData[] = await gamesRes.json();
     setData(data);
     setAllGamesData(gamesData);
