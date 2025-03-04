@@ -313,7 +313,7 @@ export default function PlayerRushingStats({ tier, tierFilter, tierOptions, seas
           loading={rows.length <= 0 && !fetched}
           sortingOrder={['desc', 'asc']}
           pagination
-          pageSizeOptions={[12, 24, 50, 100]}
+          pageSizeOptions={[10]}
           density='compact'
           getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
           disableRowSelectionOnClick
@@ -325,7 +325,7 @@ export default function PlayerRushingStats({ tier, tierFilter, tierOptions, seas
           slotProps={{ toolbar: { tier, tierFilter, tierOptions, season, seasonFilter, seasonOptions } }}
           initialState={{
             sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
-            pagination: { paginationModel: { pageSize: 12 } },
+            pagination: { paginationModel: { pageSize: 10 } },
             pinnedColumns: {
               left: ['player_name'],
             },
