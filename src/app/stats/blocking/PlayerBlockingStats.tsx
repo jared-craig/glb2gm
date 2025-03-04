@@ -4,16 +4,20 @@ import { DataGridPremium, GridColDef, GridRenderCellParams, GridRowModel } from 
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerBlockingData } from './playerBlockingData';
-import CustomGridToolbar from '@/app/components/CustomGridToolBar';
+import { CustomGridToolbarWithTierAndSeason } from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getBlockingGmRating } from '../statCalculations';
 
 interface PlayerRushingStatsProps {
   tier: string;
   tierFilter: (tier: string) => void;
+  tierOptions: string[];
+  season: string;
+  seasonFilter: (tier: string) => void;
+  seasonOptions: string[];
 }
 
-export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingStatsProps) {
+export default function PlayerRushingStats({ tier, tierFilter, tierOptions, season, seasonFilter, seasonOptions }: PlayerRushingStatsProps) {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
@@ -25,7 +29,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
     const res = await fetch('/api/blocking');
     const data = await res.json();
     setData(data.filter((x: PlayerBlockingData) => x.plays >= 10.0 * x.games_played));
-    setRows(data.filter((x: PlayerBlockingData) => x.tier === tier && x.plays >= 10.0 * x.games_played));
+    setRows(data.filter((x: PlayerBlockingData) => x.plays >= 10.0 * x.games_played && x.tier === tier && x.season === +season));
     setFetched(true);
   };
 
@@ -34,8 +38,12 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
   }, []);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerBlockingData) => x.tier === tier));
+    setRows(data.filter((x: PlayerBlockingData) => x.tier === tier && x.season === +season));
   }, [tier]);
+
+  useEffect(() => {
+    setRows(data.filter((x: PlayerBlockingData) => x.tier === tier && x.season === +season));
+  }, [season]);
 
   const columns: GridColDef[] = !desktop
     ? [
@@ -80,7 +88,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           type: 'number',
           pinnable: false,
           disableColumnMenu: true,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(+row.pancakes / +row.reverse_pancaked).toFixed(2);
           },
         },
@@ -114,7 +122,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return getBlockingGmRating(row);
           },
           disableColumnMenu: true,
@@ -165,7 +173,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(+row.pancakes / +row.reverse_pancaked).toFixed(2);
           },
         },
@@ -196,7 +204,7 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return getBlockingGmRating(row);
           },
         },
@@ -204,35 +212,32 @@ export default function PlayerRushingStats({ tier, tierFilter }: PlayerRushingSt
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <DataGridPremium
-        rows={rows ?? []}
-        columns={columns}
-        loading={rows.length <= 0 && !fetched}
-        sortingOrder={['desc', 'asc']}
-        pagination
-        pageSizeOptions={[12, 24, 50, 100]}
-        density='compact'
-        getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
-        disableRowSelectionOnClick
-        disableDensitySelector
-        getCellClassName={() => {
-          return desktop ? 'desktop-text' : 'mobile-text';
-        }}
-        slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tier, tierFilter, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
-        initialState={{
-          sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
-          filter: {
-            filterModel: {
-              items: [{ field: 'plays', operator: '>=', value: '25' }],
+      {data.length > 0 && (
+        <DataGridPremium
+          rows={rows ?? []}
+          columns={columns}
+          loading={rows.length <= 0 && !fetched}
+          sortingOrder={['desc', 'asc']}
+          pagination
+          pageSizeOptions={[12, 24, 50, 100]}
+          density='compact'
+          getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
+          disableRowSelectionOnClick
+          disableDensitySelector
+          getCellClassName={() => {
+            return desktop ? 'desktop-text' : 'mobile-text';
+          }}
+          slots={{ toolbar: CustomGridToolbarWithTierAndSeason }}
+          slotProps={{ toolbar: { tier, tierFilter, tierOptions, season, seasonFilter, seasonOptions } }}
+          initialState={{
+            sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
+            pagination: { paginationModel: { pageSize: 12 } },
+            pinnedColumns: {
+              left: ['player_name'],
             },
-          },
-          pagination: { paginationModel: { pageSize: 12 } },
-          pinnedColumns: {
-            left: ['player_name'],
-          },
-        }}
-      />
+          }}
+        />
+      )}
     </Box>
   );
 }

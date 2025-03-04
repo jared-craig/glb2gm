@@ -10,5 +10,4 @@ export interface PlayerPuntingData extends PlayerData {
   inside_five: number;
   inside_ten: number;
   inside_twenty: number;
-  tier: string;
 }

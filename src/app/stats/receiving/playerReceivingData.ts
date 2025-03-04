@@ -10,5 +10,4 @@ export interface PlayerReceivingData extends PlayerData {
   drops: number;
   fumbles: number;
   fumbles_lost: number;
-  tier: string;
 }

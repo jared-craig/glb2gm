@@ -4,16 +4,20 @@ import { DataGridPremium, GridColDef, GridRenderCellParams, GridRowModel } from 
 import { useEffect, useState } from 'react';
 import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerPassingData } from './playerPassingData';
-import CustomGridToolbar from '@/app/components/CustomGridToolBar';
+import { CustomGridToolbarWithTierAndSeason } from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getPassingGmRating } from '../statCalculations';
 
 interface PlayerPassingStatsProps {
   tier: string;
   tierFilter: (tier: string) => void;
+  tierOptions: string[];
+  season: string;
+  seasonFilter: (season: string) => void;
+  seasonOptions: string[];
 }
 
-export default function PlayerPassingStats({ tier, tierFilter }: PlayerPassingStatsProps) {
+export default function PlayerPassingStats({ tier, tierFilter, tierOptions, season, seasonFilter, seasonOptions }: PlayerPassingStatsProps) {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('xl'));
 
@@ -22,10 +26,9 @@ export default function PlayerPassingStats({ tier, tierFilter }: PlayerPassingSt
   const [rows, setRows] = useState<PlayerPassingData[]>([]);
 
   const fetchData = async () => {
-    const res = await fetch('/api/passing');
-    const data = await res.json();
+    const data = await fetch('/api/passing').then((res) => res.json());
     setData(data);
-    setRows(data.filter((x: PlayerPassingData) => x.tier === tier));
+    setRows(data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season));
     setFetched(true);
   };
 
@@ -34,8 +37,12 @@ export default function PlayerPassingStats({ tier, tierFilter }: PlayerPassingSt
   }, []);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerPassingData) => x.tier === tier));
+    setRows(data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season));
   }, [tier]);
+
+  useEffect(() => {
+    setRows(data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season));
+  }, [season]);
 
   const columns: GridColDef[] = !desktop
     ? [
@@ -72,7 +79,7 @@ export default function PlayerPassingStats({ tier, tierFilter }: PlayerPassingSt
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(+row.yards / +row.games_played).toFixed(1);
           },
           disableColumnMenu: true,
@@ -100,7 +107,7 @@ export default function PlayerPassingStats({ tier, tierFilter }: PlayerPassingSt
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return +(row.attempts / row.touchdowns).toFixed(2);
           },
           disableColumnMenu: true,
@@ -135,7 +142,7 @@ export default function PlayerPassingStats({ tier, tierFilter }: PlayerPassingSt
           width: 120,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return getPassingGmRating(row);
           },
           disableColumnMenu: true,
@@ -180,7 +187,7 @@ export default function PlayerPassingStats({ tier, tierFilter }: PlayerPassingSt
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row: GridRowModel) => {
+          valueGetter: (_value, row: GridRowModel) => {
             return +(+row.yards / +row.games_played).toFixed(1);
           },
         },
@@ -205,7 +212,7 @@ export default function PlayerPassingStats({ tier, tierFilter }: PlayerPassingSt
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return +(row.attempts / row.touchdowns).toFixed(2);
           },
         },
@@ -250,7 +257,7 @@ export default function PlayerPassingStats({ tier, tierFilter }: PlayerPassingSt
           flex: 1,
           type: 'number',
           pinnable: false,
-          valueGetter: (value, row) => {
+          valueGetter: (_value, row) => {
             return getPassingGmRating(row);
           },
         },
@@ -258,35 +265,34 @@ export default function PlayerPassingStats({ tier, tierFilter }: PlayerPassingSt
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <DataGridPremium
-        rows={rows ?? []}
-        columns={columns}
-        loading={rows.length <= 0 && !fetched}
-        sortingOrder={['desc', 'asc']}
-        pagination
-        pageSizeOptions={[12, 24, 50, 100]}
-        density='compact'
-        getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
-        disableRowSelectionOnClick
-        disableDensitySelector
-        getCellClassName={() => {
-          return desktop ? 'desktop-text' : 'mobile-text';
-        }}
-        slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{ toolbar: { tier, tierFilter, tierOptions: ['Rookie', 'Sophomore', 'Professional', 'Veteran'] } }}
-        initialState={{
-          sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
-          filter: {
-            filterModel: {
-              items: [{ field: 'attempts', operator: '>=', value: '10' }],
+      {data.length > 0 && (
+        <DataGridPremium
+          rows={rows ?? []}
+          columns={columns}
+          loading={rows.length <= 0 && !fetched}
+          sortingOrder={['desc', 'asc']}
+          pagination
+          pageSizeOptions={[12, 24, 50, 100]}
+          density='compact'
+          getRowHeight={({ densityFactor }) => (desktop ? 'auto' : 52 * densityFactor)}
+          disableRowSelectionOnClick
+          disableDensitySelector
+          getCellClassName={() => {
+            return desktop ? 'desktop-text' : 'mobile-text';
+          }}
+          slots={{ toolbar: CustomGridToolbarWithTierAndSeason }}
+          slotProps={{
+            toolbar: { tier, tierFilter, tierOptions, season, seasonFilter, seasonOptions },
+          }}
+          initialState={{
+            sorting: { sortModel: [{ field: 'gm_rating', sort: 'desc' }] },
+            pagination: { paginationModel: { pageSize: 12 } },
+            pinnedColumns: {
+              left: ['player_name'],
             },
-          },
-          pagination: { paginationModel: { pageSize: 12 } },
-          pinnedColumns: {
-            left: ['player_name'],
-          },
-        }}
-      />
+          }}
+        />
+      )}
     </Box>
   );
 }

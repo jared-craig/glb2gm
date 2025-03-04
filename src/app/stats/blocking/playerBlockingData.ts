@@ -6,5 +6,4 @@ export interface PlayerBlockingData extends PlayerData {
   reverse_pancaked: number;
   hurries_allowed: number;
   sacks_allowed: number;
-  tier: string;
 }

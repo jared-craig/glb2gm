@@ -6,4 +6,5 @@ export interface PlayerData {
   position: string;
   games_played: number;
   tier: string;
+  season: number;
 }

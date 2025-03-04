@@ -19,5 +19,4 @@ export interface PlayerKickingData extends PlayerData {
   touchbacks: number;
   yards: number;
   average: number;
-  tier: string;
 }
