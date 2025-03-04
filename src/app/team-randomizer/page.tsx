@@ -142,7 +142,7 @@ export default function TeamRandomizer() {
             <Grid container size={12} spacing={1}>
               {Object.entries(optimalTeamComp)
                 .filter((x) => ['QB', 'FB', 'HB', 'WR', 'TE', 'C', 'G', 'OT'].includes(x[0]))
-                .map(([key, value]: any) => (
+                .map(([key]: any) => (
                   <Grid key={key} size={{ xs: 6, md: 3 }} sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 1 }}>
                     <Typography color='secondary' sx={{ textAlign: 'center', pb: 1 }}>
                       {key}
@@ -170,7 +170,7 @@ export default function TeamRandomizer() {
               </Grid>
               {Object.entries(optimalTeamComp)
                 .filter((x) => ['DT', 'DE', 'LB', 'CB', 'FS', 'SS'].includes(x[0]))
-                .map(([key, value]: any) => (
+                .map(([key]: any) => (
                   <Grid key={key} size={{ xs: 6, md: 3 }} sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 1 }}>
                     <Typography color='secondary' sx={{ textAlign: 'center', pb: 1 }}>
                       {key}
@@ -198,7 +198,7 @@ export default function TeamRandomizer() {
               </Grid>
               {Object.entries(optimalTeamComp)
                 .filter((x) => ['K', 'P'].includes(x[0]))
-                .map(([key, value]: any) => (
+                .map(([key]: any) => (
                   <Grid key={key} size={{ xs: 6, md: 3 }} sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 1 }}>
                     <Typography color='secondary' sx={{ textAlign: 'center', pb: 1 }}>
                       {key}
