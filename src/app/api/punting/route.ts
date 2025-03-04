@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
   const allPlayerPuntingData = await prisma.punting.findMany({
     where: {
       tier: tiers !== null ? { in: tiers } : undefined,
+      season: process.env.CURRENT_SEASON ? +process.env.CURRENT_SEASON : undefined,
     },
     orderBy: [
       {
