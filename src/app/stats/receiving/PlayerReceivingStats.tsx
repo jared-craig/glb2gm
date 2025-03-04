@@ -26,10 +26,13 @@ export default function PlayerReceivingStats({ tier, tierFilter, tierOptions, se
   const [rows, setRows] = useState<PlayerReceivingData[]>([]);
 
   const fetchData = async () => {
-    const res = await fetch('/api/receiving');
-    const data = await res.json();
+    const data = await fetch('/api/receiving').then((res) => res.json());
     setData(data);
-    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerReceivingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season)
+    );
     setFetched(true);
   };
 
@@ -38,11 +41,19 @@ export default function PlayerReceivingStats({ tier, tierFilter, tierOptions, se
   }, []);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerReceivingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season)
+    );
   }, [tier]);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerReceivingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season)
+    );
   }, [season]);
 
   const columns: GridColDef[] = !desktop

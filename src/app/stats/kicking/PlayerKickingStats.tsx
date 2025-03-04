@@ -26,10 +26,13 @@ export default function PlayerKickingStats({ tier, tierFilter, tierOptions, seas
   const [rows, setRows] = useState<PlayerKickingData[]>([]);
 
   const fetchData = async () => {
-    const res = await fetch('/api/kicking');
-    const data = await res.json();
+    const data = await fetch('/api/kicking').then((res) => res.json());
     setData(data);
-    setRows(data.filter((x: PlayerKickingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerKickingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerKickingData) => x.tier === tier && x.season === +season)
+    );
     setFetched(true);
   };
 
@@ -38,11 +41,19 @@ export default function PlayerKickingStats({ tier, tierFilter, tierOptions, seas
   }, []);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerKickingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerKickingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerKickingData) => x.tier === tier && x.season === +season)
+    );
   }, [tier]);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerKickingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerKickingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerKickingData) => x.tier === tier && x.season === +season)
+    );
   }, [season]);
 
   const columns: GridColDef[] = !desktop

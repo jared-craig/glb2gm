@@ -7,4 +7,5 @@ export interface PlayerData {
   games_played: number;
   tier: string;
   season: number;
+  retired: boolean;
 }

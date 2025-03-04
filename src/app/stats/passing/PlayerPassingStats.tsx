@@ -28,7 +28,11 @@ export default function PlayerPassingStats({ tier, tierFilter, tierOptions, seas
   const fetchData = async () => {
     const data = await fetch('/api/passing').then((res) => res.json());
     setData(data);
-    setRows(data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerPassingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season)
+    );
     setFetched(true);
   };
 
@@ -37,11 +41,19 @@ export default function PlayerPassingStats({ tier, tierFilter, tierOptions, seas
   }, []);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerPassingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season)
+    );
   }, [tier]);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerPassingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season)
+    );
   }, [season]);
 
   const columns: GridColDef[] = !desktop
