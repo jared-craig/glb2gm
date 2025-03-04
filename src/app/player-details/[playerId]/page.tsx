@@ -47,7 +47,7 @@ const THRESHOLDS = {
   DEFENSIVE_GAMES_PLAYED: 0.75,
 };
 
-export default function TeamDetails(props: { params: Promise<{ playerId: string }> }) {
+export default function PlayerDetails(props: { params: Promise<{ playerId: string }> }) {
   const params = use(props.params);
   const [tierData, setTierData] = useState<any>();
   const [playerData, setPlayerData] = useState<any>();
@@ -55,25 +55,31 @@ export default function TeamDetails(props: { params: Promise<{ playerId: string 
   const [gamesPlayed, setGamesPlayed] = useState<number>(1);
 
   const fetchData = async () => {
-    const [passRes, rushRes, receivingRes, blockingRes, defensiveRes, kickingRes, puntingRes, returningRes] = await Promise.all([
-      fetch('/api/passing'),
-      fetch('/api/rushing'),
-      fetch('/api/receiving'),
-      fetch('/api/blocking'),
-      fetch('/api/defensive'),
-      fetch('/api/kicking'),
-      fetch('/api/punting'),
-      fetch('/api/returning'),
-    ]);
     const [passData, rushData, receivingData, blockingData, defensiveData, kickingData, puntingData, returningData] = await Promise.all([
-      passRes.json(),
-      rushRes.json(),
-      receivingRes.json(),
-      blockingRes.json(),
-      defensiveRes.json(),
-      kickingRes.json(),
-      puntingRes.json(),
-      returningRes.json(),
+      fetch('/api/passing')
+        .then((x) => x.json())
+        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+      fetch('/api/rushing')
+        .then((x) => x.json())
+        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+      fetch('/api/receiving')
+        .then((x) => x.json())
+        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+      fetch('/api/blocking')
+        .then((x) => x.json())
+        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+      fetch('/api/defensive')
+        .then((x) => x.json())
+        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+      fetch('/api/kicking')
+        .then((x) => x.json())
+        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+      fetch('/api/punting')
+        .then((x) => x.json())
+        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
+      fetch('/api/returning')
+        .then((x) => x.json())
+        .then((x) => x.filter((y: PlayerData) => y.season === +(process.env.CURRENT_SEASON ?? '0'))),
     ]);
     const passing = passData.find((x: PlayerData) => x.player_id === +params.playerId);
     const rushing = rushData.find((x: PlayerData) => x.player_id === +params.playerId);
