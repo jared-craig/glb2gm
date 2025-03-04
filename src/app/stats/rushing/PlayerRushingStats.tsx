@@ -26,10 +26,13 @@ export default function PlayerRushingStats({ tier, tierFilter, tierOptions, seas
   const [rows, setRows] = useState<PlayerRushingData[]>([]);
 
   const fetchData = async () => {
-    const res = await fetch('/api/rushing');
-    const data = await res.json();
+    const data = await fetch('/api/rushing').then((res) => res.json());
     setData(data);
-    setRows(data.filter((x: PlayerRushingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerRushingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerRushingData) => x.tier === tier && x.season === +season)
+    );
     setFetched(true);
   };
 
@@ -38,11 +41,19 @@ export default function PlayerRushingStats({ tier, tierFilter, tierOptions, seas
   }, []);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerRushingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerRushingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerRushingData) => x.tier === tier && x.season === +season)
+    );
   }, [tier]);
 
   useEffect(() => {
-    setRows(data.filter((x: PlayerRushingData) => x.tier === tier && x.season === +season));
+    setRows(
+      season === process.env.CURRENT_SEASON
+        ? data.filter((x: PlayerRushingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
+        : data.filter((x: PlayerRushingData) => x.tier === tier && x.season === +season)
+    );
   }, [season]);
 
   const columns: GridColDef[] = !desktop

@@ -28,6 +28,7 @@ model Passing {
   season                Int
   player_id             Int
   id                    Int      @id(map: "PK_Passing") @default(autoincrement())
+  retired               Boolean  @default(false, map: "DF__Passing__retired__4C364F0E")
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -50,6 +51,7 @@ model Rushing {
   season              Int
   player_id           Int
   id                  Int      @id(map: "PK_Rushing") @default(autoincrement())
+  retired             Boolean  @default(false, map: "DF__Rushing__retired__4F12BBB9")
 }
 
 model Receiving {
@@ -71,6 +73,7 @@ model Receiving {
   season            Int
   player_id         Int
   id                Int      @id(map: "PK_Receiving") @default(autoincrement())
+  retired           Boolean  @default(false, map: "DF__Receiving__retir__4D2A7347")
 }
 
 model Defensive {
@@ -102,6 +105,7 @@ model Defensive {
   season               Int
   player_id            Int
   id                   Int      @id(map: "PK_Defensive") @default(autoincrement())
+  retired              Boolean  @default(false, map: "DF__Defensive__retir__4A4E069C")
 }
 
 model Blocking {
@@ -119,6 +123,7 @@ model Blocking {
   season           Int
   player_id        Int
   id               Int      @id(map: "PK_Blocking") @default(autoincrement())
+  retired          Boolean  @default(false, map: "DF__Blocking__retire__4959E263")
 }
 
 model Kicking {
@@ -149,6 +154,7 @@ model Kicking {
   season                         Int
   player_id                      Int
   id                             Int      @id(map: "PK_Kicking") @default(autoincrement())
+  retired                        Boolean  @default(false, map: "DF__Kicking__retired__4B422AD5")
 }
 
 model Ladder {
@@ -253,6 +259,7 @@ model Punting {
   season        Int
   player_id     Int
   id            Int      @id(map: "PK_Punting") @default(autoincrement())
+  retired       Boolean  @default(false, map: "DF__Punting__retired__5006DFF2")
 }
 
 model Returning {
@@ -273,6 +280,7 @@ model Returning {
   season        Int
   player_id     Int
   id            Int      @id(map: "PK_Returning") @default(autoincrement())
+  retired       Boolean  @default(false, map: "DF__Returning__retir__4E1E9780")
 }
 
 model TeamBuilderPlayers {
