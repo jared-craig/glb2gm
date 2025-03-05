@@ -27,6 +27,14 @@ import {
   getReceivingGmRating,
   getRushingGmRating,
 } from '@/app/stats/statCalculations';
+import { PlayerPassingData } from '@/app/stats/passing/playerPassingData';
+import { PlayerBlockingData } from '@/app/stats/blocking/playerBlockingData';
+import { PlayerDefensiveData } from '@/app/stats/defensive/playerDefensiveData';
+import { PlayerKickingData } from '@/app/stats/kicking/playerKickingData';
+import { PlayerPuntingData } from '@/app/stats/punting/playerPuntingData';
+import { PlayerReceivingData } from '@/app/stats/receiving/playerReceivingData';
+import { PlayerReturningData } from '@/app/stats/returning/playerReturningData';
+import { PlayerRushingData } from '@/app/stats/rushing/playerRushingData';
 
 const combinePlayerData = (...objects: any): any => {
   return objects.reduce((acc: any, obj: any) => {
@@ -105,24 +113,66 @@ export default function PlayerDetails(props: { params: Promise<{ playerId: strin
       { returning: returning }
     );
     const tierPlayerData = combinePlayerData(
-      { passing: passData.filter((x: any) => x.tier === passing?.tier && x.attempts >= THRESHOLDS.PASS_ATTEMPTS * +x.games_played && x.gamesPlayed / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED) },
       {
-        rushing: rushData.filter((x: any) => x.tier === rushing?.tier && x.rushes >= THRESHOLDS.CARRIES * +x.games_played && x.position === rushing?.position && x.gamesPlayed / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED),
+        passing: passData.filter(
+          (x: PlayerPassingData) =>
+            x.tier === passing?.tier &&
+            x.attempts >= THRESHOLDS.PASS_ATTEMPTS * +x.games_played &&
+            x.games_played / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED
+        ),
+      },
+      {
+        rushing: rushData.filter(
+          (x: PlayerRushingData) =>
+            x.tier === rushing?.tier &&
+            x.rushes >= THRESHOLDS.CARRIES * +x.games_played &&
+            x.position === rushing?.position &&
+            x.games_played / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED
+        ),
       },
       {
         receiving: receivingData.filter(
-          (x: any) => x.tier === receiving?.tier && x.receptions >= THRESHOLDS.RECEPTIONS * +x.games_played && x.position === receiving?.position && x.gamesPlayed / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED
+          (x: PlayerReceivingData) =>
+            x.tier === receiving?.tier &&
+            x.receptions >= THRESHOLDS.RECEPTIONS * +x.games_played &&
+            x.position === receiving?.position &&
+            x.games_played / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED
         ),
       },
-      { blocking: blockingData.filter((x: any) => x.tier === blocking?.tier && x.plays >= THRESHOLDS.BLOCKER_PLAYS * gamesPlayed && x.gamesPlayed / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED) },
+      {
+        blocking: blockingData.filter(
+          (x: PlayerBlockingData) =>
+            x.tier === blocking?.tier && x.plays >= THRESHOLDS.BLOCKER_PLAYS * gamesPlayed && x.games_played / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED
+        ),
+      },
       {
         defensive: defensiveData.filter(
-          (x: any) => x.tier === defensive?.tier && x.games_played / gamesPlayed >= THRESHOLDS.DEFENSIVE_GAMES_PLAYED && x.position === defensive?.position
+          (x: PlayerDefensiveData) =>
+            x.tier === defensive?.tier && x.games_played / gamesPlayed >= THRESHOLDS.DEFENSIVE_GAMES_PLAYED && x.position === defensive?.position
         ),
       },
-      { kicking: kickingData.filter((x: any) => x.tier === kicking?.tier && x.fg_attempts >= THRESHOLDS.FG_ATTEMPTS * +x.games_played && x.gamesPlayed / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED) },
-      { punting: puntingData.filter((x: any) => x.tier === punting?.tier && x.punts >= THRESHOLDS.PUNTS * +x.games_played && x.gamesPlayed / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED) },
-      { returning: returningData.filter((x: any) => x.tier === returning?.tier && x.prs + x.krs >= THRESHOLDS.RETURNS * +x.games_played && x.gamesPlayed / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED) }
+      {
+        kicking: kickingData.filter(
+          (x: PlayerKickingData) =>
+            x.tier === kicking?.tier &&
+            x.fg_attempts >= THRESHOLDS.FG_ATTEMPTS * +x.games_played &&
+            x.games_played / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED
+        ),
+      },
+      {
+        punting: puntingData.filter(
+          (x: PlayerPuntingData) =>
+            x.tier === punting?.tier && x.punts >= THRESHOLDS.PUNTS * +x.games_played && x.games_played / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED
+        ),
+      },
+      {
+        returning: returningData.filter(
+          (x: PlayerReturningData) =>
+            x.tier === returning?.tier &&
+            x.prs + x.krs >= THRESHOLDS.RETURNS * +x.games_played &&
+            x.games_played / gamesPlayed >= THRESHOLDS.GENERIC_GAMES_PLAYED
+        ),
+      }
     );
 
     setPlayerData(currentPlayerData);
@@ -340,7 +390,7 @@ export default function PlayerDetails(props: { params: Promise<{ playerId: strin
     if (!sortedTier) return 'N/A';
     let rank = 1;
     let previousSortValue = null;
-    for (let i = 0; i <= sortedTier.length; i++) {
+    for (let i = 0; i < sortedTier.length; i++) {
       const { player_id, sortValue } = sortedTier[i];
       if (sortValue !== previousSortValue) rank = i + 1;
       if (player_id === genericPlayerData.player_id) return formatWithOrdinal(rank);
