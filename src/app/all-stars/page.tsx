@@ -15,7 +15,7 @@ import {
   getReturningGmRating,
   getRushingGmRating,
 } from '../stats/statCalculations';
-import { Divider, FormControl, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
+import { Divider, FormControl, LinearProgress, ListItemText, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { PlayerDefensiveData } from '../stats/defensive/playerDefensiveData';
 import { PlayerBlockingData } from '../stats/blocking/playerBlockingData';
 import { PlayerKickingData } from '../stats/kicking/playerKickingData';
@@ -24,6 +24,7 @@ import { PlayerReturningData } from '../stats/returning/playerReturningData';
 import OffensiveAllStarTeam from './OffensiveAllStarTeam';
 import DefensiveAllStarTeam from './DefensiveAllStarTeam';
 import SpecialTeamsAllStarTeam from './SpecialTeamsAllStarTeam';
+import { SEASON_OPTIONS } from '../helpers';
 
 interface AllData {
   passData: PlayerPassingData[];
@@ -49,7 +50,6 @@ interface Thresholds {
 export default function TopTeam() {
   const [gamesPlayed, setGamesPlayed] = useState<number>();
   const [thresholds, setThresholds] = useState<Thresholds>();
-  const [teamChoice, setTeamChoice] = useState<string>('first');
   const [allData, setAllData] = useState<AllData>();
   const [passerRookieData, setPasserRookieData] = useState<(PlayerPassingData | undefined)[]>([]);
   const [passerSophData, setPasserSophData] = useState<(PlayerPassingData | undefined)[]>([]);
@@ -91,6 +91,7 @@ export default function TopTeam() {
   const [kickersFetching, setKickersFetching] = useState<boolean>(true);
   const [puntersFetching, setPuntersFetching] = useState<boolean>(true);
   const [returnersFetching, setReturnersFetching] = useState<boolean>(true);
+  const [season, setSeason] = useState<string>(process.env.CURRENT_SEASON ?? '0');
 
   const matchById = (array1: any[], array2: any[], statToPull: string, propToAdd: string) => {
     const map = new Map();
@@ -161,28 +162,60 @@ export default function TopTeam() {
   const fetchData = async () => {
     const passData: PlayerPassingData[] = await fetch('/api/passing')
       .then((res) => res.json())
-      .then((data) => data.filter((x: PlayerPassingData) => x.season === +(process.env.CURRENT_SEASON ?? '0') && !x.retired && x.team_name !== 'N/A'));
+      .then((data) =>
+        data.filter((x: PlayerPassingData) =>
+          season === process.env.CURRENT_SEASON ? x.season === +season && !x.retired && x.team_name !== 'N/A' : x.season === +season
+        )
+      );
     const rushData: PlayerRushingData[] = await fetch('/api/rushing')
       .then((res) => res.json())
-      .then((data) => data.filter((x: PlayerRushingData) => x.season === +(process.env.CURRENT_SEASON ?? '0') && !x.retired && x.team_name !== 'N/A'));
+      .then((data) =>
+        data.filter((x: PlayerRushingData) =>
+          season === process.env.CURRENT_SEASON ? x.season === +season && !x.retired && x.team_name !== 'N/A' : x.season === +season
+        )
+      );
     const recData: PlayerReceivingData[] = await fetch('/api/receiving')
       .then((res) => res.json())
-      .then((data) => data.filter((x: PlayerReceivingData) => x.season === +(process.env.CURRENT_SEASON ?? '0') && !x.retired && x.team_name !== 'N/A'));
+      .then((data) =>
+        data.filter((x: PlayerReceivingData) =>
+          season === process.env.CURRENT_SEASON ? x.season === +season && !x.retired && x.team_name !== 'N/A' : x.season === +season
+        )
+      );
     const defData: PlayerDefensiveData[] = await fetch('/api/defensive')
       .then((res) => res.json())
-      .then((data) => data.filter((x: PlayerDefensiveData) => x.season === +(process.env.CURRENT_SEASON ?? '0') && !x.retired && x.team_name !== 'N/A'));
+      .then((data) =>
+        data.filter((x: PlayerDefensiveData) =>
+          season === process.env.CURRENT_SEASON ? x.season === +season && !x.retired && x.team_name !== 'N/A' : x.season === +season
+        )
+      );
     const blockData: PlayerBlockingData[] = await fetch('/api/blocking')
       .then((res) => res.json())
-      .then((data) => data.filter((x: PlayerBlockingData) => x.season === +(process.env.CURRENT_SEASON ?? '0') && !x.retired && x.team_name !== 'N/A'));
+      .then((data) =>
+        data.filter((x: PlayerBlockingData) =>
+          season === process.env.CURRENT_SEASON ? x.season === +season && !x.retired && x.team_name !== 'N/A' : x.season === +season
+        )
+      );
     const kickData: PlayerKickingData[] = await fetch('/api/kicking')
       .then((res) => res.json())
-      .then((data) => data.filter((x: PlayerKickingData) => x.season === +(process.env.CURRENT_SEASON ?? '0') && !x.retired && x.team_name !== 'N/A'));
+      .then((data) =>
+        data.filter((x: PlayerKickingData) =>
+          season === process.env.CURRENT_SEASON ? x.season === +season && !x.retired && x.team_name !== 'N/A' : x.season === +season
+        )
+      );
     const puntData: PlayerPuntingData[] = await fetch('/api/punting')
       .then((res) => res.json())
-      .then((data) => data.filter((x: PlayerPuntingData) => x.season === +(process.env.CURRENT_SEASON ?? '0') && !x.retired && x.team_name !== 'N/A'));
+      .then((data) =>
+        data.filter((x: PlayerPuntingData) =>
+          season === process.env.CURRENT_SEASON ? x.season === +season && !x.retired && x.team_name !== 'N/A' : x.season === +season
+        )
+      );
     const returnData: PlayerReturningData[] = await fetch('/api/returning')
       .then((res) => res.json())
-      .then((data) => data.filter((x: PlayerReturningData) => x.season === +(process.env.CURRENT_SEASON ?? '0') && !x.retired && x.team_name !== 'N/A'));
+      .then((data) =>
+        data.filter((x: PlayerReturningData) =>
+          season === process.env.CURRENT_SEASON ? x.season === +season && !x.retired && x.team_name !== 'N/A' : x.season === +season
+        )
+      );
 
     setGamesPlayed(Math.max(...passData.map((x) => x.games_played)));
 
@@ -229,31 +262,32 @@ export default function TopTeam() {
 
     const tops: PlayerRushingData[] = allDataWithRecYardsAndTd.sort((a: PlayerRushingData, b: PlayerRushingData) => sortByRating('rushing', a, b));
 
-    let rookies: (PlayerRushingData | undefined)[] = [];
+    let rooks: (PlayerRushingData | undefined)[] = [];
     let sophs: (PlayerRushingData | undefined)[] = [];
     let pros: (PlayerRushingData | undefined)[] = [];
     let vets: (PlayerRushingData | undefined)[] = [];
 
     const rookieFBs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 5.0).slice(0, 2);
-    rookies = rookieFBs.length > 0 ? [...rookies, ...rookieFBs] : [...rookies, ...[undefined, undefined]];
+    rooks =
+      rookieFBs.length > 1 ? [...rooks, ...rookieFBs] : rookieFBs.length > 0 ? [...rooks, ...[...rookieFBs, undefined]] : [...rooks, ...[undefined, undefined]];
     const rookieHBs = tops.filter((x) => x.tier === 'Rookie' && x.position === 'HB' && x.rushes >= thresholds.CARRIES).slice(0, 2);
-    rookies = rookieHBs.length > 0 ? [...rookies, ...rookieHBs] : [...rookies, ...[undefined, undefined]];
-    setRusherRookieData(rookies);
+    rooks = rookieHBs.length > 0 ? [...rooks, ...rookieHBs] : [...rooks, ...[undefined, undefined]];
+    setRusherRookieData(rooks);
 
     const sophFBs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 5.0).slice(0, 2);
-    sophs = sophFBs.length > 0 ? [...sophs, ...sophFBs] : [...sophs, ...[undefined, undefined]];
+    sophs = sophFBs.length > 1 ? [...sophs, ...sophFBs] : sophFBs.length > 0 ? [...sophs, ...[...sophFBs, undefined]] : [...sophs, ...[undefined, undefined]];
     const sophHBs = tops.filter((x) => x.tier === 'Sophomore' && x.position === 'HB' && x.rushes >= thresholds.CARRIES).slice(0, 2);
     sophs = sophHBs.length > 0 ? [...sophs, ...sophHBs] : [...sophs, ...[undefined, undefined]];
     setRusherSophData(sophs);
 
     const proFBs = tops.filter((x) => x.tier === 'Professional' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 5.0).slice(0, 2);
-    pros = proFBs.length > 0 ? [...pros, ...proFBs] : [...pros, ...[undefined, undefined]];
+    pros = proFBs.length > 1 ? [...pros, ...proFBs] : proFBs.length > 0 ? [...pros, ...[...proFBs, undefined]] : [...pros, ...[undefined, undefined]];
     const proHBs = tops.filter((x) => x.tier === 'Professional' && x.position === 'HB' && x.rushes >= thresholds.CARRIES).slice(0, 2);
     pros = proHBs.length > 0 ? [...pros, ...proHBs] : [...pros, ...[undefined, undefined]];
     setRusherProData(pros);
 
     const vetFBs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'FB' && x.rushes >= thresholds.CARRIES / 5.0).slice(0, 2);
-    vets = vetFBs.length > 0 ? [...vets, ...vetFBs] : [...vets, ...[undefined, undefined]];
+    vets = vetFBs.length > 1 ? [...vets, ...vetFBs] : vetFBs.length > 0 ? [...vets, ...[...vetFBs, undefined]] : [...vets, ...[undefined, undefined]];
     const vetHBs = tops.filter((x) => x.tier === 'Veteran' && x.position === 'HB' && x.rushes >= thresholds.CARRIES).slice(0, 2);
     vets = vetHBs.length > 0 ? [...vets, ...vetHBs] : [...vets, ...[undefined, undefined]];
     setRusherVetData(vets);
@@ -499,9 +533,14 @@ export default function TopTeam() {
     setReturnersFetching(false);
   };
 
+  const handleSeasonSelectChange = (event: SelectChangeEvent<string>) => {
+    setSeason(event.target.value);
+  };
+
   useEffect(() => {
+    setGamesPlayed(undefined);
     fetchData();
-  }, []);
+  }, [season]);
 
   useEffect(() => {
     if (!gamesPlayed) return;
@@ -509,7 +548,7 @@ export default function TopTeam() {
     setThresholds({
       PASS_ATTEMPTS: 15.0 * gamesPlayed,
       CARRIES: 15.0 * gamesPlayed,
-      RECEPTIONS: 2.5 * gamesPlayed,
+      RECEPTIONS: 2.0 * gamesPlayed,
       BLOCKER_PLAYS: 30.0 * gamesPlayed,
       FG_ATTEMPTS: 1.0 * gamesPlayed,
       PUNTS: 1.0 * gamesPlayed,
@@ -529,86 +568,24 @@ export default function TopTeam() {
   }, [thresholds]);
 
   return (
-    <Grid container spacing={2} columnSpacing={4} sx={{ mb: 1 }}>
-      <Grid sx={{ display: 'flex', justifyContent: 'center' }} size={12}>
-        <FormControl>
-          <RadioGroup row name='first-or-second-radio-buttons-group' value={teamChoice} onChange={(x) => setTeamChoice(x.target.value)}>
-            <FormControlLabel value='first' control={<Radio />} label='1st Team' />
-            <FormControlLabel value='second' control={<Radio />} label='2nd Team' />
-          </RadioGroup>
+    <Grid container spacing={2} sx={{ mb: 1 }}>
+      <Grid size={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <FormControl variant='standard' sx={{ minWidth: 150 }} size='small'>
+          <Select id='season-select' value={season} label='Season' onChange={handleSeasonSelectChange}>
+            {SEASON_OPTIONS.map((season: string) => (
+              <MenuItem key={season} value={season}>
+                <ListItemText primary={`Season ${season}`} />
+              </MenuItem>
+            ))}
+          </Select>
         </FormControl>
       </Grid>
-      {teamChoice === 'first' && gamesPlayed && (
-        <>
-          <Grid sx={{ pb: 0 }} size={12}>
-            <Divider variant='middle'>
-              <Typography variant='h6'>Offense</Typography>
-            </Divider>
-          </Grid>
-          {['Rookie', 'Sophomore', 'Professional', 'Veteran'].map((tier) => (
-            <OffensiveAllStarTeam
-              key={tier}
-              tier={tier}
-              passerData={
-                tier === 'Rookie' ? passerRookieData : tier === 'Sophomore' ? passerSophData : tier === 'Professional' ? passerProData : passerVetData
-              }
-              rusherData={
-                tier === 'Rookie' ? rusherRookieData : tier === 'Sophomore' ? rusherSophData : tier === 'Professional' ? rusherProData : rusherVetData
-              }
-              receiverData={
-                tier === 'Rookie' ? receiverRookieData : tier === 'Sophomore' ? receiverSophData : tier === 'Professional' ? receiverProData : receiverVetData
-              }
-              blockerData={
-                tier === 'Rookie' ? blockerRookieData : tier === 'Sophomore' ? blockerSophData : tier === 'Professional' ? blockerProData : blockerVetData
-              }
-              fetching={passersFetching || rushersFetching || receiversFetching || blockersFetching}
-              gamesPlayed={gamesPlayed}
-              team={1}
-            />
-          ))}
-          <Grid sx={{ pb: 0 }} size={12}>
-            <Divider variant='middle'>
-              <Typography variant='h6'>Defense</Typography>
-            </Divider>
-          </Grid>
-          {['Rookie', 'Sophomore', 'Professional', 'Veteran'].map((tier) => (
-            <DefensiveAllStarTeam
-              key={tier}
-              tier={tier}
-              defenderData={
-                tier === 'Rookie' ? defenderRookieData : tier === 'Sophomore' ? defenderSophData : tier === 'Professional' ? defenderProData : defenderVetData
-              }
-              fetching={defendersFetching}
-              gamesPlayed={gamesPlayed}
-              team={1}
-            />
-          ))}
-          <Grid sx={{ pb: 0 }} size={12}>
-            <Divider variant='middle'>
-              <Typography variant='h6'>Special Teams</Typography>
-            </Divider>
-          </Grid>
-          {['Rookie', 'Sophomore', 'Professional', 'Veteran'].map((tier) => (
-            <SpecialTeamsAllStarTeam
-              key={tier}
-              tier={tier}
-              kickerData={
-                tier === 'Rookie' ? kickerRookieData : tier === 'Sophomore' ? kickerSophData : tier === 'Professional' ? kickerProData : kickerVetData
-              }
-              punterData={
-                tier === 'Rookie' ? punterRookieData : tier === 'Sophomore' ? punterSophData : tier === 'Professional' ? punterProData : punterVetData
-              }
-              returnerData={
-                tier === 'Rookie' ? returnerRookieData : tier === 'Sophomore' ? returnerSophData : tier === 'Professional' ? returnerProData : returnerVetData
-              }
-              fetching={kickersFetching || puntersFetching || returnersFetching}
-              gamesPlayed={gamesPlayed}
-              team={1}
-            />
-          ))}
-        </>
+      {(!gamesPlayed || passersFetching || rushersFetching || receiversFetching || blockersFetching) && (
+        <Grid size={12}>
+          <LinearProgress />
+        </Grid>
       )}
-      {teamChoice === 'second' && gamesPlayed && (
+      {gamesPlayed && (
         <>
           <Grid sx={{ pb: 0 }} size={12}>
             <Divider variant='middle'>
@@ -633,7 +610,7 @@ export default function TopTeam() {
               }
               fetching={passersFetching || rushersFetching || receiversFetching || blockersFetching}
               gamesPlayed={gamesPlayed}
-              team={2}
+              season={season}
             />
           ))}
           <Grid sx={{ pb: 0 }} size={12}>
@@ -650,7 +627,7 @@ export default function TopTeam() {
               }
               fetching={defendersFetching}
               gamesPlayed={gamesPlayed}
-              team={2}
+              season={season}
             />
           ))}
           <Grid sx={{ pb: 0 }} size={12}>
@@ -673,7 +650,7 @@ export default function TopTeam() {
               }
               fetching={kickersFetching || puntersFetching || returnersFetching}
               gamesPlayed={gamesPlayed}
-              team={2}
+              season={season}
             />
           ))}
         </>

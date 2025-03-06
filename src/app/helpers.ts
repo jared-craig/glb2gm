@@ -28,3 +28,5 @@ export const generateGuid = () => {
     return v.toString(16);
   });
 };
+
+export const SEASON_OPTIONS = ['75', '76', '77', '78', '79', '80', '81'];
