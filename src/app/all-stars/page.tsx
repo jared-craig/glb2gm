@@ -570,7 +570,12 @@ export default function TopTeam() {
   return (
     <Grid container spacing={2} sx={{ mb: 1 }}>
       <Grid size={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <FormControl variant='standard' sx={{ minWidth: 150 }} size='small'>
+        <FormControl
+          variant='standard'
+          sx={{ minWidth: 150 }}
+          size='small'
+          disabled={!gamesPlayed || passersFetching || rushersFetching || receiversFetching || blockersFetching}
+        >
           <Select id='season-select' value={season} label='Season' onChange={handleSeasonSelectChange}>
             {SEASON_OPTIONS.map((season: string) => (
               <MenuItem key={season} value={season}>
