@@ -5,6 +5,7 @@ interface AllStarTeamPlayerProps {
   player: any;
   fetching: boolean;
   gamesPlayed: number;
+  season: string;
 }
 
 const THRESHOLDS = {
@@ -22,7 +23,7 @@ const THRESHOLDS = {
   TB_RATIO: 0.33,
 };
 
-export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: AllStarTeamPlayerProps) {
+export default function AllStarTeamPlayer({ player, fetching, gamesPlayed, season }: AllStarTeamPlayerProps) {
   if (fetching)
     return (
       <Stack>
@@ -117,12 +118,7 @@ export default function AllStarTeamPlayer({ player, fetching, gamesPlayed }: All
     <Stack>
       <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
         <Typography color='secondary' sx={{ typography: { xs: 'body2' } }}>
-          <Link
-            href={`/player-details/${player.player_id}/${process.env.CURRENT_SEASON}`}
-            target='_blank'
-            rel='noopener'
-            style={{ color: 'inherit', textDecoration: 'inherit' }}
-          >
+          <Link href={`/player-details/${player.player_id}/${season}`} target='_blank' rel='noopener' style={{ color: 'inherit', textDecoration: 'inherit' }}>
             <strong>{player.position}</strong> {player.player_name}
           </Link>
         </Typography>

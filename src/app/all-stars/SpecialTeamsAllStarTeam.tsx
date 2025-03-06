@@ -1,6 +1,7 @@
-import { Stack, Typography } from '@mui/material';
+import { FormControlLabel, FormGroup, Stack, Switch, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import AllStarTeamPlayer from './AllStarTeamPlayer';
+import { useState, ChangeEvent } from 'react';
 
 interface SpecialTeamsAllStarTeamProps {
   tier: string;
@@ -9,10 +10,16 @@ interface SpecialTeamsAllStarTeamProps {
   returnerData: any;
   fetching: boolean;
   gamesPlayed: number;
-  team: number;
+  season: string;
 }
 
-export default function SpecialTeamsAllStarTeam({ tier, kickerData, punterData, returnerData, fetching, gamesPlayed, team }: SpecialTeamsAllStarTeamProps) {
+export default function SpecialTeamsAllStarTeam({ tier, kickerData, punterData, returnerData, fetching, gamesPlayed, season }: SpecialTeamsAllStarTeamProps) {
+  const [secondTeamChecked, setSecondTeamChecked] = useState<boolean>(false);
+
+  const handleSecondTeamSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSecondTeamChecked(event.target.checked);
+  };
+
   return (
     <Grid
       size={{
@@ -23,12 +30,22 @@ export default function SpecialTeamsAllStarTeam({ tier, kickerData, punterData, 
       sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 2 }}
     >
       <Stack spacing={{ xs: 0.5 }}>
-        <Typography variant='h6' sx={{ textAlign: 'center' }}>
-          {tier}
-        </Typography>
-        <AllStarTeamPlayer player={kickerData[team === 1 ? 0 : 1]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={punterData[team === 1 ? 0 : 1]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={returnerData[team === 1 ? 0 : 1]} fetching={fetching} gamesPlayed={gamesPlayed} />
+        <Stack direction='row' sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography variant='h6'>{tier}</Typography>
+          <FormGroup>
+            <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
+              <Typography variant='body2'>1st Team</Typography>
+              <FormControlLabel
+                control={<Switch checked={secondTeamChecked} onChange={handleSecondTeamSwitchChange} size='small' color='default' />}
+                label=''
+              />
+              <Typography variant='body2'>2nd Team</Typography>
+            </Stack>
+          </FormGroup>
+        </Stack>
+        <AllStarTeamPlayer player={kickerData[!secondTeamChecked ? 0 : 1]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={punterData[!secondTeamChecked ? 0 : 1]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={returnerData[!secondTeamChecked ? 0 : 1]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
       </Stack>
     </Grid>
   );

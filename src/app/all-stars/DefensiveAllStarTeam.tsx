@@ -1,16 +1,23 @@
-import { Stack, Typography } from '@mui/material';
+import { FormControlLabel, FormGroup, Stack, Switch, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import AllStarTeamPlayer from './AllStarTeamPlayer';
+import { useState, ChangeEvent } from 'react';
 
 interface DefensiveAllStarTeamProps {
   tier: string;
   defenderData: any;
   fetching: boolean;
   gamesPlayed: number;
-  team: number;
+  season: string;
 }
 
-export default function DefensiveAllStarTeam({ tier, defenderData, fetching, gamesPlayed, team }: DefensiveAllStarTeamProps) {
+export default function DefensiveAllStarTeam({ tier, defenderData, fetching, gamesPlayed, season }: DefensiveAllStarTeamProps) {
+  const [secondTeamChecked, setSecondTeamChecked] = useState<boolean>(false);
+
+  const handleSecondTeamSwitchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSecondTeamChecked(event.target.checked);
+  };
+
   return (
     <Grid
       size={{
@@ -21,20 +28,30 @@ export default function DefensiveAllStarTeam({ tier, defenderData, fetching, gam
       sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 2 }}
     >
       <Stack spacing={{ xs: 0.5 }}>
-        <Typography variant='h6' sx={{ textAlign: 'center' }}>
-          {tier}
-        </Typography>
-        <AllStarTeamPlayer player={defenderData[team === 1 ? 0 : 2]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={defenderData[team === 1 ? 1 : 3]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={defenderData[team === 1 ? 4 : 6]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={defenderData[team === 1 ? 5 : 7]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={defenderData[team === 1 ? 8 : 11]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={defenderData[team === 1 ? 9 : 12]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={defenderData[team === 1 ? 10 : 13]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={defenderData[team === 1 ? 14 : 16]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={defenderData[team === 1 ? 15 : 17]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={defenderData[team === 1 ? 18 : 20]} fetching={fetching} gamesPlayed={gamesPlayed} />
-        <AllStarTeamPlayer player={defenderData[team === 1 ? 19 : 21]} fetching={fetching} gamesPlayed={gamesPlayed} />
+        <Stack direction='row' sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography variant='h6'>{tier}</Typography>
+          <FormGroup>
+            <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
+              <Typography variant='body2'>1st Team</Typography>
+              <FormControlLabel
+                control={<Switch checked={secondTeamChecked} onChange={handleSecondTeamSwitchChange} size='small' color='default' />}
+                label=''
+              />
+              <Typography variant='body2'>2nd Team</Typography>
+            </Stack>
+          </FormGroup>
+        </Stack>
+        <AllStarTeamPlayer player={defenderData[!secondTeamChecked ? 0 : 2]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={defenderData[!secondTeamChecked ? 1 : 3]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={defenderData[!secondTeamChecked ? 4 : 6]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={defenderData[!secondTeamChecked ? 5 : 7]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={defenderData[!secondTeamChecked ? 8 : 11]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={defenderData[!secondTeamChecked ? 9 : 12]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={defenderData[!secondTeamChecked ? 10 : 13]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={defenderData[!secondTeamChecked ? 14 : 16]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={defenderData[!secondTeamChecked ? 15 : 17]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={defenderData[!secondTeamChecked ? 18 : 20]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
+        <AllStarTeamPlayer player={defenderData[!secondTeamChecked ? 19 : 21]} fetching={fetching} gamesPlayed={gamesPlayed} season={season} />
       </Stack>
     </Grid>
   );

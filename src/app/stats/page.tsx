@@ -10,13 +10,13 @@ import PlayerBlockingStats from './blocking/PlayerBlockingStats';
 import PlayerKickingStats from './kicking/PlayerKickingStats';
 import PlayerPuntingStats from './punting/PlayerPuntingStats';
 import PlayerReturningStats from './returning/PlayerReturningStats';
+import { SEASON_OPTIONS } from '../helpers';
 
 export default function Stats() {
   const [value, setValue] = useState(0);
   const [tier, setTier] = useState<string>('Veteran');
   const tierOptions = ['Rookie', 'Sophomore', 'Professional', 'Veteran'];
   const [season, setSeason] = useState<string>(process.env.CURRENT_SEASON ?? '0');
-  const seasonOptions = ['75', '76', '77', '78', '79', '80', '81'];
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -35,10 +35,24 @@ export default function Stats() {
         <Tab label='Returning' />
       </Tabs>
       {value === 0 && (
-        <PlayerPassingStats tier={tier} tierFilter={setTier} tierOptions={tierOptions} season={season} seasonFilter={setSeason} seasonOptions={seasonOptions} />
+        <PlayerPassingStats
+          tier={tier}
+          tierFilter={setTier}
+          tierOptions={tierOptions}
+          season={season}
+          seasonFilter={setSeason}
+          seasonOptions={SEASON_OPTIONS}
+        />
       )}
       {value === 1 && (
-        <PlayerRushingStats tier={tier} tierFilter={setTier} tierOptions={tierOptions} season={season} seasonFilter={setSeason} seasonOptions={seasonOptions} />
+        <PlayerRushingStats
+          tier={tier}
+          tierFilter={setTier}
+          tierOptions={tierOptions}
+          season={season}
+          seasonFilter={setSeason}
+          seasonOptions={SEASON_OPTIONS}
+        />
       )}
       {value === 2 && (
         <PlayerReceivingStats
@@ -47,7 +61,7 @@ export default function Stats() {
           tierOptions={tierOptions}
           season={season}
           seasonFilter={setSeason}
-          seasonOptions={seasonOptions}
+          seasonOptions={SEASON_OPTIONS}
         />
       )}
       {value === 3 && (
@@ -57,7 +71,7 @@ export default function Stats() {
           tierOptions={tierOptions}
           season={season}
           seasonFilter={setSeason}
-          seasonOptions={seasonOptions}
+          seasonOptions={SEASON_OPTIONS}
         />
       )}
       {value === 4 && (
@@ -67,14 +81,28 @@ export default function Stats() {
           tierOptions={tierOptions}
           season={season}
           seasonFilter={setSeason}
-          seasonOptions={seasonOptions}
+          seasonOptions={SEASON_OPTIONS}
         />
       )}
       {value === 5 && (
-        <PlayerKickingStats tier={tier} tierFilter={setTier} tierOptions={tierOptions} season={season} seasonFilter={setSeason} seasonOptions={seasonOptions} />
+        <PlayerKickingStats
+          tier={tier}
+          tierFilter={setTier}
+          tierOptions={tierOptions}
+          season={season}
+          seasonFilter={setSeason}
+          seasonOptions={SEASON_OPTIONS}
+        />
       )}
       {value === 6 && (
-        <PlayerPuntingStats tier={tier} tierFilter={setTier} tierOptions={tierOptions} season={season} seasonFilter={setSeason} seasonOptions={seasonOptions} />
+        <PlayerPuntingStats
+          tier={tier}
+          tierFilter={setTier}
+          tierOptions={tierOptions}
+          season={season}
+          seasonFilter={setSeason}
+          seasonOptions={SEASON_OPTIONS}
+        />
       )}
       {value === 7 && (
         <PlayerReturningStats
@@ -83,7 +111,7 @@ export default function Stats() {
           tierOptions={tierOptions}
           season={season}
           seasonFilter={setSeason}
-          seasonOptions={seasonOptions}
+          seasonOptions={SEASON_OPTIONS}
         />
       )}
     </Box>
