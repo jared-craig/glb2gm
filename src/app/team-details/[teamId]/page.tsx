@@ -79,170 +79,199 @@ export default function TeamDetails(props: { params: Promise<{ teamId: string }>
     setTopTeamsForRanks(extraTeamData.filter((x) => x.tier === teamData.tier && x.topTeamGames?.games / gamesPlayed >= 0.33));
   };
 
-  const sortTierData = (stat: string, dir: string): TeamData[] => {
+  const sortTierData = (stat: string, dir: string): { team_id: number; sortValue: number }[] => {
     if (!tierData) return [];
+    let newData = [];
     switch (stat) {
       case 'offensive_rushing_yards_per_carry':
-        return [...tierData].sort((a, b) => +(b.offensive_rushing_yards / +b.offensive_rushes) - +(a.offensive_rushing_yards / +a.offensive_rushes));
+        newData = [...tierData].map((x) => ({ team_id: x.team_id, sortValue: +(x.offensive_rushing_yards / x.offensive_rushes) }));
+        break;
       case 'offensive_passing_yards_per_attempt':
-        return [...tierData].sort((a, b) => +(b.offensive_passing_yards / +b.offensive_attempts) - +(a.offensive_passing_yards / +a.offensive_attempts));
+        newData = [...tierData].map((x) => ({ team_id: x.team_id, sortValue: x.offensive_passing_yards / x.offensive_attempts }));
+        break;
       case 'offensive_passing_completion_percent':
-        return [...tierData].sort((a, b) => b.offensive_completions / b.offensive_attempts - a.offensive_completions / a.offensive_attempts);
+        newData = [...tierData].map((x) => ({ team_id: x.team_id, sortValue: x.offensive_completions / x.offensive_attempts }));
+        break;
       case 'defensive_rushing_yards_per_carry':
-        return [...tierData].sort((a, b) => +(a.defensive_rushing_yards / +a.defensive_rushes) - +(b.defensive_rushing_yards / +b.defensive_rushes));
+        newData = [...tierData].map((x) => ({ team_id: x.team_id, sortValue: x.defensive_rushing_yards / x.defensive_rushes }));
+        break;
       case 'defensive_passing_yards_per_attempt':
-        return [...tierData].sort((a, b) => +(a.defensive_passing_yards / +a.defensive_attempts) - +(b.defensive_passing_yards / +b.defensive_attempts));
+        newData = [...tierData].map((x) => ({ team_id: x.team_id, sortValue: x.defensive_passing_yards / x.defensive_attempts }));
+        break;
       case 'defensive_passing_completion_percent':
-        return [...tierData].sort((a, b) => a.defensive_completions / a.defensive_attempts - b.defensive_completions / b.defensive_attempts);
+        newData = [...tierData].map((x) => ({ team_id: x.team_id, sortValue: x.defensive_completions / x.defensive_attempts }));
+        break;
       default:
-        if (dir === 'asc') {
-          return [...tierData].sort((a, b) => +a[stat as keyof TeamData] - +b[stat as keyof TeamData]);
-        } else {
-          return [...tierData].sort((a, b) => +b[stat as keyof TeamData] - +a[stat as keyof TeamData]);
-        }
+        newData = [...tierData].map((x) => ({ team_id: x.team_id, sortValue: +x[stat as keyof TeamData] }));
+        break;
     }
+    if (dir === 'asc') return newData.sort((a, b) => a.sortValue - b.sortValue);
+    else return newData.sort((a, b) => b.sortValue - a.sortValue);
   };
 
-  const sortLeagueData = (stat: string, dir: string): TeamData[] => {
+  const sortLeagueData = (stat: string, dir: string): { team_id: number; sortValue: number }[] => {
     if (!leagueData) return [];
+    let newData = [];
     switch (stat) {
       case 'offensive_rushing_yards_per_carry':
-        return [...leagueData].sort((a, b) => +(b.offensive_rushing_yards / +b.offensive_rushes) - +(a.offensive_rushing_yards / +a.offensive_rushes));
+        newData = [...leagueData].map((x) => ({ team_id: x.team_id, sortValue: +(x.offensive_rushing_yards / x.offensive_rushes) }));
+        break;
       case 'offensive_passing_yards_per_attempt':
-        return [...leagueData].sort((a, b) => +(b.offensive_passing_yards / +b.offensive_attempts) - +(a.offensive_passing_yards / +a.offensive_attempts));
+        newData = [...leagueData].map((x) => ({ team_id: x.team_id, sortValue: x.offensive_passing_yards / x.offensive_attempts }));
+        break;
       case 'offensive_passing_completion_percent':
-        return [...leagueData].sort((a, b) => b.offensive_completions / b.offensive_attempts - a.offensive_completions / a.offensive_attempts);
+        newData = [...leagueData].map((x) => ({ team_id: x.team_id, sortValue: x.offensive_completions / x.offensive_attempts }));
+        break;
       case 'defensive_rushing_yards_per_carry':
-        return [...leagueData].sort((a, b) => +(a.defensive_rushing_yards / +a.defensive_rushes) - +(b.defensive_rushing_yards / +b.defensive_rushes));
+        newData = [...leagueData].map((x) => ({ team_id: x.team_id, sortValue: x.defensive_rushing_yards / x.defensive_rushes }));
+        break;
       case 'defensive_passing_yards_per_attempt':
-        return [...leagueData].sort((a, b) => +(a.defensive_passing_yards / +a.defensive_attempts) - +(b.defensive_passing_yards / +b.defensive_attempts));
+        newData = [...leagueData].map((x) => ({ team_id: x.team_id, sortValue: x.defensive_passing_yards / x.defensive_attempts }));
+        break;
       case 'defensive_passing_completion_percent':
-        return [...leagueData].sort((a, b) => a.defensive_completions / a.defensive_attempts - b.defensive_completions / b.defensive_attempts);
+        newData = [...leagueData].map((x) => ({ team_id: x.team_id, sortValue: x.defensive_completions / x.defensive_attempts }));
+        break;
       default:
-        if (dir === 'asc') {
-          return [...leagueData].sort((a, b) => +a[stat as keyof TeamData] - +b[stat as keyof TeamData]);
-        } else {
-          return [...leagueData].sort((a, b) => +b[stat as keyof TeamData] - +a[stat as keyof TeamData]);
-        }
+        newData = [...leagueData].map((x) => ({ team_id: x.team_id, sortValue: +x[stat as keyof TeamData] }));
+        break;
     }
+    if (dir === 'asc') return newData.sort((a, b) => a.sortValue - b.sortValue);
+    else return newData.sort((a, b) => b.sortValue - a.sortValue);
   };
 
-  const sortTopTeamsData = (stat: string, dir: string): any[] => {
+  const sortTopTeamsData = (stat: string, dir: string): { team_id: number; sortValue: number }[] => {
     if (!topTeamsForRanks) return [];
+    let newData = [];
     switch (stat) {
       case 'offensive_points_scored_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => b.topTeamGames.offensive_points / b.topTeamGames.games - a.topTeamGames.offensive_points / a.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.offensive_points / x.topTeamGames.games }));
+        break;
       case 'offensive_total_yards_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => b.topTeamGames.offensive_total_yards / b.topTeamGames.games - a.topTeamGames.offensive_total_yards / a.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.offensive_total_yards / x.topTeamGames.games }));
+        break;
       case 'offensive_rushing_yards_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => b.topTeamGames.offensive_rushing_yards / b.topTeamGames.games - a.topTeamGames.offensive_rushing_yards / a.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.offensive_rushing_yards / x.topTeamGames.games }));
+        break;
       case 'offensive_rushing_yards_per_carry':
-        return [...topTeamsForRanks].sort(
-          (a, b) =>
-            b.topTeamGames.offensive_rushing_yards / b.topTeamGames.offensive_rushes - a.topTeamGames.offensive_rushing_yards / a.topTeamGames.offensive_rushes
-        );
+        newData = [...topTeamsForRanks].map((x) => ({
+          team_id: x.team_id,
+          sortValue: x.topTeamGames.offensive_rushing_yards / x.topTeamGames.offensive_rushes,
+        }));
+        break;
       case 'offensive_passing_yards_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => b.topTeamGames.offensive_passing_yards / b.topTeamGames.games - a.topTeamGames.offensive_passing_yards / a.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.offensive_passing_yards / x.topTeamGames.games }));
+        break;
       case 'offensive_passing_yards_per_attempt':
-        return [...topTeamsForRanks].sort(
-          (a, b) =>
-            b.topTeamGames.offensive_passing_yards / b.topTeamGames.offensive_attempts -
-            a.topTeamGames.offensive_passing_yards / a.topTeamGames.offensive_attempts
-        );
+        newData = [...topTeamsForRanks].map((x) => ({
+          team_id: x.team_id,
+          sortValue: x.topTeamGames.offensive_passing_yards / x.topTeamGames.offensive_attempts,
+        }));
+        break;
       case 'offensive_passing_completion_percent':
-        return [...topTeamsForRanks].sort(
-          (a, b) =>
-            b.topTeamGames.offensive_completions / b.topTeamGames.offensive_attempts - a.topTeamGames.offensive_completions / a.topTeamGames.offensive_attempts
-        );
+        newData = [...topTeamsForRanks].map((x) => ({
+          team_id: x.team_id,
+          sortValue: x.topTeamGames.offensive_completions / x.topTeamGames.offensive_attempts,
+        }));
+        break;
       case 'offensive_sacks_taken_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => a.topTeamGames.offensive_sacks / a.topTeamGames.games - b.topTeamGames.offensive_sacks / b.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.offensive_sacks / x.topTeamGames.games }));
+        break;
       case 'offensive_interceptions_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => a.topTeamGames.offensive_interceptions / a.topTeamGames.games - b.topTeamGames.offensive_interceptions / b.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.offensive_interceptions / x.topTeamGames.games }));
+        break;
       case 'offensive_fumbles_lost_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => a.topTeamGames.offensive_fumbles_lost / a.topTeamGames.games - b.topTeamGames.offensive_fumbles_lost / b.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.offensive_fumbles_lost / x.topTeamGames.games }));
+        break;
       case 'defensive_points_allowed_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => a.topTeamGames.defensive_points / a.topTeamGames.games - b.topTeamGames.defensive_points / b.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.defensive_points / x.topTeamGames.games }));
+        break;
       case 'defensive_total_yards_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => a.topTeamGames.defensive_total_yards / a.topTeamGames.games - b.topTeamGames.defensive_total_yards / b.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.defensive_total_yards / x.topTeamGames.games }));
+        break;
       case 'defensive_rushing_yards_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => a.topTeamGames.defensive_rushing_yards / a.topTeamGames.games - b.topTeamGames.defensive_rushing_yards / b.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.defensive_rushing_yards / x.topTeamGames.games }));
+        break;
       case 'defensive_rushing_yards_per_carry':
-        return [...topTeamsForRanks].sort(
-          (a, b) =>
-            a.topTeamGames.defensive_rushing_yards / a.topTeamGames.defensive_rushes - b.topTeamGames.defensive_rushing_yards / b.topTeamGames.defensive_rushes
-        );
+        newData = [...topTeamsForRanks].map((x) => ({
+          team_id: x.team_id,
+          sortValue: x.topTeamGames.defensive_rushing_yards / x.topTeamGames.defensive_rushes,
+        }));
+        break;
       case 'defensive_passing_yards_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => a.topTeamGames.defensive_passing_yards / a.topTeamGames.games - b.topTeamGames.defensive_passing_yards / b.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.defensive_passing_yards / x.topTeamGames.games }));
+        break;
       case 'defensive_passing_yards_per_attempt':
-        return [...topTeamsForRanks].sort(
-          (a, b) =>
-            a.topTeamGames.defensive_passing_yards / a.topTeamGames.defensive_attempts -
-            b.topTeamGames.defensive_passing_yards / b.topTeamGames.defensive_attempts
-        );
+        newData = [...topTeamsForRanks].map((x) => ({
+          team_id: x.team_id,
+          sortValue: x.topTeamGames.defensive_passing_yards / x.topTeamGames.defensive_attempts,
+        }));
+        break;
       case 'defensive_passing_completion_percent':
-        return [...topTeamsForRanks].sort(
-          (a, b) =>
-            a.topTeamGames.defensive_completions / a.topTeamGames.defensive_attempts - b.topTeamGames.defensive_completions / b.topTeamGames.defensive_attempts
-        );
+        newData = [...topTeamsForRanks].map((x) => ({
+          team_id: x.team_id,
+          sortValue: x.topTeamGames.defensive_completions / x.topTeamGames.defensive_attempts,
+        }));
+        break;
       case 'defensive_sacks_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => b.topTeamGames.defensive_sacks / b.topTeamGames.games - a.topTeamGames.defensive_sacks / a.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.defensive_sacks / x.topTeamGames.games }));
+        break;
       case 'defensive_interceptions_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => b.topTeamGames.defensive_interceptions / b.topTeamGames.games - a.topTeamGames.defensive_interceptions / a.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.defensive_interceptions / x.topTeamGames.games }));
+        break;
       case 'defensive_fumbles_lost_per_game':
-        return [...topTeamsForRanks].sort(
-          (a, b) => b.topTeamGames.defensive_fumbles_lost / b.topTeamGames.games - a.topTeamGames.defensive_fumbles_lost / a.topTeamGames.games
-        );
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames.defensive_fumbles_lost / x.topTeamGames.games }));
+        break;
       default:
-        if (dir === 'asc') {
-          return [...topTeamsForRanks].sort((a, b) => a.topTeamGames[stat as keyof TeamData] - b.topTeamGames[stat as keyof TeamData]);
-        } else {
-          return [...topTeamsForRanks].sort((a, b) => b.topTeamGames[stat as keyof TeamData] - a.topTeamGames[stat as keyof TeamData]);
-        }
+        newData = [...topTeamsForRanks].map((x) => ({ team_id: x.team_id, sortValue: x.topTeamGames[stat as keyof TeamData] }));
+        break;
     }
+    if (dir === 'asc') return newData.sort((a, b) => a.sortValue - b.sortValue);
+    else return newData.sort((a, b) => b.sortValue - a.sortValue);
   };
 
   const getTierRank = (stat: string, dir: string): string => {
     if (!teamData || !tierData) return 'N/A';
     const sortedTier = sortTierData(stat, dir);
-    return formatWithOrdinal(sortedTier.map((x) => x.team_id).indexOf(teamData.team_id) + 1);
+    if (!sortedTier) return 'N/A';
+    let rank = 1;
+    let previousSortValue = null;
+    for (let i = 0; i < sortedTier.length; i++) {
+      const { team_id, sortValue } = sortedTier[i];
+      if (sortValue !== previousSortValue) rank = i + 1;
+      if (team_id === teamData.team_id) return formatWithOrdinal(rank);
+      previousSortValue = sortValue;
+    }
+    return 'N/A';
   };
 
   const getLeagueRank = (stat: string, dir: string): string => {
     if (!teamData || !leagueData) return 'N/A';
     const sortedLeague = sortLeagueData(stat, dir);
-    return formatWithOrdinal(sortedLeague.map((x) => x.team_id).indexOf(teamData.team_id) + 1);
+    if (!sortedLeague) return 'N/A';
+    let rank = 1;
+    let previousSortValue = null;
+    for (let i = 0; i < sortedLeague.length; i++) {
+      const { team_id, sortValue } = sortedLeague[i];
+      if (sortValue !== previousSortValue) rank = i + 1;
+      if (team_id === teamData.team_id) return formatWithOrdinal(rank);
+      previousSortValue = sortValue;
+    }
+    return 'N/A';
   };
 
   const getTopTeamsRank = (stat: string, dir: string): string => {
     if (!teamData || !topTeamsForRanks || !topTeamsForRanks.some((x) => x.team_id === teamData.team_id)) return 'N/A';
     const sortedTopTeamsData = sortTopTeamsData(stat, dir);
-    return formatWithOrdinal(sortedTopTeamsData.map((x) => x.team_id).indexOf(teamData.team_id) + 1);
+    if (!sortedTopTeamsData) return 'N/A';
+    let rank = 1;
+    let previousSortValue = null;
+    for (let i = 0; i < sortedTopTeamsData.length; i++) {
+      const { team_id, sortValue } = sortedTopTeamsData[i];
+      if (sortValue !== previousSortValue) rank = i + 1;
+      if (team_id === teamData.team_id) return formatWithOrdinal(rank);
+      previousSortValue = sortValue;
+    }
+    return 'N/A';
   };
 
   useEffect(() => {
