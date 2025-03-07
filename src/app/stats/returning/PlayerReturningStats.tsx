@@ -7,6 +7,7 @@ import { PlayerReturningData } from './playerReturningData';
 import { CustomGridToolbarWithTierAndSeason } from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getReturningGmRating } from '../statCalculations';
+import { PlayerData } from '@/app/players/playerData';
 
 interface PlayerReturningStatsProps {
   tier: string;
@@ -24,6 +25,7 @@ export default function PlayerReturningStats({ tier, tierFilter, tierOptions, se
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerReturningData[]>([]);
   const [rows, setRows] = useState<PlayerReturningData[]>([]);
+  const [gamesPlayed, setGamesPlayed] = useState<number>();
 
   const fetchData = async () => {
     const data = await fetch('/api/returning').then((res) => res.json());
@@ -33,6 +35,7 @@ export default function PlayerReturningStats({ tier, tierFilter, tierOptions, se
         ? data.filter((x: PlayerReturningData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerReturningData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
     setFetched(true);
   };
 
@@ -46,6 +49,7 @@ export default function PlayerReturningStats({ tier, tierFilter, tierOptions, se
         ? data.filter((x: PlayerReturningData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerReturningData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
   }, [tier]);
 
   useEffect(() => {
@@ -54,6 +58,7 @@ export default function PlayerReturningStats({ tier, tierFilter, tierOptions, se
         ? data.filter((x: PlayerReturningData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerReturningData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
   }, [season]);
 
   const columns: GridColDef[] = !desktop
@@ -144,7 +149,8 @@ export default function PlayerReturningStats({ tier, tierFilter, tierOptions, se
           type: 'number',
           pinnable: false,
           valueGetter: (_value, row: GridRowModel) => {
-            return getReturningGmRating(row);
+            const gm = getReturningGmRating(row, gamesPlayed);
+            return gm === Number.MIN_SAFE_INTEGER ? null : gm;
           },
           disableColumnMenu: true,
         },
@@ -229,7 +235,8 @@ export default function PlayerReturningStats({ tier, tierFilter, tierOptions, se
           type: 'number',
           pinnable: false,
           valueGetter: (_value, row) => {
-            return getReturningGmRating(row);
+            const gm = getReturningGmRating(row, gamesPlayed);
+            return gm === Number.MIN_SAFE_INTEGER ? null : gm;
           },
         },
       ];

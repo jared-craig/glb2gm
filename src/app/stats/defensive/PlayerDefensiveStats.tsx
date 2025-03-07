@@ -7,6 +7,7 @@ import { CustomGridToolbarWithTierAndSeason } from '@/app/components/CustomGridT
 import Link from 'next/link';
 import { getDefensiveGmRating } from '../statCalculations';
 import { PlayerDefensiveData } from './playerDefensiveData';
+import { PlayerData } from '@/app/players/playerData';
 
 interface PlayerDefensiveStatsProps {
   tier: string;
@@ -24,6 +25,7 @@ export default function PlayerDefensiveStats({ tier, tierFilter, tierOptions, se
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerDefensiveData[]>([]);
   const [rows, setRows] = useState<PlayerDefensiveData[]>([]);
+  const [gamesPlayed, setGamesPlayed] = useState<number>();
 
   const fetchData = async () => {
     const data = await fetch('/api/defensive').then((res) => res.json());
@@ -33,6 +35,7 @@ export default function PlayerDefensiveStats({ tier, tierFilter, tierOptions, se
         ? data.filter((x: PlayerDefensiveData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerDefensiveData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
     setFetched(true);
   };
 
@@ -46,6 +49,7 @@ export default function PlayerDefensiveStats({ tier, tierFilter, tierOptions, se
         ? data.filter((x: PlayerDefensiveData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerDefensiveData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
   }, [tier]);
 
   useEffect(() => {
@@ -54,6 +58,7 @@ export default function PlayerDefensiveStats({ tier, tierFilter, tierOptions, se
         ? data.filter((x: PlayerDefensiveData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerDefensiveData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
   }, [season]);
 
   const columns: GridColDef[] = !desktop
@@ -196,7 +201,8 @@ export default function PlayerDefensiveStats({ tier, tierFilter, tierOptions, se
           pinnable: false,
           disableColumnMenu: true,
           valueGetter: (_value, row: GridRowModel) => {
-            return getDefensiveGmRating(row);
+            const gm = getDefensiveGmRating(row, gamesPlayed);
+            return gm === Number.MIN_SAFE_INTEGER ? null : gm;
           },
         },
       ]
@@ -326,7 +332,8 @@ export default function PlayerDefensiveStats({ tier, tierFilter, tierOptions, se
           type: 'number',
           pinnable: false,
           valueGetter: (_value, row) => {
-            return getDefensiveGmRating(row);
+            const gm = getDefensiveGmRating(row, gamesPlayed);
+            return gm === Number.MIN_SAFE_INTEGER ? null : gm;
           },
         },
       ];

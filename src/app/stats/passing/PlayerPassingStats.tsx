@@ -7,6 +7,7 @@ import { PlayerPassingData } from './playerPassingData';
 import { CustomGridToolbarWithTierAndSeason } from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getPassingGmRating } from '../statCalculations';
+import { PlayerData } from '@/app/players/playerData';
 
 interface PlayerPassingStatsProps {
   tier: string;
@@ -24,6 +25,7 @@ export default function PlayerPassingStats({ tier, tierFilter, tierOptions, seas
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerPassingData[]>([]);
   const [rows, setRows] = useState<PlayerPassingData[]>([]);
+  const [gamesPlayed, setGamesPlayed] = useState<number>();
 
   const fetchData = async () => {
     const data = await fetch('/api/passing').then((res) => res.json());
@@ -33,6 +35,7 @@ export default function PlayerPassingStats({ tier, tierFilter, tierOptions, seas
         ? data.filter((x: PlayerPassingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
     setFetched(true);
   };
 
@@ -46,6 +49,7 @@ export default function PlayerPassingStats({ tier, tierFilter, tierOptions, seas
         ? data.filter((x: PlayerPassingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
   }, [tier]);
 
   useEffect(() => {
@@ -54,6 +58,7 @@ export default function PlayerPassingStats({ tier, tierFilter, tierOptions, seas
         ? data.filter((x: PlayerPassingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerPassingData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
   }, [season]);
 
   const columns: GridColDef[] = !desktop
@@ -160,7 +165,8 @@ export default function PlayerPassingStats({ tier, tierFilter, tierOptions, seas
           type: 'number',
           pinnable: false,
           valueGetter: (_value, row) => {
-            return getPassingGmRating(row);
+            const gm = getPassingGmRating(row, gamesPlayed);
+            return gm === Number.MIN_SAFE_INTEGER ? null : gm;
           },
           disableColumnMenu: true,
         },
@@ -275,7 +281,8 @@ export default function PlayerPassingStats({ tier, tierFilter, tierOptions, seas
           type: 'number',
           pinnable: false,
           valueGetter: (_value, row) => {
-            return getPassingGmRating(row);
+            const gm = getPassingGmRating(row, gamesPlayed);
+            return gm === Number.MIN_SAFE_INTEGER ? null : gm;
           },
         },
       ];
