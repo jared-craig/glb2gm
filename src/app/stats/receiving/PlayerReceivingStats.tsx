@@ -6,7 +6,8 @@ import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { PlayerReceivingData } from './playerReceivingData';
 import { CustomGridToolbarWithTierAndSeason } from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
-import { getReceivingDropsPerReception, getReceivingGmRating } from '../statCalculations';
+import { getReceivingGmRating } from '../statCalculations';
+import { PlayerData } from '@/app/players/playerData';
 
 interface PlayerReceivingStatsProps {
   tier: string;
@@ -24,6 +25,7 @@ export default function PlayerReceivingStats({ tier, tierFilter, tierOptions, se
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerReceivingData[]>([]);
   const [rows, setRows] = useState<PlayerReceivingData[]>([]);
+  const [gamesPlayed, setGamesPlayed] = useState<number>();
 
   const fetchData = async () => {
     const data = await fetch('/api/receiving').then((res) => res.json());
@@ -33,6 +35,7 @@ export default function PlayerReceivingStats({ tier, tierFilter, tierOptions, se
         ? data.filter((x: PlayerReceivingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
     setFetched(true);
   };
 
@@ -46,6 +49,7 @@ export default function PlayerReceivingStats({ tier, tierFilter, tierOptions, se
         ? data.filter((x: PlayerReceivingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
   }, [tier]);
 
   useEffect(() => {
@@ -54,6 +58,7 @@ export default function PlayerReceivingStats({ tier, tierFilter, tierOptions, se
         ? data.filter((x: PlayerReceivingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerReceivingData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
   }, [season]);
 
   const columns: GridColDef[] = !desktop
@@ -200,7 +205,7 @@ export default function PlayerReceivingStats({ tier, tierFilter, tierOptions, se
           type: 'number',
           pinnable: false,
           valueGetter: (_value, row) => {
-            return getReceivingDropsPerReception(row);
+            return (row.drops / row.receptions).toFixed(2);
           },
           disableColumnMenu: true,
         },
@@ -227,7 +232,8 @@ export default function PlayerReceivingStats({ tier, tierFilter, tierOptions, se
           type: 'number',
           pinnable: false,
           valueGetter: (_value, row: GridRowModel) => {
-            return getReceivingGmRating(row);
+            const gm = getReceivingGmRating(row, gamesPlayed);
+            return gm === Number.MIN_SAFE_INTEGER ? null : gm;
           },
           disableColumnMenu: true,
         },
@@ -364,7 +370,7 @@ export default function PlayerReceivingStats({ tier, tierFilter, tierOptions, se
           type: 'number',
           pinnable: false,
           valueGetter: (_value, row) => {
-            return getReceivingDropsPerReception(row);
+            return (row.drops / row.receptions).toFixed(2);
           },
         },
         {
@@ -388,7 +394,8 @@ export default function PlayerReceivingStats({ tier, tierFilter, tierOptions, se
           type: 'number',
           pinnable: false,
           valueGetter: (_value, row) => {
-            return getReceivingGmRating(row);
+            const gm = getReceivingGmRating(row, gamesPlayed);
+            return gm === Number.MIN_SAFE_INTEGER ? null : gm;
           },
         },
       ];

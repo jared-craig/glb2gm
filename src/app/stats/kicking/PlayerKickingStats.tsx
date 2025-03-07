@@ -7,6 +7,7 @@ import { PlayerKickingData } from './playerKickingData';
 import { CustomGridToolbarWithTierAndSeason } from '@/app/components/CustomGridToolBar';
 import Link from 'next/link';
 import { getKickingGmRating } from '../statCalculations';
+import { PlayerData } from '@/app/players/playerData';
 
 interface PlayerKickingStatsProps {
   tier: string;
@@ -24,6 +25,7 @@ export default function PlayerKickingStats({ tier, tierFilter, tierOptions, seas
   const [fetched, setFetched] = useState<boolean>(false);
   const [data, setData] = useState<PlayerKickingData[]>([]);
   const [rows, setRows] = useState<PlayerKickingData[]>([]);
+  const [gamesPlayed, setGamesPlayed] = useState<number>();
 
   const fetchData = async () => {
     const data = await fetch('/api/kicking').then((res) => res.json());
@@ -33,6 +35,7 @@ export default function PlayerKickingStats({ tier, tierFilter, tierOptions, seas
         ? data.filter((x: PlayerKickingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerKickingData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
     setFetched(true);
   };
 
@@ -46,6 +49,7 @@ export default function PlayerKickingStats({ tier, tierFilter, tierOptions, seas
         ? data.filter((x: PlayerKickingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerKickingData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
   }, [tier]);
 
   useEffect(() => {
@@ -54,6 +58,7 @@ export default function PlayerKickingStats({ tier, tierFilter, tierOptions, seas
         ? data.filter((x: PlayerKickingData) => !x.retired && x.team_name !== 'N/A' && x.tier === tier && x.season === +season)
         : data.filter((x: PlayerKickingData) => x.tier === tier && x.season === +season)
     );
+    setGamesPlayed(Math.max(...data.filter((x: PlayerData) => x.tier === tier && x.season === +season).map((x: PlayerData) => x.games_played)));
   }, [season]);
 
   const columns: GridColDef[] = !desktop
@@ -153,7 +158,8 @@ export default function PlayerKickingStats({ tier, tierFilter, tierOptions, seas
           type: 'number',
           pinnable: false,
           valueGetter: (_value, row) => {
-            return getKickingGmRating(row);
+            const gm = getKickingGmRating(row, gamesPlayed);
+            return gm === Number.MIN_SAFE_INTEGER ? null : gm;
           },
           disableColumnMenu: true,
         },
@@ -250,7 +256,8 @@ export default function PlayerKickingStats({ tier, tierFilter, tierOptions, seas
           type: 'number',
           pinnable: false,
           valueGetter: (_value, row) => {
-            return getKickingGmRating(row);
+            const gm = getKickingGmRating(row, gamesPlayed);
+            return gm === Number.MIN_SAFE_INTEGER ? null : gm;
           },
         },
       ];

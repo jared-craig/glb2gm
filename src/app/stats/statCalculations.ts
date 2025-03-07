@@ -1,4 +1,5 @@
-export const getBlockingGmRating = (x: any): number => {
+export const getBlockingGmRating = (x: any, gamesPlayed: number | undefined = undefined): number => {
+  if (gamesPlayed && x.games_played / gamesPlayed < 0.5) return Number.MIN_SAFE_INTEGER;
   const gm = Math.round(
     10.0 * ((+x.pancakes / +x.plays) * 1000.0) -
       10.0 * ((+x.reverse_pancaked / +x.plays) * 1000.0) -
@@ -8,7 +9,8 @@ export const getBlockingGmRating = (x: any): number => {
   return gm;
 };
 
-export const getDefensiveGmRating = (x: any): number => {
+export const getDefensiveGmRating = (x: any, gamesPlayed: number | undefined = undefined): number => {
+  if (gamesPlayed && x.games_played / gamesPlayed < 0.5) return Number.MIN_SAFE_INTEGER;
   const gm = Math.round(
     1.0 * +x.tackles +
       1.0 * +x.tackles_for_loss -
@@ -27,7 +29,8 @@ export const getDefensiveGmRating = (x: any): number => {
   return gm;
 };
 
-export const getKickingGmRating = (x: any): number => {
+export const getKickingGmRating = (x: any, gamesPlayed: number | undefined = undefined): number => {
+  if (gamesPlayed && x.games_played / gamesPlayed < 0.5) return Number.MIN_SAFE_INTEGER;
   const gm = Math.round(
     100.0 * +(+x.fg_made / +x.fg_attempts) +
       1.0 * +x.zero_to_nineteen_made -
@@ -45,7 +48,8 @@ export const getKickingGmRating = (x: any): number => {
   return gm;
 };
 
-export const getPassingGmRating = (x: any): number => {
+export const getPassingGmRating = (x: any, gamesPlayed: number | undefined = undefined): number => {
+  if (gamesPlayed && x.games_played / gamesPlayed < 0.5) return Number.MIN_SAFE_INTEGER;
   const gm = Math.round(
     +(+x.yards / +x.games_played) +
       100.0 * +(+x.touchdowns / +x.games_played) -
@@ -56,7 +60,8 @@ export const getPassingGmRating = (x: any): number => {
   return gm;
 };
 
-export const getPuntingGmRating = (x: any): number => {
+export const getPuntingGmRating = (x: any, gamesPlayed: number | undefined = undefined): number => {
+  if (gamesPlayed && x.games_played / gamesPlayed < 0.5) return Number.MIN_SAFE_INTEGER;
   const gm = Math.round(
     10.0 * +x.average +
       100.0 * +x.hangtime +
@@ -68,7 +73,8 @@ export const getPuntingGmRating = (x: any): number => {
   return gm;
 };
 
-export const getReceivingGmRating = (x: any): number => {
+export const getReceivingGmRating = (x: any, gamesPlayed: number | undefined = undefined): number => {
+  if (gamesPlayed && x.games_played / gamesPlayed < 0.5) return Number.MIN_SAFE_INTEGER;
   const gm = Math.round(
     2.0 * +(+x.yards / +x.games_played) +
       20.0 * +(+x.touchdowns / +x.games_played) +
@@ -79,14 +85,16 @@ export const getReceivingGmRating = (x: any): number => {
   return gm;
 };
 
-export const getReturningGmRating = (x: any): number => {
+export const getReturningGmRating = (x: any, gamesPlayed: number | undefined = undefined): number => {
+  if (gamesPlayed && x.games_played / gamesPlayed < 0.5) return Number.MIN_SAFE_INTEGER;
   let gm = 0.0;
   if (x.krs > 0) gm += 50.0 * +x.kr_average + 250.0 * (+x.kr_touchdowns / +x.krs);
   if (x.prs > 0) gm += 50.0 * +x.pr_average + 250.0 * (+x.pr_touchdowns / +x.prs);
   return Math.round(gm);
 };
 
-export const getRushingGmRating = (x: any): number => {
+export const getRushingGmRating = (x: any, gamesPlayed: number | undefined = undefined): number => {
+  if (gamesPlayed && x.games_played / gamesPlayed < 0.5) return Number.MIN_SAFE_INTEGER;
   const gm = Math.round(
     2.0 * +(+x.yards / +x.games_played) +
       20.0 * +(+x.touchdowns / +x.games_played) +
@@ -101,8 +109,4 @@ export const getRushingGmRating = (x: any): number => {
 export const getTeamGmRating = (x: any, bonus: number): number => {
   const gm = Math.round(25.0 * (100.0 - +x.global_rank) + bonus);
   return gm;
-};
-
-export const getReceivingDropsPerReception = (x: any): number => {
-  return +(+x.drops / +x.receptions).toFixed(2);
 };
