@@ -81,7 +81,7 @@ export const getTopTeamRank = (tier: string): number => {
     case 'Rookie':
       return 10.0;
     case 'Sophomore':
-      return 8.0;
+      return 6.0;
     case 'Professional':
       return 8.0;
     case 'Veteran':
